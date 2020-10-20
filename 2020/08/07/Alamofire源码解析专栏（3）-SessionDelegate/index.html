@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-siteapp">
@@ -16,7 +16,7 @@
     
     
     
-        <link rel="shortcut icon" href="/icons/favicon.ico">
+        <link rel="shortcut icon" href="/about/index/avatar.png">
     
 
     
@@ -71,17 +71,15 @@
 
 <div class="mdui-dialog" id="search">
   
-    <div class="search-form">
-      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
-    </div>
-    <div class="search-result" data-resource="/search.xml"></div>
+    <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="请输入关键字"><input type="hidden" name="sitesearch" value="http://blog.liuyousama.top"></form>
+    <div class="search-result"></div>
   
 </div>
 
   <aside id="sidebar" class="mdui-drawer">
     <div class="mdui-tab" mdui-tab>
-        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
-        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">站点概览</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">关于</a>
     </div>
 
     
@@ -124,7 +122,7 @@
                 <div class="mdui-list-item-icon">
                     <i class="iconfont icon-moon"></i>
                 </div>
-                <div class="mdui-list-item-content">Night Mode</div>
+                <div class="mdui-list-item-content">夜间模式</div>
                 <label class="mdui-switch" id="darkmode">
                   <input type="checkbox" id="nightmode_switch"/>
                   <i class="mdui-switch-icon"></i>
@@ -165,7 +163,7 @@
                     <div class="mdui-list-item-icon">
                         <i class="iconfont icon-link"></i>
                     </div>
-                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-list-item-content">友情链接</div>
                     <div class="mdui-collapse-item-arrow">
                         <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
                     </div>
@@ -192,20 +190,20 @@
   <div class="post-header-meta">
     <span>
       <span class="iconfont icon-calendar"></span>
-      Posted on:&nbsp;2020-08-07
+      发布于:&nbsp;2020-08-07
     </span>
     <span>
       <span class="iconfont icon-calendar-check"></span>
-      Edited on:&nbsp;2020-08-08
+      更新于:&nbsp;2020-10-20
     </span>
-    <span>
+    <!-- <span>
       <span class="iconfont icon-folder"></span>
-      In:&nbsp;
-    </span>
+      分类于:&nbsp;
+    </span> -->
     
       <span>
         <span class="iconfont icon-eye"></span>
-        Views:&nbsp;
+        阅读次数:&nbsp;
         <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
       </span>
     
@@ -222,25 +220,25 @@
       <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
       <ul class="mdui-menu" id="share_menu">
         <li class="mdui-menu-item">
-          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&pic=http://blog.liuyousama.top/about/index/avatar.png&searchPic=false&style=simple" target="_blank" class="mdui-ripple">分享到 Weibo</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&via=六游" target="_blank" class="mdui-ripple">分享到 Twitter</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">分享到 Facebook</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to Google+</a>
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">分享到 Google+</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&title=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&title=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">分享到 LinkedIn</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（3）- SessionDelegate&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to QQ</a>
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（3）- SessionDelegate&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/about/index/avatar.png&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">分享到 QQ</a>
         </li>
         <li class="mdui-menu-item">
-          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&text=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">Share to Telegram</a>
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&text=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">分享到 Telegram</a>
         </li>
       </ul>
     
@@ -264,7 +262,9 @@
 <li><a href="../../../../../2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/#more">Alamofire源码解析专栏（1）-启程</a></li>
 <li><a href="../../../../../2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/#more">Alamofire源码解析专栏（2）- Request</a></li>
 <li><a href="../../../../../2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/#more">Alamofire源码解析专栏（3）- SessionDelegate</a></li>
-<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a></li>
+<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a><a id="more"></a>
+
+</li>
 </ul>
 <p><br><br></p>
 <p>这篇文章我们来分析SessionDelegate相关的源码，主要涉及到Session中的一些属性类型源码的分析以及SessionDelegaet类中对于各种系统原生代理协议的实现</p>
@@ -334,7 +334,7 @@
     <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
     <ul class="mdui-menu" id="toc">
       <li class="mdui-menu-item">
-        <a href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <a href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" id="toc-header" class="mdui-ripple">文章目录</a>
         <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%E6%96%87%E7%AB%A0%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">Alamofire源码解析专栏文章地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E4%B8%AD%E5%BF%83CompositeEventMonitor"><span class="toc-number">2.</span> <span class="toc-text">事件监听中心CompositeEventMonitor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RequestTaskMap"><span class="toc-number">3.</span> <span class="toc-text">RequestTaskMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SessionDelegate%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">SessionDelegate类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SessionDelegate%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">SessionDelegate证书验证过程</span></a></li></ol>
       </li>
     </ul>
@@ -411,10 +411,10 @@
     <div class="mdui-row">
       
         <div class="mdui-col-xs-6 mdui-text-right">
-          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>总访客量 <span id="busuanzi_value_site_uv"></span></span>
         </div>
         <div class="mdui-col-xs-6 mdui-text-left">
-          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>总访问量 <span id="busuanzi_value_site_pv"></span></span>
         </div>
       
     </div>
