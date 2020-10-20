@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Channel&amp;Select源码分析 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Channel&amp;Select源码分析</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-08-27
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-08-28
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Channel&amp;Select源码分析&url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Channel&amp;Select源码分析&url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&title=Channel&amp;Select源码分析" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Channel&amp;Select源码分析&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&text=Channel&amp;Select源码分析" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/Golang/ >Golang</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <p>Golang中使用了channel这个概念来实现了基于消息传递的并发，借用了CSP中channel与process这两个概念，其中process在Go语言中表现为Goroutine，各个Goroutine之间通过channel通讯来实现数据共享</p>
+<p>在此篇文章中，我们首先会介绍Golang中channel的基本结构，以及结构中各个对象的用途。然后会介绍Golang中channel的接受、发送数据以及select的zero-case,one-case,multi-case等常见情况的大致的执行过程，抛弃运行中的大部分细节，大致了解整个过程对之后的源码阅读会有很大的帮助。最后会给出各个情况下源码执行的过程以及分析。</p>
+<h2 id="Channel基本结构"><a href="#Channel基本结构" class="headerlink" title="Channel基本结构"></a>Channel基本结构</h2><p><img src="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/1.png" alt="1.png"><br>上图中的hchan结构体就是Golang中的channel在底层所对应的结构</p>
+<ul>
+<li>hchan中的buf, recvx, sendx这三个字段构成了RingBuffer（下文中会有介绍）这种数据结构，用来存储Channel中的数据</li>
+<li>closed用来标注该channel是否已经被关闭，我们执行关闭channel的操作的时候，并不是立马销毁hchan结构体，hchan结构体还需要继续存活来处理内部剩余的一些数据以及阻塞挂起在自身上的GoRoutine</li>
+<li>recvq与sendq分别是记录在接受channel数据时与在向channel中发送数据时阻塞的GoRoutine的队列，当GoRoutine在接受或者发送数据时发生阻塞时，会将这个发生阻塞的GoRoutine包装成sudog对象，放入对应的队列，等待相关资源可用之后再释放</li>
+<li>sudog中的elem是指向数据的一个指针，如果是发送消息的GoRoutine，elem指向要发送的数据，如果是接收消息的GoRoutine，elem指向数据将被读取到的位置</li>
+</ul>
+<h2 id="hchan中的RingBuffer"><a href="#hchan中的RingBuffer" class="headerlink" title="hchan中的RingBuffer"></a>hchan中的RingBuffer</h2><blockquote>
+<p>为了可以更好的理解在channel数据存取过程中底层RingBuffer的工作过程，我画了一幅图，图画的不是很好，但可以看懂其中的原理。首先我们给出一个容量为3的channel，图中的圆环代表channel的底层数组，r与s箭头分别代表recvx(读取索引)与sendx(发送索引)。在初始化状态中，r与s的值都指向数组头部。向channel中写入一个数据，会数据存到当前s指向的位置，并将s前移一位；读取channel中的一个数据，会读取当前r指向的位置上的数据，并将r前移一位，此时r与s重合，说明buffer中数据已空，此时再进行读取的操作会进入阻塞状态。随后向channle中写入两个数据，s会向前移两位，此时s指针若再向前移动一位则会与r“相遇”，说明buffer中数据已满，此时再进行发送的操作会进入阻塞状态</p>
+</blockquote>
+<p><img src="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2.png" alt="2.png"></p>
+<h2 id="对Channel进行的各种操作"><a href="#对Channel进行的各种操作" class="headerlink" title="对Channel进行的各种操作"></a>对Channel进行的各种操作</h2><h4 id="1-创建channel"><a href="#1-创建channel" class="headerlink" title="1.创建channel"></a>1.创建channel</h4><ol>
+<li>分配hchan（从堆中分配，所有字段均为零值）</li>
+<li>分配ring buffer（从堆中根据给定大小分配，如果是无缓冲channel则不需要这一步）</li>
+</ol>
+<h4 id="2-向有缓冲channel中发送数据（未满）"><a href="#2-向有缓冲channel中发送数据（未满）" class="headerlink" title="2.向有缓冲channel中发送数据（未满）"></a>2.向有缓冲channel中发送数据（未满）</h4><ol>
+<li>对channel上锁</li>
+<li>将数据存入ring buffer</li>
+<li>对channel解锁</li>
+</ol>
+<h4 id="3-从有缓冲channel中读取数据（非空）"><a href="#3-从有缓冲channel中读取数据（非空）" class="headerlink" title="3.从有缓冲channel中读取数据（非空）"></a>3.从有缓冲channel中读取数据（非空）</h4><ol>
+<li>对channel上锁</li>
+<li>从ring buffer中读取数据</li>
+<li>对channel解锁</li>
+</ol>
+<h4 id="4-向有缓冲channel中发送数据（已满）"><a href="#4-向有缓冲channel中发送数据（已满）" class="headerlink" title="4.向有缓冲channel中发送数据（已满）"></a>4.向有缓冲channel中发送数据（已满）</h4><ol>
+<li>将执行操作的GoRoutine与要发送的数据封装为sudog对象</li>
+<li>sudog对象加入sendq队列</li>
+<li>gopark（通知GoRoutine的调度器放弃这个GoRoutine，继续循环调度其他GoRoutine）</li>
+</ol>
+<p><strong>若此时出现一个新的接受方接收channel中的数据</strong></p>
+<ol>
+<li>sendq队列中队首的sudog出队</li>
+<li>将sudog中的数据放入ring buffer</li>
+<li>goready（将GoRoutine重新放入调度队列，等待被调度器调度）</li>
+</ol>
+<h4 id="5-从有缓冲channel中读取数据（空）"><a href="#5-从有缓冲channel中读取数据（空）" class="headerlink" title="5.从有缓冲channel中读取数据（空）"></a>5.从有缓冲channel中读取数据（空）</h4><ol>
+<li>将执行操作的GoRoutine与接收数据的位置封装为sudog对象</li>
+<li>sudog对象加入recvq队列</li>
+<li>gopark</li>
+</ol>
+<p><strong>若此时出现一个新的发送方向channel中发送数据</strong></p>
+<ol>
+<li>recvq队列中对手的sudog出队</li>
+<li>直接将发送方的要发送的数据写入刚刚出队的sudog中的元素位置处</li>
+<li>goready</li>
+</ol>
+<h4 id="6-关闭channel"><a href="#6-关闭channel" class="headerlink" title="6.关闭channel"></a>6.关闭channel</h4><ol>
+<li>对channel加锁</li>
+<li>hchan中的closed字段修改为true</li>
+<li>ready所有sendq与recvq中的sudog</li>
+<li>解锁</li>
+</ol>
+<h4 id="7-从已经关闭的channel中读取数据"><a href="#7-从已经关闭的channel中读取数据" class="headerlink" title="7.从已经关闭的channel中读取数据"></a>7.从已经关闭的channel中读取数据</h4><ol>
+<li>查看底层的ring buffer中是否为空</li>
+<li>如果为空，清空ring buffer</li>
+<li>如果不为空，继续从buffer中读数据</li>
+</ol>
+<h2 id="channel相关操作的源码"><a href="#channel相关操作的源码" class="headerlink" title="channel相关操作的源码"></a>channel相关操作的源码</h2><h4 id="channel各种操作的翻译"><a href="#channel各种操作的翻译" class="headerlink" title="channel各种操作的翻译"></a>channel各种操作的翻译</h4><blockquote>
+<p>上述对channel的各种操作在编译时会被翻译成runtime包中的对应操作channel的函数，在阅读源码之前，我们要先了解一下各个操作所对应的函数，阅读源码的第一步是先要找到源码的位置</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;, size) =&gt; runtime.makechan(<span class="keyword">interface</span>&#123;&#125;, size)</span><br><span class="line"><span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;)       =&gt; runtime.makechan(<span class="keyword">interface</span>&#123;&#125;, <span class="number">0</span>)</span><br><span class="line">channel &lt;- value             =&gt; runtime.chansend1(channel, &amp;value)</span><br><span class="line">value &lt;- channel             =&gt; runtime.chanrecv1(channel, &amp;value)</span><br><span class="line">value, ok &lt;- channel         =&gt; ok := runtime.chanrecv2(channel, &amp;value)</span><br><span class="line"><span class="built_in">close</span>(channel)               =&gt; runtime.closechan(channel)</span><br></pre></td></tr></table></figure>
+<h4 id="创建channel"><a href="#创建channel" class="headerlink" title="创建channel"></a>创建channel</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makechan</span><span class="params">(t *chantype, size <span class="keyword">int</span>)</span> *<span class="title">hchan</span></span> &#123;</span><br><span class="line">	elem := t.elem</span><br><span class="line"></span><br><span class="line">	<span class="comment">//下面使一些安全检查，目的是确保编译器不出错误</span></span><br><span class="line">	<span class="keyword">if</span> elem.size &gt;= <span class="number">1</span>&lt;&lt;<span class="number">16</span> &#123;</span><br><span class="line">		throw(<span class="string">&quot;makechan: invalid channel element type&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> hchanSize%maxAlign != <span class="number">0</span> || elem.align &gt; maxAlign &#123;</span><br><span class="line">		throw(<span class="string">&quot;makechan: bad alignment&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//计算底层 ring buffer需要的内存</span></span><br><span class="line">	mem, overflow := math.MulUintptr(elem.size, <span class="keyword">uintptr</span>(size))</span><br><span class="line">	<span class="keyword">if</span> overflow || mem &gt; maxAlloc-hchanSize || size &lt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(plainError(<span class="string">&quot;makechan: size out of range&quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">var</span> c *hchan</span><br><span class="line">	<span class="keyword">switch</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> mem == <span class="number">0</span>:</span><br><span class="line">        <span class="comment">//当channel的长度为0的情况，也就是申请无缓冲channel的情况，直接申请一个hchan大小的内存</span></span><br><span class="line">		c = (*hchan)(mallocgc(hchanSize, <span class="literal">nil</span>, <span class="literal">true</span>))</span><br><span class="line">		<span class="comment">// Race detector uses this location for synchronization.</span></span><br><span class="line">		c.buf = c.raceaddr()</span><br><span class="line">	<span class="keyword">case</span> elem.kind&amp;kindNoPointers != <span class="number">0</span>:</span><br><span class="line">        <span class="comment">//当channel中的元素不包含指针时，将hchan以及ring buffer的内存一次性分配</span></span><br><span class="line">        <span class="comment">//也就是：此时hchan结构体本身与底层ring buffer是位于一块连续内存中的，这是针对Golang gc的优化</span></span><br><span class="line">		c = (*hchan)(mallocgc(hchanSize+mem, <span class="literal">nil</span>, <span class="literal">true</span>))</span><br><span class="line">		c.buf = add(unsafe.Pointer(c), hchanSize)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="comment">//当channel中的元素包含指针时，则hchan与ring buffer的内存是分开分配的</span></span><br><span class="line">		c = <span class="built_in">new</span>(hchan)</span><br><span class="line">		c.buf = mallocgc(mem, elem, <span class="literal">true</span>)</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//初始化hchan中的一些元素</span></span><br><span class="line">	c.elemsize = <span class="keyword">uint16</span>(elem.size)</span><br><span class="line">	c.elemtype = elem</span><br><span class="line">	c.dataqsiz = <span class="keyword">uint</span>(size)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> debugChan &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">&quot;makechan: chan=&quot;</span>, c, <span class="string">&quot;; elemsize=&quot;</span>, elem.size, <span class="string">&quot;; elemalg=&quot;</span>, elem.alg, <span class="string">&quot;; dataqsiz=&quot;</span>, size, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> c</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="发送数据"><a href="#发送数据" class="headerlink" title="发送数据"></a>发送数据</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chansend</span><span class="params">(c *hchan, ep unsafe.Pointer, block <span class="keyword">bool</span>, callerpc <span class="keyword">uintptr</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="comment">//如果channel不存在，发送方GoRoutine将出错，并永远处于不能被调度的情况</span></span><br><span class="line">	<span class="keyword">if</span> c == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> !block &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">		gopark(<span class="literal">nil</span>, <span class="literal">nil</span>, waitReasonChanSendNilChan, traceEvGoStop, <span class="number">2</span>)</span><br><span class="line">		throw(<span class="string">&quot;unreachable&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//一些调试信息以及安全检查</span></span><br><span class="line">	<span class="keyword">if</span> debugChan &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">&quot;chansend: chan=&quot;</span>, c, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> raceenabled &#123;</span><br><span class="line">		racereadpc(c.raceaddr(), callerpc, funcPC(chansend))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> !block &amp;&amp; c.closed == <span class="number">0</span> &amp;&amp; ((c.dataqsiz == <span class="number">0</span> &amp;&amp; c.recvq.first == <span class="literal">nil</span>) ||</span><br><span class="line">		(c.dataqsiz &gt; <span class="number">0</span> &amp;&amp; c.qcount == c.dataqsiz)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> t0 <span class="keyword">int64</span></span><br><span class="line">	<span class="keyword">if</span> blockprofilerate &gt; <span class="number">0</span> &#123;</span><br><span class="line">		t0 = cputicks()</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//给channel上锁</span></span><br><span class="line">	lock(&amp;c.lock)</span><br><span class="line">    <span class="comment">//如果channel已经关闭，报错，因为不能向以及关闭的channel中发送数据</span></span><br><span class="line">	<span class="keyword">if</span> c.closed != <span class="number">0</span> &#123;</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="built_in">panic</span>(plainError(<span class="string">&quot;send on closed channel&quot;</span>))</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//如果在接受阻塞队列中存在sudog，那么就取出sudog，将这个要发送的数据给这个sudog</span></span><br><span class="line">	<span class="keyword">if</span> sg := c.recvq.dequeue(); sg != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Found a waiting receiver. We pass the value we want to send</span></span><br><span class="line">		<span class="comment">// directly to the receiver, bypassing the channel buffer (if any).</span></span><br><span class="line">		send(c, sg, ep, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; unlock(&amp;c.lock) &#125;, <span class="number">3</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//如果底层ring buffer中的数据没有满，则直接将数据塞入ring buffer</span></span><br><span class="line">	<span class="keyword">if</span> c.qcount &lt; c.dataqsiz &#123;</span><br><span class="line">		<span class="comment">// Space is available in the channel buffer. Enqueue the element to send.</span></span><br><span class="line">		qp := chanbuf(c, c.sendx)</span><br><span class="line">		<span class="keyword">if</span> raceenabled &#123;</span><br><span class="line">			raceacquire(qp)</span><br><span class="line">			racerelease(qp)</span><br><span class="line">		&#125;</span><br><span class="line">		typedmemmove(c.elemtype, qp, ep)</span><br><span class="line">		c.sendx++</span><br><span class="line">		<span class="keyword">if</span> c.sendx == c.dataqsiz &#123;</span><br><span class="line">			c.sendx = <span class="number">0</span></span><br><span class="line">		&#125;</span><br><span class="line">		c.qcount++</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !block &#123;</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//以下逻辑处理channel中数据已满时发送数据的情况</span></span><br><span class="line">    <span class="comment">//封装了当前GoRoutine对象(gp)与sudog对象(mysg)，并将sudog加入sendq队列，以及gopark掉当前GoRoutine</span></span><br><span class="line">	gp := getg()</span><br><span class="line">	mysg := acquireSudog()</span><br><span class="line">	mysg.releasetime = <span class="number">0</span></span><br><span class="line">	<span class="keyword">if</span> t0 != <span class="number">0</span> &#123;</span><br><span class="line">		mysg.releasetime = <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	mysg.elem = ep</span><br><span class="line">	mysg.waitlink = <span class="literal">nil</span></span><br><span class="line">	mysg.g = gp</span><br><span class="line">	mysg.isSelect = <span class="literal">false</span></span><br><span class="line">	mysg.c = c</span><br><span class="line">	gp.waiting = mysg</span><br><span class="line">	gp.param = <span class="literal">nil</span></span><br><span class="line">	c.sendq.enqueue(mysg)</span><br><span class="line">	goparkunlock(&amp;c.lock, waitReasonChanSend, traceEvGoBlockSend, <span class="number">3</span>)</span><br><span class="line">	<span class="comment">//keepAlive是为了保活要发送到channel的数据，防止被垃圾回收掉</span></span><br><span class="line">	KeepAlive(ep)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// someone woke us up.</span></span><br><span class="line">	<span class="keyword">if</span> mysg != gp.waiting &#123;</span><br><span class="line">		throw(<span class="string">&quot;G waiting list is corrupted&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	gp.waiting = <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">if</span> gp.param == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> c.closed == <span class="number">0</span> &#123;</span><br><span class="line">			throw(<span class="string">&quot;chansend: spurious wakeup&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">panic</span>(plainError(<span class="string">&quot;send on closed channel&quot;</span>))</span><br><span class="line">	&#125;</span><br><span class="line">	gp.param = <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">if</span> mysg.releasetime &gt; <span class="number">0</span> &#123;</span><br><span class="line">		blockevent(mysg.releasetime-t0, <span class="number">2</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	mysg.c = <span class="literal">nil</span></span><br><span class="line">	releaseSudog(mysg)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="接受数据"><a href="#接受数据" class="headerlink" title="接受数据"></a>接受数据</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//channel接受数据分有ok返回值，与没有ok返回值的两个函数，分别为chanrecv1与chanrecv2，这两个函数都调用了chanrecv函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chanrecv1</span><span class="params">(c *hchan, elem unsafe.Pointer)</span></span> &#123;</span><br><span class="line">	chanrecv(c, elem, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chanrecv2</span><span class="params">(c *hchan, elem unsafe.Pointer)</span> <span class="params">(received <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	_, received = chanrecv(c, elem, <span class="literal">true</span>)</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chanrecv</span><span class="params">(c *hchan, ep unsafe.Pointer, block <span class="keyword">bool</span>)</span> <span class="params">(selected, received <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> debugChan &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">&quot;chanrecv: chan=&quot;</span>, c, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//如果channel为空，报错</span></span><br><span class="line">	<span class="keyword">if</span> c == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> !block &#123;</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		gopark(<span class="literal">nil</span>, <span class="literal">nil</span>, waitReasonChanReceiveNilChan, traceEvGoStop, <span class="number">2</span>)</span><br><span class="line">		throw(<span class="string">&quot;unreachable&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !block &amp;&amp; (c.dataqsiz == <span class="number">0</span> &amp;&amp; c.sendq.first == <span class="literal">nil</span> ||</span><br><span class="line">		c.dataqsiz &gt; <span class="number">0</span> &amp;&amp; atomic.Loaduint(&amp;c.qcount) == <span class="number">0</span>) &amp;&amp;</span><br><span class="line">		atomic.Load(&amp;c.closed) == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> t0 <span class="keyword">int64</span></span><br><span class="line">	<span class="keyword">if</span> blockprofilerate &gt; <span class="number">0</span> &#123;</span><br><span class="line">		t0 = cputicks()</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//给channel加锁</span></span><br><span class="line">	lock(&amp;c.lock)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> c.closed != <span class="number">0</span> &amp;&amp; c.qcount == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> raceenabled &#123;</span><br><span class="line">			raceacquire(c.raceaddr())</span><br><span class="line">		&#125;</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="keyword">if</span> ep != <span class="literal">nil</span> &#123;</span><br><span class="line">			typedmemclr(c.elemtype, ep)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>, <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//查看sendq队列中是否有sudog，如果有并且channel的size为0，直接取得sudog的值。如果channel的size不为0，则取ring buffer中的值</span></span><br><span class="line">	<span class="keyword">if</span> sg := c.sendq.dequeue(); sg != <span class="literal">nil</span> &#123;</span><br><span class="line">		recv(c, sg, ep, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; unlock(&amp;c.lock) &#125;, <span class="number">3</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>, <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//如果sendq队列中没有sudog且ring buffer中有数据，则直接从ring buffer中拿数据</span></span><br><span class="line">	<span class="keyword">if</span> c.qcount &gt; <span class="number">0</span> &#123;</span><br><span class="line">		qp := chanbuf(c, c.recvx)</span><br><span class="line">		<span class="keyword">if</span> raceenabled &#123;</span><br><span class="line">			raceacquire(qp)</span><br><span class="line">			racerelease(qp)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> ep != <span class="literal">nil</span> &#123;</span><br><span class="line">			typedmemmove(c.elemtype, ep, qp)</span><br><span class="line">		&#125;</span><br><span class="line">		typedmemclr(c.elemtype, qp)</span><br><span class="line">		c.recvx++</span><br><span class="line">		<span class="keyword">if</span> c.recvx == c.dataqsiz &#123;</span><br><span class="line">			c.recvx = <span class="number">0</span></span><br><span class="line">		&#125;</span><br><span class="line">		c.qcount--</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>, <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !block &#123;</span><br><span class="line">		unlock(&amp;c.lock)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>, <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//如果ring buffer中没有数据，且recvq中没有sudog，那就封装当前GoRoutine与sudog，并添加进sendq队列</span></span><br><span class="line">	gp := getg()</span><br><span class="line">	mysg := acquireSudog()</span><br><span class="line">	mysg.releasetime = <span class="number">0</span></span><br><span class="line">	<span class="keyword">if</span> t0 != <span class="number">0</span> &#123;</span><br><span class="line">		mysg.releasetime = <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	mysg.elem = ep</span><br><span class="line">	mysg.waitlink = <span class="literal">nil</span></span><br><span class="line">	gp.waiting = mysg</span><br><span class="line">	mysg.g = gp</span><br><span class="line">	mysg.isSelect = <span class="literal">false</span></span><br><span class="line">	mysg.c = c</span><br><span class="line">	gp.param = <span class="literal">nil</span></span><br><span class="line">	c.recvq.enqueue(mysg)</span><br><span class="line">	goparkunlock(&amp;c.lock, waitReasonChanReceive, traceEvGoBlockRecv, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> mysg != gp.waiting &#123;</span><br><span class="line">		throw(<span class="string">&quot;G waiting list is corrupted&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	gp.waiting = <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">if</span> mysg.releasetime &gt; <span class="number">0</span> &#123;</span><br><span class="line">		blockevent(mysg.releasetime-t0, <span class="number">2</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	closed := gp.param == <span class="literal">nil</span></span><br><span class="line">	gp.param = <span class="literal">nil</span></span><br><span class="line">	mysg.c = <span class="literal">nil</span></span><br><span class="line">	releaseSudog(mysg)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>, !closed</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Select的原理"><a href="#Select的原理" class="headerlink" title="Select的原理"></a>Select的原理</h2><h4 id="Select的翻译工作"><a href="#Select的翻译工作" class="headerlink" title="Select的翻译工作"></a>Select的翻译工作</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//零case的select</span></span><br><span class="line"><span class="keyword">select</span>&#123;&#125;                =&gt;  runtime.block()</span><br><span class="line"><span class="comment">//只含一个case的select，实质为chanrecv1</span></span><br><span class="line"><span class="keyword">select</span>&#123;</span><br><span class="line"><span class="keyword">case</span> value &lt;- channel:      <span class="keyword">if</span> value &lt;- channel &#123;</span><br><span class="line">    (...)               =&gt;      (...)</span><br><span class="line">&#125;                           &#125;</span><br><span class="line"><span class="comment">//含有一个case和default的select，实质为chanrecv2</span></span><br><span class="line"><span class="keyword">select</span>&#123;</span><br><span class="line"><span class="keyword">case</span> value &lt;- channel:      <span class="keyword">if</span> value, ok &lt;- channel; ok &#123;</span><br><span class="line">    (...)               =&gt;      (...)</span><br><span class="line"><span class="keyword">default</span>:                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    (...)                       (...)</span><br><span class="line">&#125;                           &#125;</span><br><span class="line"><span class="comment">//含有多个case 的select</span></span><br><span class="line"><span class="keyword">select</span>&#123;</span><br><span class="line"><span class="keyword">case</span> value &lt;- channel1:</span><br><span class="line">    (...)               =&gt;  runtime.selectgo()</span><br><span class="line"><span class="keyword">case</span> value &lt;- channel2:</span><br><span class="line">    (...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Golang中的反射与接口详解</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+        <span>Context初识、源码解析以及最佳实践</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Channel%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">Channel基本结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hchan%E4%B8%AD%E7%9A%84RingBuffer"><span class="toc-number">2.</span> <span class="toc-text">hchan中的RingBuffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9Channel%E8%BF%9B%E8%A1%8C%E7%9A%84%E5%90%84%E7%A7%8D%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">对Channel进行的各种操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BAchannel"><span class="toc-number">3.0.1.</span> <span class="toc-text">1.创建channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%90%91%E6%9C%89%E7%BC%93%E5%86%B2channel%E4%B8%AD%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE%EF%BC%88%E6%9C%AA%E6%BB%A1%EF%BC%89"><span class="toc-number">3.0.2.</span> <span class="toc-text">2.向有缓冲channel中发送数据（未满）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%BB%8E%E6%9C%89%E7%BC%93%E5%86%B2channel%E4%B8%AD%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%EF%BC%88%E9%9D%9E%E7%A9%BA%EF%BC%89"><span class="toc-number">3.0.3.</span> <span class="toc-text">3.从有缓冲channel中读取数据（非空）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E5%90%91%E6%9C%89%E7%BC%93%E5%86%B2channel%E4%B8%AD%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE%EF%BC%88%E5%B7%B2%E6%BB%A1%EF%BC%89"><span class="toc-number">3.0.4.</span> <span class="toc-text">4.向有缓冲channel中发送数据（已满）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E4%BB%8E%E6%9C%89%E7%BC%93%E5%86%B2channel%E4%B8%AD%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%EF%BC%88%E7%A9%BA%EF%BC%89"><span class="toc-number">3.0.5.</span> <span class="toc-text">5.从有缓冲channel中读取数据（空）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-%E5%85%B3%E9%97%ADchannel"><span class="toc-number">3.0.6.</span> <span class="toc-text">6.关闭channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-%E4%BB%8E%E5%B7%B2%E7%BB%8F%E5%85%B3%E9%97%AD%E7%9A%84channel%E4%B8%AD%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">3.0.7.</span> <span class="toc-text">7.从已经关闭的channel中读取数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#channel%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E7%9A%84%E6%BA%90%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">channel相关操作的源码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#channel%E5%90%84%E7%A7%8D%E6%93%8D%E4%BD%9C%E7%9A%84%E7%BF%BB%E8%AF%91"><span class="toc-number">4.0.1.</span> <span class="toc-text">channel各种操作的翻译</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAchannel"><span class="toc-number">4.0.2.</span> <span class="toc-text">创建channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE"><span class="toc-number">4.0.3.</span> <span class="toc-text">发送数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A5%E5%8F%97%E6%95%B0%E6%8D%AE"><span class="toc-number">4.0.4.</span> <span class="toc-text">接受数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Select%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">5.</span> <span class="toc-text">Select的原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Select%E7%9A%84%E7%BF%BB%E8%AF%91%E5%B7%A5%E4%BD%9C"><span class="toc-number">5.0.1.</span> <span class="toc-text">Select的翻译工作</span></a></li></ol></li></ol></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Alamofire源码解析专栏（3）- SessionDelegate | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/">Alamofire源码解析专栏（3）- SessionDelegate</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-08-07
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-08-08
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（3）- SessionDelegate&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&title=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（3）- SessionDelegate&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/&text=Alamofire源码解析专栏（3）- SessionDelegate" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Alamofire源码解析专栏文章地址"><a href="#Alamofire源码解析专栏文章地址" class="headerlink" title="Alamofire源码解析专栏文章地址"></a>Alamofire源码解析专栏文章地址</h2><ul>
+<li><a href="../../../../../2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/#more">Alamofire源码解析专栏（1）-启程</a></li>
+<li><a href="../../../../../2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/#more">Alamofire源码解析专栏（2）- Request</a></li>
+<li><a href="../../../../../2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/#more">Alamofire源码解析专栏（3）- SessionDelegate</a></li>
+<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a></li>
+</ul>
+<p><br><br></p>
+<p>这篇文章我们来分析SessionDelegate相关的源码，主要涉及到Session中的一些属性类型源码的分析以及SessionDelegaet类中对于各种系统原生代理协议的实现</p>
+<p>在文章的开头，我再将专栏的第一篇文章中放出来的Session类中的成员属性代码贴出来，因为该文章很大部分都是在分析Session类中的实例变量类型的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Session类的共享单例对象 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> `<span class="keyword">default</span>` = <span class="type">Session</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 一个Session中持有一个URLSession对象，底层使用这个URLSession发起各种请求 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> session: <span class="type">URLSession</span></span><br><span class="line"><span class="comment">/* 处理URLSession的代理方法的一个类，其本身实现了URLSessionDelegate、URLSessionDataDelegate、URLSessionDownloadDelegate等多个原生Session代理协议 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> delegate: <span class="type">SessionDelegate</span></span><br><span class="line"><span class="comment">/* rootQueue用来执行所有内部的回调方法和状态更新操作，必须是串行队列（为了保证对资源操作的有序性） */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> rootQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 下面这个值决定实例是否对所有创建的request自动调用resume()，如果为true则会在request创建完成后自动立马调用resume方法 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> startRequestsImmediately: <span class="type">Bool</span></span><br><span class="line"><span class="comment">/* 用来异步创建URLRequest的queue，默认情况直接使用上面的rootQueue，如果创建URLRequest成为了你的系统的瓶颈可以尝试引入另外一个附加的queue */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> requestQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 用来序列化请求响应数据的queue，默认情况直接使用上面的rootQueue，如果对response的序列化成为了你的系统的瓶颈，可以尝试引入一个附加的queue */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> serializationQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 全局的请求拦截器，可以在请求发出前或者响应前做出一些判断，并根据需要拦截或者放行请求。 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> interceptor: <span class="type">RequestInterceptor?</span></span><br><span class="line"><span class="comment">/* 全局的证书验证器 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> serverTrustManager: <span class="type">ServerTrustManager?</span></span><br><span class="line"><span class="comment">/* 全局的请求重定向处理器，当一个请求被系统代理告知需要重定向，而请求又没有自己的一个重定向处理器的时候，就会调用全局的处理器来处理重定向 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> redirectHandler: <span class="type">RedirectHandler?</span></span><br><span class="line"><span class="comment">/* 全局的缓存处理器，响应请求所产生的缓存 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> cachedResponseHandler: <span class="type">CachedResponseHandler?</span></span><br><span class="line"><span class="comment">/* 事件监听器，是一个集中的事件分发中心 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> eventMonitor: <span class="type">CompositeEventMonitor</span></span><br><span class="line"><span class="comment">/* 默认的事件监听器订阅者列表，事件监听器中的所有订阅者由默认的订阅者加初始化传入的监听者组成 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> defaultEventMonitors: [<span class="type">EventMonitor</span>] = [<span class="type">AlamofireNotifications</span>()]</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 内部的map，存储着创建的Request与对应的URLSessionTask之间的映射 */</span></span><br><span class="line"><span class="keyword">var</span> requestTaskMap = <span class="type">RequestTaskMap</span>()</span><br><span class="line"><span class="comment">/* 一个set，存储这当前活跃的（还未被关闭）的所有request */</span></span><br><span class="line"><span class="keyword">var</span> activeRequests: <span class="type">Set</span>&lt;<span class="type">Request</span>&gt; = []</span><br><span class="line"><span class="comment">/* 一个字典，记录着某个task完成时需要执行的回调 */</span></span><br><span class="line"><span class="keyword">var</span> waitingCompletions: [<span class="type">URLSessionTask</span>: () -&gt; <span class="type">Void</span>] = [:]</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件监听中心CompositeEventMonitor"><a href="#事件监听中心CompositeEventMonitor" class="headerlink" title="事件监听中心CompositeEventMonitor"></a>事件监听中心CompositeEventMonitor</h2><p>事件监听中心CompositeEventMonitor负责接收Alamofire系统中的各种通知，并将这些通知发送给全部的订阅者，监听中心给订阅者发送通知是通过调用函数的方式来发送的，所以在我们阅读CompositeEventMonitor源码之前，先看一下Alamofire中对订阅者的定义，Alamofre中使用一个协议EventMonitor来表示一个订阅者角色，协议中声明了各种通知对应的方法，如果监听中心想要发送一个通知给订阅者，就直接调用订阅者的对应方法完成通知的传递。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">EventMonitor</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 返回监听者在接收到通知之后需要在哪个队列上运行相对应的方法</span></span><br><span class="line">    <span class="keyword">var</span> queue: <span class="type">DispatchQueue</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// URLSession变为Invalid状态，并且发生了错误</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession, didBecomeInvalidWithError error: Error?)</span></span></span><br><span class="line">    <span class="comment">// URLSession收到了服务器信任挑战</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge)</span></span></span><br><span class="line">    <span class="comment">// 某个URLSession下的task上传了新的数据</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession,</span></span></span><br><span class="line"><span class="function"><span class="params">                    task: URLSessionTask,</span></span></span><br><span class="line"><span class="function"><span class="params">                    didSendBodyData bytesSent: Int64,</span></span></span><br><span class="line"><span class="function"><span class="params">                    totalBytesSent: Int64,</span></span></span><br><span class="line"><span class="function"><span class="params">                    totalBytesExpectedToSend: Int64)</span></span></span><br><span class="line">    <span class="comment">// 以下省略……</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>EventMonitor协议中定义了非常多的方法，一个方法对应一个通知事件，这些事件中一部分是与URLSessionDelegate或者URLSessionDataDelegate等一些系统原生网络代理中的方法相关，另外一部分是与我们上一篇文章中提到过的Reques他的生命周期相关。除了这个协议之外，因为该协议中定义的方法数量十分巨大，并且大多数情况下监听者只会同时关注其中的几个通知，所以为了便于实现协议，Alamofire还会协议中的每一个方法提供了一个默认实现，这些默认实现大部分由空实现构成。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">EventMonitor</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// The default queue on which `CompositeEventMonitor`s will call the `EventMonitor` methods. `.main` by default.</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">var</span> queue: <span class="type">DispatchQueue</span> &#123; .main &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// MARK: Default Implementations</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession, didBecomeInvalidWithError error: Error?)</span></span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession,</span></span></span><br><span class="line"><span class="function"><span class="params">                           task: URLSessionTask,</span></span></span><br><span class="line"><span class="function"><span class="params">                           didReceive challenge: URLAuthenticationChallenge)</span></span> &#123;&#125;</span><br><span class="line">    <span class="comment">// 省略n行代码……</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面来看事件监听中心CompositeEventMonitor的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">CompositeEventMonitor</span>: <span class="title">EventMonitor</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 事件监听中心向监听者们分发事件所使用的队列</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> queue = <span class="type">DispatchQueue</span>(label: <span class="string">&quot;org.alamofire.compositeEventMonitor&quot;</span>, qos: .background)</span><br><span class="line">    <span class="comment">// 事件监听中心中会存储所有的监听者</span></span><br><span class="line">    <span class="keyword">let</span> monitors: [<span class="type">EventMonitor</span>]</span><br><span class="line">    <span class="keyword">init</span>(monitors: [<span class="type">EventMonitor</span>]) &#123;</span><br><span class="line">        <span class="keyword">self</span>.monitors = monitors</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 最关键的是这个方法，这个方法的逻辑很简单，就是接受一个闭包作为通知的分发函数</span></span><br><span class="line">    <span class="comment">// 然后遍历所有的监听者，对其应用传入的闭包，将通知分发给每一个监听者</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">performEvent</span><span class="params">(<span class="number">_</span> event: @escaping <span class="params">(EventMonitor)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        queue.async &#123;</span><br><span class="line">            <span class="keyword">for</span> monitor <span class="keyword">in</span> <span class="keyword">self</span>.monitors &#123;</span><br><span class="line">                monitor.queue.async &#123; event(monitor) &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 除此之外，监听者EventMonitor协议中定义的每一个方法在CompositeEventMonitor类中都有一个与之对应的方法</span></span><br><span class="line">    <span class="comment">// 调用CompositeEventMonitor类中的这些方法，相当于向通知中心发送了一条该方法对应的通知，通知中心会把这条通知下发下去</span></span><br><span class="line">    <span class="comment">// 例如下面这个例子</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession, didBecomeInvalidWithError error: Error?)</span></span> &#123;</span><br><span class="line">        <span class="comment">// 方法中调用了performEvent对收到的通知进行下发</span></span><br><span class="line">        performEvent &#123; $<span class="number">0</span>.urlSession(session, didBecomeInvalidWithError: error) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省略n行代码……</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestTaskMap"><a href="#RequestTaskMap" class="headerlink" title="RequestTaskMap"></a>RequestTaskMap</h2><p>Alamofire中许多关于网络请求状态的更新都是基于原生URLSession的各种代理方法回调来完成的，原生的回调方法中会告诉你是哪一个Task的状态发生了改变，但是在Alamofire中将请求封装为了Request类，所以就需要有一个可以通过task找到与之对应的Request的方法。然后就有了RequestTaskMap，这个类中存储了Request与原生Task之间的映射。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RequestTaskMap</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">typealias</span> <span class="type">Events</span> = (completed: <span class="type">Bool</span>, metricsGathered: <span class="type">Bool</span>)</span><br><span class="line">    <span class="comment">// 从task到Reqeust的映射</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> tasksToRequests: [<span class="type">URLSessionTask</span>: <span class="type">Request</span>]</span><br><span class="line">    <span class="comment">// 从Request到task的映射</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> requestsToTasks: [<span class="type">Request</span>: <span class="type">URLSessionTask</span>]</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> taskEvents: [<span class="type">URLSessionTask</span>: <span class="type">Events</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> requests: [<span class="type">Request</span>] &#123;</span><br><span class="line">        <span class="type">Array</span>(tasksToRequests.values)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>(tasksToRequests: [<span class="type">URLSessionTask</span>: <span class="type">Request</span>] = [:],</span><br><span class="line">         requestsToTasks: [<span class="type">Request</span>: <span class="type">URLSessionTask</span>] = [:],</span><br><span class="line">         taskEvents: [<span class="type">URLSessionTask</span>: (completed: <span class="type">Bool</span>, metricsGathered: <span class="type">Bool</span>)] = [:]) &#123;</span><br><span class="line">        <span class="keyword">self</span>.tasksToRequests = tasksToRequests</span><br><span class="line">        <span class="keyword">self</span>.requestsToTasks = requestsToTasks</span><br><span class="line">        <span class="keyword">self</span>.taskEvents = taskEvents</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 下标方法，建立\删除\获取 Reqeust到task的映射</span></span><br><span class="line">    <span class="keyword">subscript</span>(<span class="number">_</span> request: <span class="type">Request</span>) -&gt; <span class="type">URLSessionTask?</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; requestsToTasks[request] &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123;</span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> newValue = newValue <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">guard</span> <span class="keyword">let</span> task = requestsToTasks[request] <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: no task corresponding to request found.&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                requestsToTasks.removeValue(forKey: request)</span><br><span class="line">                tasksToRequests.removeValue(forKey: task)</span><br><span class="line">                taskEvents.removeValue(forKey: task)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            requestsToTasks[request] = newValue</span><br><span class="line">            tasksToRequests[newValue] = request</span><br><span class="line">            taskEvents[newValue] = (completed: <span class="literal">false</span>, metricsGathered: <span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 下标方法，建立\删除\获取 task到Reqeust的映射</span></span><br><span class="line">    <span class="keyword">subscript</span>(<span class="number">_</span> task: <span class="type">URLSessionTask</span>) -&gt; <span class="type">Request?</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; tasksToRequests[task] &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123;</span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> newValue = newValue <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">guard</span> <span class="keyword">let</span> request = tasksToRequests[task] <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: no request corresponding to task found.&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                tasksToRequests.removeValue(forKey: task)</span><br><span class="line">                requestsToTasks.removeValue(forKey: request)</span><br><span class="line">                taskEvents.removeValue(forKey: task)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            tasksToRequests[task] = newValue</span><br><span class="line">            requestsToTasks[newValue] = task</span><br><span class="line">            taskEvents[task] = (completed: <span class="literal">false</span>, metricsGathered: <span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RequestTaskMap除了上面源码中我们看到的存取Request与Task之间的映射关系的功能之外，还会额外记录每个task的完成状态</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RequestTaskMap</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">typealias</span> <span class="type">Events</span> = (completed: <span class="type">Bool</span>, metricsGathered: <span class="type">Bool</span>)</span><br><span class="line">    <span class="comment">// 字典中每一个task对应一个Events，Events中记录着该task是否已经complete，以及是否已经完成metrics数据的收集</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> taskEvents: [<span class="type">URLSessionTask</span>: <span class="type">Events</span>]</span><br><span class="line">    <span class="comment">// 要想看懂下面的两个方法，就需要先了解一些概念</span></span><br><span class="line">    <span class="comment">// task的complete事件以及metrics收集完成事件都是由原生系统中的代理发出的</span></span><br><span class="line">    <span class="comment">// 然而这两个事件到达的顺序是不一定的，哪个事件先到达是随机的</span></span><br><span class="line">    <span class="comment">// 这两个事件有一个没到，就说明这个task还没完全结束，还需要保留</span></span><br><span class="line">    <span class="comment">// 如果两个事件都到了，那么就说明这个task已经彻底没有用处了，可以理解为task的生命周期已经结束了</span></span><br><span class="line">    <span class="comment">// 这个时候我们就称这个task处于disassociate状态，断开联系了</span></span><br><span class="line">    <span class="comment">// 下面两个方法就对应这两个事件，方法会返回某个task在接收到对应事件之后是否已经disassociate</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">disassociateIfNecessaryAfterGatheringMetricsForTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> events = taskEvents[task] <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: no events corresponding to task found.&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (events.completed, events.metricsGathered) &#123;</span><br><span class="line">        <span class="keyword">case</span> (<span class="number">_</span>, <span class="literal">true</span>): <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: duplicate metricsGatheredForTask call.&quot;</span>)</span><br><span class="line">        <span class="keyword">case</span> (<span class="literal">false</span>, <span class="literal">false</span>): taskEvents[task] = (completed: <span class="literal">false</span>, metricsGathered: <span class="literal">true</span>); <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="literal">true</span>, <span class="literal">false</span>): <span class="keyword">self</span>[task] = <span class="literal">nil</span>; <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">disassociateIfNecessaryAfterCompletingTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> events = taskEvents[task] <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: no events corresponding to task found.&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (events.completed, events.metricsGathered) &#123;</span><br><span class="line">        <span class="keyword">case</span> (<span class="literal">true</span>, <span class="number">_</span>): <span class="built_in">fatalError</span>(<span class="string">&quot;RequestTaskMap consistency error: duplicate completionReceivedForTask call.&quot;</span>)</span><br><span class="line">        #<span class="keyword">if</span> os(watchOS) <span class="comment">// watchOS doesn&#x27;t gather metrics, so unconditionally remove the reference and return true.</span></span><br><span class="line">        <span class="keyword">default</span>: <span class="keyword">self</span>[task] = <span class="literal">nil</span>; <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        #<span class="keyword">else</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="literal">false</span>, <span class="literal">false</span>): taskEvents[task] = (completed: <span class="literal">true</span>, metricsGathered: <span class="literal">false</span>); <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="literal">false</span>, <span class="literal">true</span>): <span class="keyword">self</span>[task] = <span class="literal">nil</span>; <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        #endif</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SessionDelegate类"><a href="#SessionDelegate类" class="headerlink" title="SessionDelegate类"></a>SessionDelegate类</h2><p>由于要想通过代理处理原生URLSession中所有行为的回调是非常繁琐与复杂的，所以Alamofire新创建了一个类来实现原生Session的各种代理协议。Session是Alamofire中的核心管理类，SessionDelegate在处理代理回调的时候必然会涉及到需要与Session交互的逻辑。之前在分析Request时，Request也需要与Session进行交互，其做法时定义一个代理协议由Session本身实现，然后自身持有这个代理属性。现在这个SessionDelegate也使用了类似的方式处理这个问题。首先我们来看SessionStateProvider协议，虽然协议名称中没有包含delegate这个单词，但实际上从作用上来说，这就是一个代理协议</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">SessionStateProvider</span>: <span class="title">AnyObject</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取Session中用来处理服务器信任挑战的ServerTrustManager</span></span><br><span class="line">    <span class="keyword">var</span> serverTrustManager: <span class="type">ServerTrustManager?</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">    <span class="comment">// 获取Session中用来处理重定向的RedirectHandler</span></span><br><span class="line">    <span class="keyword">var</span> redirectHandler: <span class="type">RedirectHandler?</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">    <span class="comment">// 获取Session中用来响应缓存的CachedResponseHandler</span></span><br><span class="line">    <span class="keyword">var</span> cachedResponseHandler: <span class="type">CachedResponseHandler?</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">    <span class="comment">// 拿到与task对应的Request类</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="keyword">for</span> task: URLSessionTask)</span></span> -&gt; <span class="type">Request?</span></span><br><span class="line">    <span class="comment">// 通知Session对task的metrics已经完成了收集工作</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">didGatherMetricsForTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask)</span></span></span><br><span class="line">    <span class="comment">// 通知Session task已经完成</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">didCompleteTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask, completion: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">credential</span><span class="params">(<span class="keyword">for</span> task: URLSessionTask, <span class="keyword">in</span> protectionSpace: URLProtectionSpace)</span></span> -&gt; <span class="type">URLCredential?</span></span><br><span class="line">    <span class="comment">// 通知Session因为URLSession失效而出错</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cancelRequestsForSessionInvalidation</span><span class="params">(with error: Error?)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们来看一下Session类是如何实现这个协议的</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Session</span>: <span class="title">SessionStateProvider</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 直接在自己属性中的requestTaskMap中查找</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="keyword">for</span> task: URLSessionTask)</span></span> -&gt; <span class="type">Request?</span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(rootQueue))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> requestTaskMap[task]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 下面的这两个通知方法，一个是通知task已经complete，一个是通知task的metrics已经收集完毕</span></span><br><span class="line">    <span class="comment">// 由于在原生系统中对于同一个task来说这两个事件没有固定的到达顺序</span></span><br><span class="line">    <span class="comment">// 但是SessionDelegate提供的闭包必须要等到这两个事件都已经完成之后才能调用，如果metrics还没有收集完毕之前就调用这个闭包会导致Request直接结束，无法正常完成metrics的收集</span></span><br><span class="line">    <span class="comment">// 所以就有了以下两个方法中的逻辑</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">didCompleteTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask, completion: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(rootQueue))</span><br><span class="line">        <span class="comment">// 这里的didDisassociate表明task是否完全解挂，也就是是否两个通知都已经收到过了</span></span><br><span class="line">        <span class="keyword">let</span> didDisassociate = requestTaskMap.disassociateIfNecessaryAfterCompletingTask(task)</span><br><span class="line">        <span class="comment">// 这里如果返回true，代表metrics收集完成事件比complete事件到达的更早</span></span><br><span class="line">        <span class="comment">// 说明接受到complete事件时可以直接执行闭包了</span></span><br><span class="line">        <span class="keyword">if</span> didDisassociate &#123;</span><br><span class="line">            completion()</span><br><span class="line">        <span class="comment">// 如果返回false，代表此时metrics收集完成的事件还没有到来</span></span><br><span class="line">        <span class="comment">// 所以先将该闭包存起来，等到metrics收集完成之后再调用</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            waitingCompletions[task] = completion</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">didGatherMetricsForTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask)</span></span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(rootQueue))</span><br><span class="line">        <span class="keyword">let</span> didDisassociate = requestTaskMap.disassociateIfNecessaryAfterGatheringMetricsForTask(task)</span><br><span class="line">        <span class="comment">// 这里如果返回true，代表complete事件要更早到来，闭包已经被放入Session中做暂存了</span></span><br><span class="line">        <span class="comment">// 直接拿出来执行并清空就可以了</span></span><br><span class="line">        <span class="keyword">if</span> didDisassociate &#123;</span><br><span class="line">            waitingCompletions[task]?()</span><br><span class="line">            waitingCompletions[task] = <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果为false，代表complete事件还没来，就什么都不用做，等待complete事件到来就可以了</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 优先返回task对应的Request中的URLCredential对象，如果没有就返回Session中的默认URLCredential对象</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">credential</span><span class="params">(<span class="keyword">for</span> task: URLSessionTask, <span class="keyword">in</span> protectionSpace: URLProtectionSpace)</span></span> -&gt; <span class="type">URLCredential?</span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(rootQueue))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> requestTaskMap[task]?.credential ??</span><br><span class="line">            session.configuration.urlCredentialStorage?.defaultCredential(<span class="keyword">for</span>: protectionSpace)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果被通知URLSession除了问题，那么就通知Session中管理的所有Request网络请求失败</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cancelRequestsForSessionInvalidation</span><span class="params">(with error: Error?)</span></span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(rootQueue))</span><br><span class="line"></span><br><span class="line">        requestTaskMap.requests.forEach &#123; $<span class="number">0</span>.finish(error: <span class="type">AFError</span>.sessionInvalidated(error: error)) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们来看SessionDelegate中原生代理协议的实现</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">SessionDelegate</span>: <span class="title">URLSessionDataDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 当一个task接收到服务器传过来的数据时</span></span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data)</span></span> &#123;</span><br><span class="line">        <span class="comment">// 首先向通知中心发送通知</span></span><br><span class="line">        eventMonitor?.urlSession(session, dataTask: dataTask, didReceive: data)</span><br><span class="line">        <span class="comment">// 之后获取到task对应的request，并调用request的对应的方法来更新request的状态</span></span><br><span class="line">        <span class="comment">// 还记得我们在Request那一篇文章中讲到的，Request中有一类方法是专门来与原生代理通知做交互的吗</span></span><br><span class="line">        <span class="comment">// 这些方法就是在这里使用的</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> request = request(<span class="keyword">for</span>: dataTask, <span class="keyword">as</span>: <span class="type">DataRequest</span>.<span class="keyword">self</span>) &#123;</span><br><span class="line">            request.didReceive(data: data)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> request = request(<span class="keyword">for</span>: dataTask, <span class="keyword">as</span>: <span class="type">DataStreamRequest</span>.<span class="keyword">self</span>) &#123;</span><br><span class="line">            request.didReceive(data: data)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">assertionFailure</span>(<span class="string">&quot;dataTask did not find DataRequest or DataStreamRequest in didReceive&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">SessionDelegate</span>: <span class="title">URLSessionDownloadDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 当一个downloadTask接收到新的数据发送时</span></span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession,</span></span></span><br><span class="line"><span class="function"><span class="params">                         downloadTask: URLSessionDownloadTask,</span></span></span><br><span class="line"><span class="function"><span class="params">                         didResumeAtOffset fileOffset: Int64,</span></span></span><br><span class="line"><span class="function"><span class="params">                         expectedTotalBytes: Int64)</span></span> &#123;</span><br><span class="line">        <span class="comment">// 首先向通知中心发送通知</span></span><br><span class="line">        eventMonitor?.urlSession(session,</span><br><span class="line">                                 downloadTask: downloadTask,</span><br><span class="line">                                 didResumeAtOffset: fileOffset,</span><br><span class="line">                                 expectedTotalBytes: expectedTotalBytes)</span><br><span class="line">        <span class="comment">// 接着获取到task对应的request</span></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> downloadRequest = request(<span class="keyword">for</span>: downloadTask, <span class="keyword">as</span>: <span class="type">DownloadRequest</span>.<span class="keyword">self</span>) <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">assertionFailure</span>(<span class="string">&quot;downloadTask did not find DownloadRequest.&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 然后调用request的对应方法来更新request状态，这里是更新了DownloadRequest的下载进度</span></span><br><span class="line">        downloadRequest.updateDownloadProgress(bytesWritten: fileOffset,</span><br><span class="line">                                               totalBytesExpectedToWrite: expectedTotalBytes)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面我们只罗列出了SessionDelegate对原生代理协议的实现的一小部分，SessionDelegate中对于系统原生协议中的几乎所有方法都有对应的实现，但这些方法的基本套路都一样，都是根据通知传递过来的task找到与之对应的request，然后再对request做出某些状态更新的操作，所以这里就不一一列举了，如果读者对这些代码感兴趣，可以自行去源代码文件中查看，代码在<code>SessionDelegate.swift</code>文件中。</p>
+<h2 id="SessionDelegate证书验证过程"><a href="#SessionDelegate证书验证过程" class="headerlink" title="SessionDelegate证书验证过程"></a>SessionDelegate证书验证过程</h2><p>在了解具体的流程之前，我们需要先了解几个类型。首先是Session类中的一个成员属性的类型：ServerTrustManager，该类型管理着Alamofire系统中所有与证书验证相关的证书验证器。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerTrustManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> allHostsMustBeEvaluated: <span class="type">Bool</span></span><br><span class="line">    <span class="comment">// 存储证书验证器的字典，以服务器Host为键，与之对应的证书验证器为值</span></span><br><span class="line">    <span class="comment">// 所以服务器每个Host都会对应一个证书验证器</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> evaluators: [<span class="type">String</span>: <span class="type">ServerTrustEvaluating</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(allHostsMustBeEvaluated: <span class="type">Bool</span> = <span class="literal">true</span>, evaluators: [<span class="type">String</span>: <span class="type">ServerTrustEvaluating</span>]) &#123;</span><br><span class="line">        <span class="keyword">self</span>.allHostsMustBeEvaluated = allHostsMustBeEvaluated</span><br><span class="line">        <span class="keyword">self</span>.evaluators = evaluators</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 获取某个host对应的证书验证器</span></span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">serverTrustEvaluator</span><span class="params">(forHost host: String)</span></span> <span class="keyword">throws</span> -&gt; <span class="type">ServerTrustEvaluating?</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> evaluator = evaluators[host] <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果没找到，并且规定了所有Host必须经过证书验证器验证，就会直接报错，请求会直接失败</span></span><br><span class="line">            <span class="keyword">if</span> allHostsMustBeEvaluated &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="type">AFError</span>.serverTrustEvaluationFailed(reason: .noRequiredEvaluator(host: host))</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果没找到但没有规定所有Host必须经过证书验证器验证，就会返回nil，使用原生系统默认逻辑处理证书验证</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果找到了就将对应的证书验证器返回上层</span></span><br><span class="line">        <span class="keyword">return</span> evaluator</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来是关于证书验证器的定义，其在Alamofire中仅仅是一个简单的协议</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">ServerTrustEvaluating</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 通过该方法传入一个SecTrust和需要进行验证的服务器的Host</span></span><br><span class="line">    <span class="comment">// 如果抛出错误代表验证不通过，会终止请求</span></span><br><span class="line">    <span class="comment">// 如果正常return代表证书验证通过</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">evaluate</span><span class="params">(<span class="number">_</span> trust: SecTrust, forHost host: String)</span></span> <span class="keyword">throws</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们来分析SeverDelegate类在证书验证流程中的一个关键helper方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">attemptServerTrustAuthentication</span><span class="params">(with challenge: URLAuthenticationChallenge)</span></span> -&gt; <span class="type">ChallengeEvaluation</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> host = challenge.protectionSpace.host</span><br><span class="line">    <span class="keyword">guard</span> challenge.protectionSpace.authenticationMethod == <span class="type">NSURLAuthenticationMethodServerTrust</span>,</span><br><span class="line">        <span class="keyword">let</span> trust = challenge.protectionSpace.serverTrust</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (.performDefaultHandling, <span class="literal">nil</span>, <span class="literal">nil</span>)</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="comment">// 通过stateProvider拿到指定Host对应的证书验证器</span></span><br><span class="line">        <span class="comment">// 如果返回为nil，就使用系统默认的逻辑处理此次证书验证</span></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> evaluator = <span class="keyword">try</span> stateProvider?.serverTrustManager?.serverTrustEvaluator(forHost: host) <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> (.performDefaultHandling, <span class="literal">nil</span>, <span class="literal">nil</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果拿到了证书验证器，就调用证书验证器的方法进行验证</span></span><br><span class="line">        <span class="keyword">try</span> evaluator.evaluate(trust, forHost: host)</span><br><span class="line">        <span class="comment">// 如果没有抛出错误，说明验证成功，返回成功信息</span></span><br><span class="line">        <span class="keyword">return</span> (.useCredential, <span class="type">URLCredential</span>(trust: trust), <span class="literal">nil</span>)</span><br><span class="line">    &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">        <span class="comment">// 如果抛出了错误，说明验证失败，返回失败信息</span></span><br><span class="line">        <span class="keyword">return</span> (.cancelAuthenticationChallenge, <span class="literal">nil</span>, error.asAFError(or: .serverTrustEvaluationFailed(reason: .customEvaluationFailed(error: error))))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们继续来分析SessionDelegate对于原生系统代理中的证书验证方法的实现</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">urlSession</span><span class="params">(<span class="number">_</span> session: URLSession,</span></span></span><br><span class="line"><span class="function"><span class="params">                        task: URLSessionTask,</span></span></span><br><span class="line"><span class="function"><span class="params">                        didReceive challenge: URLAuthenticationChallenge,</span></span></span><br><span class="line"><span class="function"><span class="params">                        completionHandler: @escaping <span class="params">(URLSession.AuthChallengeDisposition, URLCredential?)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">    <span class="comment">// 首先向通知中心发送一个通知</span></span><br><span class="line">    eventMonitor?.urlSession(session, task: task, didReceive: challenge)</span><br><span class="line">    <span class="comment">// ChallengeEvaluation是一个使用typealias定义的元组：</span></span><br><span class="line">    <span class="comment">// typealias ChallengeEvaluation = (disposition: URLSession.AuthChallengeDisposition, credential: URLCredential?, error: AFError?)</span></span><br><span class="line">    <span class="comment">// 第一个参数URLSession.AuthChallengeDisposition表示系统接下来要如何处置此次证书验证</span></span><br><span class="line">    <span class="comment">// 第二个参数是在disposition为.useCredential时才需要附加的一个UserCredential对象</span></span><br><span class="line">    <span class="comment">// 第三个参数是当证书验证失败的时候产生的错误</span></span><br><span class="line">    <span class="keyword">let</span> evaluation: <span class="type">ChallengeEvaluation</span></span><br><span class="line">    <span class="comment">// 根据不同的authenticationMethod，调用不同的helper方法，获取到证书验证的结果</span></span><br><span class="line">    <span class="keyword">switch</span> challenge.protectionSpace.authenticationMethod &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">NSURLAuthenticationMethodServerTrust</span>:</span><br><span class="line">        evaluation = attemptServerTrustAuthentication(with: challenge)</span><br><span class="line">    <span class="keyword">case</span> <span class="type">NSURLAuthenticationMethodHTTPBasic</span>, <span class="type">NSURLAuthenticationMethodHTTPDigest</span>, <span class="type">NSURLAuthenticationMethodNTLM</span>,</span><br><span class="line">            <span class="type">NSURLAuthenticationMethodNegotiate</span>, <span class="type">NSURLAuthenticationMethodClientCertificate</span>:</span><br><span class="line">        evaluation = attemptCredentialAuthentication(<span class="keyword">for</span>: challenge, belongingTo: task)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        evaluation = (.performDefaultHandling, <span class="literal">nil</span>, <span class="literal">nil</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果验证结果出错了，那么就通过stateProvider通知对应的request请求失败</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> error = evaluation.error &#123;</span><br><span class="line">        stateProvider?.request(<span class="keyword">for</span>: task)?.didFailTask(task, earlyWithError: error)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果验证成功了，就调用系统代理方法中提供的回调，继续网络请求</span></span><br><span class="line">    completionHandler(evaluation.disposition, evaluation.credential)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ServerManage在接收到服务器发来的证书验证请求时，会将任务交给Session去执行，而Session会将任务交给其成员属性serverTrustManager去执行，最终serverTrustManager会在其内部寻找此次请求的Host字符串对应的一个证书验证器，并将任务交给证书验证器负责。</p>
+<p>在使用Alamofire来进行网络请求时，如果遇到自签名证书或者单个证书服务于多个域名等需求时，需要你创建遵循ServerTrustEvaluating协议的证书验证器类，在<code>func evaluate(_ trust: SecTrust, forHost host: String) throws</code>方法中，去验证每次请求的正确性。之后创建一个ServerTrustManager的实例，将一系列你创建的证书验证器与要验证的Host字符串的字典放入到你创建的serverTrustManager中去，最后将新创建的serverTrustManager通过实例化方法传入，构建出来一个新的Session，并在之后的网络请求中使用这个Session</p>
+<p>好了本篇的内容到这里就结束了，系列专栏未完待续……</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Alamofire源码解析专栏（4）- 请求发起流程</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/">
+        <span>Alamofire源码解析专栏（2）- Request</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%E6%96%87%E7%AB%A0%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">Alamofire源码解析专栏文章地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E4%B8%AD%E5%BF%83CompositeEventMonitor"><span class="toc-number">2.</span> <span class="toc-text">事件监听中心CompositeEventMonitor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RequestTaskMap"><span class="toc-number">3.</span> <span class="toc-text">RequestTaskMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SessionDelegate%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">SessionDelegate类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SessionDelegate%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">SessionDelegate证书验证过程</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Alamofire源码解析专栏（2）- Request | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/">Alamofire源码解析专栏（2）- Request</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-08-05
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-08-08
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（2）- Request&url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（2）- Request&url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/&title=Alamofire源码解析专栏（2）- Request" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（2）- Request&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/&text=Alamofire源码解析专栏（2）- Request" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Alamofire源码解析专栏文章地址"><a href="#Alamofire源码解析专栏文章地址" class="headerlink" title="Alamofire源码解析专栏文章地址"></a>Alamofire源码解析专栏文章地址</h2><ul>
+<li><a href="../../../../../2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/#more">Alamofire源码解析专栏（1）-启程</a></li>
+<li><a href="../../../../../2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/#more">Alamofire源码解析专栏（2）- Request</a></li>
+<li><a href="../../../../../2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/#more">Alamofire源码解析专栏（3）- SessionDelegate</a></li>
+<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a></li>
+</ul>
+<p><br><br></p>
+<p>上篇文章中我们讲到了Session是Alamofire整个系统中的核心类，主要负责请求的创建，分发，管理等，其内部的大部分逻辑都是在与Request类交互，Request类是Alamofire系统中用于代表一个请求的类，在想要仔细阅读Session类的源码之前，我们需要先对Request类有一个了解，所以这一篇文章主要分析Request类以及与其相关的一些类的源码</p>
+<h2 id="Request代理-RequestDelegate"><a href="#Request代理-RequestDelegate" class="headerlink" title="Request代理-RequestDelegate"></a>Request代理-RequestDelegate</h2><p>Session是管理所有Request的类，Request类本身需要通过代理的方式与Session进行通信，以完成Session对Request的控制，Request代理又RequestDelegate协议定义</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">RequestDelegate</span>: <span class="title">AnyObject</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 获取到Session中的URLSession的配置</span></span><br><span class="line">    <span class="keyword">var</span> sessionConfiguration: <span class="type">URLSessionConfiguration</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">    <span class="comment">/// 决定Request是否在添加了第一个响应处理函数的时候自动调用resume()启动请求</span></span><br><span class="line">    <span class="keyword">var</span> startImmediately: <span class="type">Bool</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line">    <span class="comment">/// 在Request的生命周期结束的时候通知Session清理此Request相关的资源</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cleanup</span><span class="params">(after request: Request)</span></span></span><br><span class="line">    <span class="comment">/// 在某个Request出现错误的时候，询问Session该Request的重试结果，重试结果使用completion闭包参数传递</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">retryResult</span><span class="params">(<span class="keyword">for</span> request: Request, dueTo error: AFError, completion: @escaping <span class="params">(RetryResult)</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">    <span class="comment">/// 让Session异步（延时）地重试某个请求</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">retryRequest</span><span class="params">(<span class="number">_</span> request: Request, withDelay timeDelay: TimeInterval?)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看完了协议定义，我们来看一下在Session类中具体的协议实现，这个样子我们才能更清楚的了解Request与Session之间交流的方式与内容</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// RequestDelegate协议实现的前半部分</span></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Session</span>: <span class="title">RequestDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">var</span> sessionConfiguration: <span class="type">URLSessionConfiguration</span> &#123;</span><br><span class="line">        session.configuration</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">var</span> startImmediately: <span class="type">Bool</span> &#123; startRequestsImmediately &#125;</span><br><span class="line">    <span class="comment">/// 3</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">cleanup</span><span class="params">(after request: Request)</span></span> &#123;</span><br><span class="line">        activeRequests.remove(request)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>直接返回自身所拥有的URLSession的configuration属性</li>
+<li>直接返回Sessoni自身的startRequestsImmediately属性</li>
+<li>request结束之后，Session所做的仅仅是在自己的一个存储活跃Request的集合中将其删除</li>
+</ol>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Session</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// RequestDelegate协议实现的后半部分，较为复杂</span></span><br><span class="line">    <span class="comment">/// 为了方便阅读，将Session内部的一个帮助函数也贴了上来</span></span><br><span class="line">    <span class="comment">/// 1</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">retrier</span><span class="params">(<span class="keyword">for</span> request: Request)</span></span> -&gt; <span class="type">RequestRetrier?</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> requestInterceptor = request.interceptor, <span class="keyword">let</span> sessionInterceptor = interceptor &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="type">Interceptor</span>(retriers: [requestInterceptor, sessionInterceptor])</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> request.interceptor ?? interceptor</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">retryResult</span><span class="params">(<span class="keyword">for</span> request: Request, dueTo error: AFError, completion: @escaping <span class="params">(RetryResult)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        <span class="comment">/// 3</span></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> retrier = retrier(<span class="keyword">for</span>: request) <span class="keyword">else</span> &#123;</span><br><span class="line">            rootQueue.async &#123; completion(.doNotRetry) &#125;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/// 4</span></span><br><span class="line">        retrier.retry(request, <span class="keyword">for</span>: <span class="keyword">self</span>, dueTo: error) &#123; retryResult <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">self</span>.rootQueue.async &#123;</span><br><span class="line">                <span class="keyword">guard</span> <span class="keyword">let</span> retryResultError = retryResult.error <span class="keyword">else</span> &#123; completion(retryResult); <span class="keyword">return</span> &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">let</span> retryError = <span class="type">AFError</span>.requestRetryFailed(retryError: retryResultError, originalError: error)</span><br><span class="line">                completion(.doNotRetryWithError(retryError))</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 5</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">retryRequest</span><span class="params">(<span class="number">_</span> request: Request, withDelay timeDelay: TimeInterval?)</span></span> &#123;</span><br><span class="line">        rootQueue.async &#123;</span><br><span class="line">            <span class="comment">/// 7</span></span><br><span class="line">            <span class="keyword">let</span> retry: () -&gt; <span class="type">Void</span> = &#123;</span><br><span class="line">                <span class="keyword">guard</span> !request.isCancelled <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line"></span><br><span class="line">                request.prepareForRetry()</span><br><span class="line">                <span class="keyword">self</span>.perform(request)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> retryDelay = timeDelay &#123;</span><br><span class="line">                <span class="comment">/// 6</span></span><br><span class="line">                <span class="keyword">self</span>.rootQueue.after(retryDelay) &#123; retry() &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                retry()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>retrier是Session类内部提供的一个帮助方法，该方法返回某个request对应的Retrier，这里说的Retrier就是之前在第一篇提到过的遵循RequestRetrier协议的结构，方法返回的retrier主要由Session全局的Interceptor与Request特有的Interceptor拦截器生成。如果全局与Request都有一个自己的拦截器，那么就会将这两个拦截器中的retry方法与adapt融合生成一个新的拦截器并按照RequestRetrier协议类型返回</li>
+<li>该方法由Request出错之后主动调用，来获取重试结果</li>
+<li>首先调用retrier帮助方法，获得一个retrier，如果获取到的retrier为空，则就放弃重试。</li>
+<li>然后调用retrier的retry方法获取到retryResult（是否重试），然后再将这个结果通过Request调用时传进来的completion回调通知给Request</li>
+<li>Request接收到是否重试的结果之后调用retryRequest方法让Session重新发起Request</li>
+<li>从Reqeust那里接受一个延时的参数，延时重试Reqeust</li>
+<li>重试Request的逻辑，首先是调用了request的prepareForRetry方法，让Request做出一些重试前的工作（比如重置状态，自增重试次数等），之后Session类的perform方法，这个方法是Session类中的核心方法，用于启动一个Request，之后我们会讲到</li>
+</ol>
+<h2 id="Request"><a href="#Request" class="headerlink" title="Request"></a>Request</h2><p>Alamofire中的Request模仿了系统中URLSessionTask的结构，存在着许多种不同的请求类，他们都以Request为基类。其中DataRequest、DownloadReqeust、DataStreamRequest都直接继承自基类Request，然后UploadRequest又继承自DataRequest。我们首先来看Request基类中定义了什么东西</p>
+<h3 id="State"><a href="#State" class="headerlink" title="State"></a>State</h3><p>首先是每个Request都拥有的状态，也是模仿的系统中URLSessionTask的实现</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">State</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 初始化状态</span></span><br><span class="line">    <span class="keyword">case</span> initialized</span><br><span class="line">    <span class="comment">/// resume()被调用后的状态，代表Request请求已经发出</span></span><br><span class="line">    <span class="keyword">case</span> resumed</span><br><span class="line">    <span class="comment">/// suspend()被调用后的状态，代表Request进程已经暂停</span></span><br><span class="line">    <span class="keyword">case</span> suspended</span><br><span class="line">    <span class="comment">/// cancel()被调用后的状态，代表Request已经关停</span></span><br><span class="line">    <span class="keyword">case</span> cancelled</span><br><span class="line">    <span class="comment">/// finish()被调用后的状态，代表所有Request相关的任务都已经处理完毕（包括请求本身与响应数据序列化任务）</span></span><br><span class="line">    <span class="keyword">case</span> finished</span><br><span class="line">    <span class="comment">/// 定义了哪些状态转换是可行的</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">canTransitionTo</span><span class="params">(<span class="number">_</span> state: State)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> (<span class="keyword">self</span>, state) &#123;</span><br><span class="line">        <span class="keyword">case</span> (.initialized, <span class="number">_</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="number">_</span>, .initialized), (.cancelled, <span class="number">_</span>), (.finished, <span class="number">_</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        <span class="keyword">case</span> (.resumed, .cancelled), (.suspended, .cancelled), (.resumed, .suspended), (.suspended, .resumed):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        <span class="keyword">case</span> (.suspended, .suspended), (.resumed, .resumed):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="number">_</span>, .finished):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="MutableState"><a href="#MutableState" class="headerlink" title="MutableState"></a>MutableState</h3><p>Request中在存储与自己相关的状态信息时并不是选择将一个个的状态直接作为自己的属性存储，而是做了一个中间层，这个中间层就是MutableState，MutableState存储了Request的大部分状态信息，然后Request只需要将MutableState作为自己的属性即可。为什么非要费时费力地增加一个MutableState中间层呢？请继续看，后面我们会说明原因，现在我们先来看一下MutableState的定义</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MutableState</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// request当前的状态</span></span><br><span class="line">    <span class="keyword">var</span> state: <span class="type">State</span> = .initialized</span><br><span class="line">    <span class="comment">/// 上传任务进度更新时会调用的回调函数与回调queue</span></span><br><span class="line">    <span class="keyword">var</span> uploadProgressHandler: (handler: <span class="type">ProgressHandler</span>, queue: <span class="type">DispatchQueue</span>)?</span><br><span class="line">    <span class="comment">/// 下载任务进度更新时会调用的回调函数与回调queue</span></span><br><span class="line">    <span class="keyword">var</span> downloadProgressHandler: (handler: <span class="type">ProgressHandler</span>, queue: <span class="type">DispatchQueue</span>)?</span><br><span class="line">    <span class="comment">/// request发生重定向时会调用的回调</span></span><br><span class="line">    <span class="keyword">var</span> redirectHandler: <span class="type">RedirectHandler?</span></span><br><span class="line">    <span class="comment">/// 响应缓存时会调用的回调</span></span><br><span class="line">    <span class="keyword">var</span> cachedResponseHandler: <span class="type">CachedResponseHandler?</span></span><br><span class="line">    <span class="comment">/// Closure called when the `Request` is able to create a cURL description of itself.</span></span><br><span class="line">    <span class="keyword">var</span> cURLHandler: ((<span class="type">String</span>) -&gt; <span class="type">Void</span>)?</span><br><span class="line">    <span class="comment">/// Request中所有待处理的响应序列化任务</span></span><br><span class="line">    <span class="keyword">var</span> responseSerializers: [() -&gt; <span class="type">Void</span>] = []</span><br><span class="line">    <span class="comment">/// 每个响应序列化任务都有一个与之对应的任务完成时会调用的回调</span></span><br><span class="line">    <span class="keyword">var</span> responseSerializerCompletions: [() -&gt; <span class="type">Void</span>] = []</span><br><span class="line">    <span class="comment">/// 用来标识响应序列化是否完成</span></span><br><span class="line">    <span class="keyword">var</span> responseSerializerProcessingFinished = <span class="literal">false</span></span><br><span class="line">    <span class="comment">/// 安全鉴权时会使用到的URLCredential实例</span></span><br><span class="line">    <span class="keyword">var</span> credential: <span class="type">URLCredential?</span></span><br><span class="line">    <span class="comment">/// 由该Request创建的所有URLRequest（说明一个Alamofire的Request对象是有可能创建多个URLRequest的，并不是1对1的关系）</span></span><br><span class="line">    <span class="keyword">var</span> requests: [<span class="type">URLRequest</span>] = []</span><br><span class="line">    <span class="comment">/// 由该Request创建的所有URLSessionTask</span></span><br><span class="line">    <span class="keyword">var</span> tasks: [<span class="type">URLSessionTask</span>] = []</span><br><span class="line">    <span class="comment">/// tasks产生的所有URLSessionTaskMetrics</span></span><br><span class="line">    <span class="keyword">var</span> metrics: [<span class="type">URLSessionTaskMetrics</span>] = []</span><br><span class="line">    <span class="comment">/// 已经进行重试的次数</span></span><br><span class="line">    <span class="keyword">var</span> retryCount = <span class="number">0</span></span><br><span class="line">    <span class="comment">/// 请求中最后一次出现的Error，可以是来自Alamofire内部的各种调用出错，也可以来自原生请求的执行错误</span></span><br><span class="line">    <span class="keyword">var</span> error: <span class="type">AFError?</span></span><br><span class="line">    <span class="comment">/// 请求是否已经结束</span></span><br><span class="line">    <span class="keyword">var</span> isFinishing = <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据Session中有多个不同的DispatchQueue属性我们可以推断出，Request是极有可能在多个队列中并行操作的，这样就会带来资源的并发访问安全问题，正常的做法是持有一个锁，在对资源进行操作的时候进行对应的加锁解锁操作，但是属性有这么多，如果在每次都需要在修改属性的时候都额外进行一次加解锁操作，会使程序变得非常复杂，同时编写也更加容易出错，不利于进一步扩展。所以这就是引入MutableState的原因，将所有具有并发访问安全问题的属性放入到这个MutableState中，然后再对这个MutableState属性进行统一的加解锁处理。Alamofire中使用了Swift语言的新特性，使用了Property Wrapper的特性来优雅的实现并发安全的属性访问问题。在Request类的源码中，MutableState的属性是这样定义的</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@<span class="type">Protected</span></span><br><span class="line"><span class="keyword">fileprivate</span> <span class="keyword">var</span> mutableState = <span class="type">MutableState</span>()</span><br></pre></td></tr></table></figure>
+<p>上述的属性定义中，使用到了一个名称为Protected的属性包装器，这个属性包装器是Alamofire为需要并发安全访问的属性提供的，接下来我们来分析这个属性包装器的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@propertyWrapper</span></span><br><span class="line"><span class="meta">@dynamicMemberLookup</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Protected</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/// 类中声明了一个锁，锁的类型根据部署平台变化而有变化</span></span><br><span class="line">    #<span class="keyword">if</span> os(macOS) || os(iOS) || os(watchOS) || os(tvOS)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">let</span> lock = <span class="type">UnfairLock</span>()</span><br><span class="line">    #elseif os(<span class="type">Linux</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">let</span> lock = <span class="type">MutexLock</span>()</span><br><span class="line">    #endif</span><br><span class="line">    <span class="comment">/// 真正被包裹的值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> value: <span class="type">T</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>(<span class="number">_</span> value: <span class="type">T</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.value = value</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 在包裹值中对于读写操作都做了加解锁操作</span></span><br><span class="line">    <span class="keyword">var</span> wrappedValue: <span class="type">T</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; lock.around &#123; value &#125; &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123; lock.around &#123; value = newValue &#125; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 其中调用的lock.around是对Lock锁的两个扩展方法，是为了更加方便加解锁代码的书写</span></span><br><span class="line">    <span class="class"><span class="keyword">extension</span> <span class="title">Lock</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">func</span> <span class="title">around</span>&lt;T&gt;<span class="params">(<span class="number">_</span> closure: <span class="params">()</span></span></span> -&gt; <span class="type">T</span>) -&gt; <span class="type">T</span> &#123;</span><br><span class="line">            lock(); <span class="keyword">defer</span> &#123; unlock() &#125;</span><br><span class="line">            <span class="keyword">return</span> closure()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">func</span> <span class="title">around</span><span class="params">(<span class="number">_</span> closure: <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">            lock(); <span class="keyword">defer</span> &#123; unlock() &#125;</span><br><span class="line">            closure()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> projectedValue: <span class="type">Protected</span>&lt;<span class="type">T</span>&gt; &#123; <span class="keyword">self</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>(wrappedValue: <span class="type">T</span>) &#123;</span><br><span class="line">        value = wrappedValue</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 以下两个方法是为使用工程值进行读写所写的两个便捷方法</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">read</span>&lt;U&gt;<span class="params">(<span class="number">_</span> closure: <span class="params">(T)</span></span></span> -&gt; <span class="type">U</span>) -&gt; <span class="type">U</span> &#123;</span><br><span class="line">        lock.around &#123; closure(<span class="keyword">self</span>.value) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@discardableResult</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">write</span>&lt;U&gt;<span class="params">(<span class="number">_</span> closure: <span class="params">(<span class="keyword">inout</span> T)</span></span></span> -&gt; <span class="type">U</span>) -&gt; <span class="type">U</span> &#123;</span><br><span class="line">        lock.around &#123; closure(&amp;<span class="keyword">self</span>.value) &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">subscript</span>&lt;<span class="type">Property</span>&gt;(dynamicMember keyPath: <span class="type">WritableKeyPath</span>&lt;<span class="type">T</span>, <span class="type">Property</span>&gt;) -&gt; <span class="type">Property</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; lock.around &#123; value[keyPath: keyPath] &#125; &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123; lock.around &#123; value[keyPath: keyPath] = newValue &#125; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>使用Swift的属性包装器特性来为类的属性提供并发安全的特性是一种非常优雅的做法，这个东西我们也可以尝试用在自己的项目中，在需要解决并发安全的地方引入这个属性包装器，会使我们的工程代码更加优雅一些</p>
+<h3 id="Request类关键属性与生命周期"><a href="#Request类关键属性与生命周期" class="headerlink" title="Request类关键属性与生命周期"></a>Request类关键属性与生命周期</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">```swift</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 使用UUID为一个request提供一个唯一的标识，同时这个id也帮助了Request实现了Hashable协议</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> id: <span class="type">UUID</span></span><br><span class="line">    <span class="comment">/// 内部异步调用使用的串行队列，对应session中的的rootQueue，由Session在创建Request是通过初始化方法传入</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> underlyingQueue: <span class="type">DispatchQueue</span></span><br><span class="line">    <span class="comment">/// 所有序列化操作使用的queue，默认与underlyingQueue一样</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> serializationQueue: <span class="type">DispatchQueue</span></span><br><span class="line">    <span class="comment">/// 监听器，由session创建时将session的监听器传入</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> eventMonitor: <span class="type">EventMonitor?</span></span><br><span class="line">    <span class="comment">/// Request的拦截器</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> interceptor: <span class="type">RequestInterceptor?</span></span><br><span class="line">    <span class="comment">/// request的Delegate，与Session类沟通的桥梁，最开始已经讲解过</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">private</span>(<span class="keyword">set</span>) <span class="keyword">weak</span> <span class="keyword">var</span> delegate: <span class="type">RequestDelegate?</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/// mutableState记录Request大部分的可变状态信息，上面已经讲解过</span></span><br><span class="line">    @<span class="type">Protected</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> mutableState = <span class="type">MutableState</span>()</span><br><span class="line">    <span class="comment">/// 存储着validator验证器队列，该属性也使用了@Protected属性包装器修饰，来保证并发安全性</span></span><br><span class="line">    @<span class="type">Protected</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> validators: [() -&gt; <span class="type">Void</span>] = []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面介绍了Request类中的成员属性，下面来介绍Request类中的一些方法，最开始是Request类中比较重要的与生命周期相关的方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 启动Request的方法，调用该方法将Request的状态设置为resumed</span></span><br><span class="line">    <span class="comment">/// 如果成功将Request的状态设置为resumed，那么resume Request的task列表中的最后一个URLSessionTask</span></span><br><span class="line">    <span class="meta">@discardableResult</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">resume</span><span class="params">()</span></span> -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">        $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">guard</span> mutableState.state.canTransitionTo(.resumed) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            <span class="comment">// 更改状态</span></span><br><span class="line">            mutableState.state = .resumed</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didResume() &#125;</span><br><span class="line">            <span class="comment">// 获取task列表中的最后一个URLSessionTask并对其进行resume操作</span></span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> task = mutableState.tasks.last, task.state != .completed <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            task.resume()</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didResumeTask(task) &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 关闭并清理Request的方法，子类中的cleanup方法需要调用super的方法</span></span><br><span class="line">    <span class="comment">/// 基类中该方法做的仅仅是：通过代理通知Session清除与自己相关的资源</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cleanup</span><span class="params">()</span></span> &#123;</span><br><span class="line">        delegate?.cleanup(after: <span class="keyword">self</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// 暂停Request的方法，调用该方法将Request的状态设置为suspend</span></span><br><span class="line">    <span class="comment">/// 如果成功将Request的状态设置为suspend，那么suspend Request的task列表中的最后一个URLSessionTask</span></span><br><span class="line">    <span class="meta">@discardableResult</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">suspend</span><span class="params">()</span></span> -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">        $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">guard</span> mutableState.state.canTransitionTo(.suspended) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            <span class="comment">// 更改状态</span></span><br><span class="line">            mutableState.state = .suspended</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didSuspend() &#125;</span><br><span class="line">            <span class="comment">// 获取task列表中的最后一个URLSessionTask并对其进行suspend操作</span></span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> task = mutableState.tasks.last, task.state != .completed <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            task.suspend()</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didSuspendTask(task) &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 关闭Request的方法，调用该方法将Request的状态设置为cancel</span></span><br><span class="line">    <span class="comment">/// 如果成功将Request的状态设置为cancel，那么cancel Request的task列表中的最后一个URLSessionTask</span></span><br><span class="line">    <span class="meta">@discardableResult</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span> -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">        $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">guard</span> mutableState.state.canTransitionTo(.cancelled) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            <span class="comment">// 更改状态</span></span><br><span class="line">            mutableState.state = .cancelled</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didCancel() &#125;</span><br><span class="line">            <span class="comment">// 获取task列表中的最后一个URLSessionTask并对其进行suspend操作</span></span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> task = mutableState.tasks.last, task.state != .completed <span class="keyword">else</span> &#123;</span><br><span class="line">                underlyingQueue.async &#123; <span class="keyword">self</span>.finish() &#125;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Resume to ensure metrics are gathered.</span></span><br><span class="line">            task.resume()</span><br><span class="line">            task.cancel()</span><br><span class="line">            <span class="comment">// 发出通知</span></span><br><span class="line">            underlyingQueue.async &#123; <span class="keyword">self</span>.didCancelTask(task) &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 结束Request的方法，调用该方法将Request的状态设置为finish</span></span><br><span class="line">    <span class="comment">/// 如果成功将Request的状态设置为cancel，那么就开始处理响应序列化任务</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">finish</span><span class="params">(error: AFError? = <span class="literal">nil</span>)</span></span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(underlyingQueue))</span><br><span class="line">        <span class="keyword">guard</span> !mutableState.isFinishing <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">        <span class="comment">// 更改状态</span></span><br><span class="line">        mutableState.isFinishing = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> error = error &#123; <span class="keyword">self</span>.error = error &#125;</span><br><span class="line">        <span class="comment">// 开始处理响应序列化任务</span></span><br><span class="line">        processNextResponseSerializer()</span><br><span class="line">        <span class="comment">// 发出通知</span></span><br><span class="line">        eventMonitor?.requestDidFinish(<span class="keyword">self</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// request出错时调用，该方法会判断这个request是retry还是直接结束</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">retryOrFinish</span><span class="params">(error: AFError?)</span></span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(underlyingQueue))</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> error = error, <span class="keyword">let</span> delegate = delegate <span class="keyword">else</span> &#123; finish(); <span class="keyword">return</span> &#125;</span><br><span class="line">        <span class="comment">// 向自己的代理询问该请求是否可以进行重试</span></span><br><span class="line">        delegate.retryResult(<span class="keyword">for</span>: <span class="keyword">self</span>, dueTo: error) &#123; retryResult <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">switch</span> retryResult &#123;</span><br><span class="line">            <span class="comment">// 如果得到的结果是不能进行重试，那么就调用finish方法，结束Request的生命周期</span></span><br><span class="line">            <span class="keyword">case</span> .doNotRetry:</span><br><span class="line">                <span class="keyword">self</span>.finish()</span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">let</span> .doNotRetryWithError(retryError):</span><br><span class="line">                <span class="keyword">self</span>.finish(error: retryError.asAFError(orFailWith: <span class="string">&quot;Received retryError was not already AFError&quot;</span>))</span><br><span class="line">            <span class="comment">// 如果得到的结果是可以进行重试，那么就通过代理委托Session类重新发起这个请求</span></span><br><span class="line">            <span class="keyword">case</span> .retry, .retryWithDelay:</span><br><span class="line">                delegate.retryRequest(<span class="keyword">self</span>, withDelay: retryResult.delay)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 在Request准备进行重试之前会被调用</span></span><br><span class="line">    <span class="comment">/// 重试次数+1，并调用reset方法重置一些状态，为即将到来的重试做准备</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">prepareForRetry</span><span class="params">()</span></span> &#123;</span><br><span class="line">        dispatchPrecondition(condition: .onQueue(underlyingQueue))</span><br><span class="line">        <span class="comment">// 重试次数+1并调用reset方法</span></span><br><span class="line">        $mutableState.write &#123; $<span class="number">0</span>.retryCount += <span class="number">1</span> &#125;</span><br><span class="line">        reset()</span><br><span class="line">        <span class="comment">// 发出通知</span></span><br><span class="line">        eventMonitor?.requestIsRetrying(<span class="keyword">self</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 重置Request一些状态，包括出现的错误、上传下载进度以及序列化任务</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">reset</span><span class="params">()</span></span> &#123;</span><br><span class="line">        error = <span class="literal">nil</span></span><br><span class="line">        uploadProgress.totalUnitCount = <span class="number">0</span></span><br><span class="line">        uploadProgress.completedUnitCount = <span class="number">0</span></span><br><span class="line">        downloadProgress.totalUnitCount = <span class="number">0</span></span><br><span class="line">        downloadProgress.completedUnitCount = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        $mutableState.write &#123; state <span class="keyword">in</span></span><br><span class="line">            state.isFinishing = <span class="literal">false</span></span><br><span class="line">            state.responseSerializerCompletions = []</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Request类序列化任务处理流程"><a href="#Request类序列化任务处理流程" class="headerlink" title="Request类序列化任务处理流程"></a>Request类序列化任务处理流程</h3><p>上述分析了一些与Request整个生命周期相关的方法代码，下面开始分析与Request序列化任务相关的代码。在开始之前我们要了解Request中的序列化任务是什么，在我们开发使用Alamofire是，经常使用AF.request(…).reponse(…)或者AF.request(…).reponseJson(…)这样子的链式调用来处理一个网络请求，最后面调用的response()与responseJson()方法就是在为当前请求的Request添加一个响应的序列化任务，序列化任务主要负责将网络返回的响应序列化成你像要的数据并在完成任务之后调用对应的回调。</p>
+<p>Request类中对于序列化任务的处理逻辑十分复杂，我也是前前后后看了好多遍才理解其内部运行的机制，虽然代码量不少，但是逻辑非常的绕。我这里会将其内部大概的运行机制先描述一遍，希望能使你们在观看以下源码的时候理解起来可以更加轻松一些。当然，一时看不懂请先不要着急，看完一遍有个大概地印象之后，再细细品味每个方法的作用便可参透。</p>
+<br>
+我们对Request调用response或者responseJSON等序列化方法，想要拿到请求之后的数据的时候，实际上就是在向Request中添加一个序列化任务，每一个序列化任务都对应一个序列化任务回调，该回调会在序列化任务结束的时候调用。我们用户通过response或者responseJSON方法传入进去的闭包大多数情况下就直接被作为这个序列化任务的回调，但是呢，Alamofire就在这里玩了一个骚操作，序列化任务与序列化回调并不会同时都被加入到Request中去，而是只添加一个序列化任务并通知Request开始处理未处理的序列化任务或者序列化闭包，然后在这个序列化任务的末尾（也就是真正的序列化都已经执行完毕，但这个序列化任务闭包还没结束的时候），将该序列化任务对应的回调添加进Request中去，同时也会去通知Request去处理未处理的序列化任务或者序列化闭包。
+
+<p>PS：这里的逻辑很绕，我的文本表达能力也不是很好，应该没有特别清晰地将这段流程表达清楚，大家可以看下面更具有逻辑性的描述。另外这里为什么要搞一套这么复杂的流程来处理序列化任务的问题，笔者目前还是不太清楚的，仅仅是了解了其基本流程（因为还存在其他更为直接的方法来处理序列化任务以及任务的回调），等我探索到原因之后一定火速更新到这里。</p>
+<br>
+同时我还提供了两个在不同情况下，序列化任务的处理流程，你在阅读代码的时候，可以分别将这两种代码带入到源码中去，便阅读源码边验证下面我所书写的流程，应该会有不小的收获
+
+<p>当一个请求在同一时间只有一个序列化任务被添加的时候，执行的流程就是这个样子的：</p>
+<ol>
+<li>序列化任务被加入到Request中</li>
+<li>开始处理这个序列化任务（通过serializationQueue异步处理）</li>
+<li>在序列化任务即将完成时，序列化任务对应的回调将会被加入到Request中</li>
+<li>开始处理这个回调</li>
+<li>回调处理完毕，清理Request的资源，并设置相关标识符，表示自己已经完成所有任务</li>
+</ol>
+<p>当一个请求在同一时间被添加了两个序列化任务的时候，执行的流程是这个样子的：</p>
+<ol>
+<li>序列化任务A被添加到Request中</li>
+<li>开始处理序列化任务A（通过serializationQueue异步处理）</li>
+<li>序列化任务B被添加到Request中</li>
+<li>在序列化任务B被添加时，通过Request的一些状态标识发现该Request正在处理其他的序列化任务，就停止自己的下一步行为了</li>
+<li>序列化任务A即将完成时，序列化任务A对应的回调将会被加入到Request中</li>
+<li>Request发现此时还有未经过处理的序列化任务（任务B），然后就开始处理序列化任务B（通过serializationQueue异步处理）</li>
+<li>序列化任务B即将完成时，序列化任务B对应的回调将会被加入到Request中</li>
+<li>Request发现此时拥有的所有序列化任务都处理完了，然后就清除所有的序列化任务，执行先前被添加到Request中的所有回调（回调A，回调B），并清除自身拥有的所有回调。最后清理Request的资源，并设置相关标识符，表示自己已经完成所有任务</li>
+</ol>
+<p>下面是源码：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 为了更好的理解Request中处理响应与回调的流程</span></span><br><span class="line"><span class="comment">/// 这里先用一个最简单的response函数作为举例演示一下</span></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">DataRequest</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 调用response函数取得请求的结果，该方法实际上不会对网络请求返回的Data做任何处理，直接将原数据作为结果</span></span><br><span class="line">    <span class="meta">@discardableResult</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">response</span><span class="params">(queue: DispatchQueue = .main, completionHandler: @escaping <span class="params">(AFDataResponse&lt;Data?&gt;)</span></span></span> -&gt; <span class="type">Void</span>) -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">        <span class="comment">// 调用appendResponseSerializer，向Request中添加一个序列化任务</span></span><br><span class="line">        appendResponseSerializer &#123;</span><br><span class="line">            <span class="comment">// 创建一个用来表示网络请求的结果的对象</span></span><br><span class="line">            <span class="keyword">let</span> result = <span class="type">AFResult</span>&lt;<span class="type">Data?</span>&gt;(value: <span class="keyword">self</span>.data, error: <span class="keyword">self</span>.error)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">self</span>.underlyingQueue.async &#123;</span><br><span class="line">                <span class="keyword">let</span> response = <span class="type">DataResponse</span>(request: <span class="keyword">self</span>.request,</span><br><span class="line">                                            response: <span class="keyword">self</span>.response,</span><br><span class="line">                                            data: <span class="keyword">self</span>.data,</span><br><span class="line">                                            metrics: <span class="keyword">self</span>.metrics,</span><br><span class="line">                                            serializationDuration: <span class="number">0</span>,</span><br><span class="line">                                            result: result)</span><br><span class="line">                <span class="comment">// 发出通知</span></span><br><span class="line">                <span class="keyword">self</span>.eventMonitor?.request(<span class="keyword">self</span>, didParseResponse: response)</span><br><span class="line">                <span class="comment">// 在序列化任务结束的前一刻，会调用responseSerializerDidComplete方法将此次序列化任务的完成回调添加到Request中</span></span><br><span class="line">                <span class="keyword">self</span>.responseSerializerDidComplete &#123; queue.async &#123; completionHandler(response) &#125; &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 该方法向request的ResponseSerializer列表中添加一个序列化处理任务</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">appendResponseSerializer</span><span class="params">(<span class="number">_</span> closure: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">            <span class="comment">// 添加序列化任务</span></span><br><span class="line">            mutableState.responseSerializers.append(closure)</span><br><span class="line">            <span class="comment">// 这里更改状态是为了在方法的末尾能够成功重新resume这个request</span></span><br><span class="line">            <span class="keyword">if</span> mutableState.state == .finished &#123;</span><br><span class="line">                mutableState.state = .resumed</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果当前没有正在处理的序列化任务，就调用processNextResponseSerializer方法立即对刚添加的这个任务进行处理</span></span><br><span class="line">            <span class="keyword">if</span> mutableState.responseSerializerProcessingFinished &#123;</span><br><span class="line">                underlyingQueue.async &#123; <span class="keyword">self</span>.processNextResponseSerializer() &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果session中的startImmediately设置为了true，那么在添加了一个序列化任务之后会立马resume这个Request</span></span><br><span class="line">            <span class="keyword">if</span> mutableState.state.canTransitionTo(.resumed) &#123;</span><br><span class="line">                underlyingQueue.async &#123; <span class="keyword">if</span> <span class="keyword">self</span>.delegate?.startImmediately == <span class="literal">true</span> &#123; <span class="keyword">self</span>.resume() &#125; &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 该方法向request中添加一个序列化处理任务的闭包，随后调用processNextResponseSerializer方法让Request来处理</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">responseSerializerDidComplete</span><span class="params">(completion: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        $mutableState.write &#123; $<span class="number">0</span>.responseSerializerCompletions.append(completion) &#125;</span><br><span class="line">        processNextResponseSerializer()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 该方法处理Request的序列化任务或者序列化任务回调</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">processNextResponseSerializer</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// 查看Request中是否还有没有进行处理过的序列化任务，如果没有</span></span><br><span class="line">        <span class="comment">// 则获取到所有的回调，并执行他们，最后进行清理工作，相当于进行了一个清底行动</span></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> responseSerializer = nextResponseSerializer() <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">var</span> completions: [() -&gt; <span class="type">Void</span>] = []</span><br><span class="line"></span><br><span class="line">            $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">                completions = mutableState.responseSerializerCompletions</span><br><span class="line">                mutableState.responseSerializers.removeAll()</span><br><span class="line">                mutableState.responseSerializerCompletions.removeAll()</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> mutableState.state.canTransitionTo(.finished) &#123;</span><br><span class="line">                    mutableState.state = .finished</span><br><span class="line">                &#125;</span><br><span class="line">                mutableState.responseSerializerProcessingFinished = <span class="literal">true</span></span><br><span class="line">                mutableState.isFinishing = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            completions.forEach &#123; $<span class="number">0</span>() &#125;</span><br><span class="line">            cleanup()</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果查找到还有没有进行处理过的序列化任务，那就调用这个闭包执行序列化任务</span></span><br><span class="line">        serializationQueue.async &#123; responseSerializer() &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 该方法查找Request中是否还有没有进行处理过的序列化任务</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">nextResponseSerializer</span><span class="params">()</span></span> -&gt; (() -&gt; <span class="type">Void</span>)? &#123;</span><br><span class="line">        <span class="keyword">var</span> responseSerializer: (() -&gt; <span class="type">Void</span>)?</span><br><span class="line"></span><br><span class="line">        $mutableState.write &#123; mutableState <span class="keyword">in</span></span><br><span class="line">            <span class="comment">// 因为每一个序列化任务的回调都是在序列化任务即将要完成时添加到Request中的</span></span><br><span class="line">            <span class="comment">// 所以我们可以使用Request内部的回调的个数来指示当前序列化任务已经完成的个数</span></span><br><span class="line">            <span class="comment">// 然后就有了以下的操作，用回调个数来作为索引去序列化任务数组中取值，如果没有取到就说明所有的序列化任务都已经处理完成了</span></span><br><span class="line">            <span class="keyword">let</span> responseSerializerIndex = mutableState.responseSerializerCompletions.<span class="built_in">count</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> responseSerializerIndex &lt; mutableState.responseSerializers.<span class="built_in">count</span> &#123;</span><br><span class="line">                responseSerializer = mutableState.responseSerializers[responseSerializerIndex]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> responseSerializer</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Request类的其他函数"><a href="#Request类的其他函数" class="headerlink" title="Request类的其他函数"></a>Request类的其他函数</h3><p>除了上面的那些重要并且逻辑比较难懂的方法之外，Request类中还有一系列简单易懂的函数，有些函数是负责将Request的一些状态变更作为通知发送给Alamofire的通知中心，比如下面的一些例子：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该方法很简单的向Alamofire中的通知中心eventMonitor发送了task已经被resume的通知</span></span><br><span class="line"><span class="comment">// 诸如此类的方法还有许多，大多都是跟下面一样的套路，所以就不一一罗列</span></span><br><span class="line"><span class="comment">// 这些方法的定义在Alamofire源码的Request.swift文件中，如果有兴趣可以自行去文件中查找</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didResumeTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask)</span></span> &#123;</span><br><span class="line">    dispatchPrecondition(condition: .onQueue(underlyingQueue))</span><br><span class="line">    eventMonitor?.request(<span class="keyword">self</span>, didResumeTask: task)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还有一些函数是对外提供API接口，使用户可以使用Request的特定功能的函数，比如下面一些例子：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以下函数接收一个ProgressHandler，将其作为下载进度更新时的回调函数</span></span><br><span class="line"><span class="comment">// 这些方法的套路基本上是接收用户传入的一个东西，并将其设置到Request的属性中去</span></span><br><span class="line"><span class="comment">// 另外值得注意的是：这些方法的末尾都会返回self，这也是Alamofire中可以链式调用的一个原因</span></span><br><span class="line"><span class="comment">// 同样，此类的更多方法就不一一赘述，如果有兴趣可以自行去文件中查找</span></span><br><span class="line"><span class="meta">@discardableResult</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">downloadProgress</span><span class="params">(queue: DispatchQueue = .main, closure: @escaping ProgressHandler)</span></span> -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">    mutableState.downloadProgressHandler = (handler: closure, queue: queue)</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除此之外还有一些函数值得大家去注意，那就是SessionDelegate与Request进行交互的方法。但这些函数并不存在于Request类中，前面我们就提到过Alamofire中的请求是一个系统，并不是单单一个类，并且Request在请求系统中扮演的角色只是一个抽象基类，是不会被真正使用的，其类内部只是定义了一些Request所共有的关键属性与生命周期。Request的每个子类都有自己需要完成的任务，不同的任务也就需要与SessionDelegate有不同种类的交互。这里我们举一个DataRequest的例子</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以下函数会接收一个从代理那里收到的服务器响应的数据</span></span><br><span class="line"><span class="comment">// 接收到之后会将数据拼接到自身的一个用来存储数据的属性之上，并在之后更新Request的下载进度</span></span><br><span class="line"><span class="comment">// 同时此举动会触发DownloadProgressHandler回调的调用</span></span><br><span class="line"><span class="comment">// 这类函数并没有固定的套路，都是与特定的功能强相关的代码，但是基本上都与我们在使用原生网络系统进行开发时的遇到的问题一致</span></span><br><span class="line"><span class="comment">// 所以也就不一一赘述，如果有兴趣可以自行去文件中查找</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(data: Data)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">self</span>.data == <span class="literal">nil</span> &#123;</span><br><span class="line">        mutableData = data</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $mutableData.write &#123; $<span class="number">0</span>?.append(data) &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    updateDownloadProgress()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此本篇关于Request类源码阅读的也就先告一段落了，希望大家都能在源码阅读的道路上有自己的收获</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Alamofire源码解析专栏（3）- SessionDelegate</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/">
+        <span>Alamofire源码解析专栏（1）- 启程</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%E6%96%87%E7%AB%A0%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">Alamofire源码解析专栏文章地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Request%E4%BB%A3%E7%90%86-RequestDelegate"><span class="toc-number">2.</span> <span class="toc-text">Request代理-RequestDelegate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Request"><span class="toc-number">3.</span> <span class="toc-text">Request</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#State"><span class="toc-number">3.1.</span> <span class="toc-text">State</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MutableState"><span class="toc-number">3.2.</span> <span class="toc-text">MutableState</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Request%E7%B1%BB%E5%85%B3%E9%94%AE%E5%B1%9E%E6%80%A7%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">3.3.</span> <span class="toc-text">Request类关键属性与生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Request%E7%B1%BB%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%BB%E5%8A%A1%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-number">3.4.</span> <span class="toc-text">Request类序列化任务处理流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Request%E7%B1%BB%E7%9A%84%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0"><span class="toc-number">3.5.</span> <span class="toc-text">Request类的其他函数</span></a></li></ol></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

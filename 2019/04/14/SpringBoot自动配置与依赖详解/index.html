@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            SpringBoot自动配置与依赖详解 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/">SpringBoot自动配置与依赖详解</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-04-14
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-04-14
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=SpringBoot自动配置与依赖详解&url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=SpringBoot自动配置与依赖详解&url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/&title=SpringBoot自动配置与依赖详解" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=SpringBoot自动配置与依赖详解&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/&text=SpringBoot自动配置与依赖详解" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/Java/ >Java</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <blockquote>
+<p>第一次使用SpringBoot，便为塔强大的自动配置而惊叹，开箱即用这样的特性对入门者实在是太友好了，通过官方的启动器生成的maven工程，pom文件中只有寥寥几行，这样用起来的确是比传统的Spring要轻松不少，但是每每通过项目的主入口类来启动整个项目的时候，心里面总不免产生这样的疑问：如此多的配置与依赖，SpringBoot是怎么样做到帮我们自动配置的呢？</p>
+</blockquote>
+<h3 id="一、SpringBoot的依赖管理"><a href="#一、SpringBoot的依赖管理" class="headerlink" title="一、SpringBoot的依赖管理"></a>一、SpringBoot的依赖管理</h3><h5 id="1-父项目"><a href="#1-父项目" class="headerlink" title="1.父项目"></a>1.父项目</h5><blockquote>
+<p>进入到一个SpringBoot的项目的pom文件里，首先会看到的就是一对<parent>标签，这表明开头引入了一个父项目</parent></p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.4.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们点进这个父项目，会发现该项目的开头又有一个名为spring-boot-dependencies父项目，我们再点进去，会发现，在这个父项目中定义了大量的版本。因此我们明白了，这里就是SpringBoot的版本仲裁中心，我们在引入一些比较常见的依赖时，并不需要关心版本与兼容的问题，因为SringBoot官方已经帮我们定义好了所有常用依赖的版本号。</p>
+<p><img src="/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/1.png" alt="1.png"></p>
+<h5 id="2-场景启动器"><a href="#2-场景启动器" class="headerlink" title="2.场景启动器"></a>2.场景启动器</h5><blockquote>
+<p>在pom文件中在往下看，我们又会发现这么一个依赖</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里之所以会出现这个依赖，是因为我们在官方的SpringBoos项目生成器里面，勾选了web这个选项，spring-boot-starter-web就是一个web项目的场景启动器，这个启动器中帮我们导入了web模块正常运行所需要的组件。</p>
+<blockquote>
+<p>SpringBoot将所有的场景都抽取出来，做成了一个个的starter（启动器），当我们需要用什么功能的时候，只需要将该功能相关的场景启动器导入就可以了。</p>
+</blockquote>
+<h3 id="二、SpringBoot的自动配置"><a href="#二、SpringBoot的自动配置" class="headerlink" title="二、SpringBoot的自动配置"></a>二、SpringBoot的自动配置</h3><p>要想了解SpringBoot的自动配置，我们首先需要关注的是，SpringBoot的主入口类，因为项目都是靠这个类来启动的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(MyApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个主入口类仅有这么寥寥几行，却帮我们完成了如此复杂的自动配置，我们眼睛一扫，发现了一个陌生的注解SpringBootApplication，而且其中还包含了SpringBoot这个单词，八成就是它了。没错 ，就是它帮我们完成的自动配置，我们点进这个注解会发现这其实是一个混合注解，我们主要关注 <strong>@EnableAutoConfiguration</strong> 这个注解，从字面意思上理解就是启用自动配置的意思。点进这个注解，发现里面有AutoConfigurationPackage与Import这两个注解</p>
+<blockquote>
+<ol>
+<li>AutoConfigurationPackage这个注解帮我做的是，获取主入口类所在的包的路径，并将该包下以及所有子包下的所有组件扫描进容器</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>Import这个注解帮我们做的是，找到Spring下的一个spring.factories文件，这个文件中记录了所有配置类的全类名，然后从中挑选出我们需要用到的配置类的累名，并根据类名将相应的配置类导入到我们的容器中去。其中，我们提到的配置类，其实是Spring官方提前帮我们写好的一些默认的我们都习惯用的配置，他们用了习惯大于配置的思想，帮我们实现了完全零配置启动一个Spring项目的功能。</li>
+</ol>
+</blockquote>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Context初识、源码解析以及最佳实践</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/03/31/MySQL%E4%B8%BB%E4%BB%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/">
+        <span>MySQL主从数据库读写分离</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81SpringBoot%E7%9A%84%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">一、SpringBoot的依赖管理</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E7%88%B6%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.0.1.</span> <span class="toc-text">1.父项目</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%9C%BA%E6%99%AF%E5%90%AF%E5%8A%A8%E5%99%A8"><span class="toc-number">1.0.2.</span> <span class="toc-text">2.场景启动器</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81SpringBoot%E7%9A%84%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">二、SpringBoot的自动配置</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

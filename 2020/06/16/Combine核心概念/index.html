@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Combine核心概念 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/">Combine核心概念</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-06-16
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-07-02
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Combine核心概念&url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Combine核心概念&url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/&title=Combine核心概念" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Combine核心概念&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/&text=Combine核心概念" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Combine简介"><a href="#Combine简介" class="headerlink" title="Combine简介"></a>Combine简介</h2><p>Combine是Apple在Swift语言内部实现的响应式异步编程的框架。核心角色由发布者、订阅者和操作符组成，事件由发布者发出，经过操作符的一系列变换，最后通知到订阅者处。</p>
+<h2 id="Publisher发布者"><a href="#Publisher发布者" class="headerlink" title="Publisher发布者"></a>Publisher发布者</h2><p>Publisher在Combine中是可以随着时间向一个或多个订阅者发送它们感兴趣的事件或者值的角色。</p>
+<p>每一个Publisher都可以向外部发送三种事件<br></p>
+<ol>
+<li>一个输出值，该值的类型由Pulisher中的泛型Output决定</li>
+<li>一个成功的completion，代表该Publisher已经成功完成了自己的使命</li>
+<li>一个失败的completion，其中携带者失败的错误信息，错误信息的类型由Publisher中的泛型Failure决定，代表该Publisher因为某种原因失败了，不得不结束自己的使命</li>
+</ol>
+<p>在一个Publisher的生命周期中，可以向外部发送0个或者多个任意的值，但却只能发送一次completion事件（无论是成功还是失败），一旦completion事件被发送，就意味着该Publisher停止了工作，结束了自己的生命周期，之后再也不会发送任何事件或者值了</p>
+<p>在Combine中使用了名为Publisher的协议来定义了Publisher角色的类型</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Publisher</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Publisher所要输出的值的类型</span></span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Output</span></span><br><span class="line">    <span class="comment">// 用来表示一个Publisher失败的原因的类型，如果你觉得你所定义的Publisher永远不会出错，那么可以使用一个Never类型来指定Failure所代表的类型</span></span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Failure</span>:<span class="type">Error</span></span><br><span class="line">    <span class="comment">// 提供一个使用订阅者订阅该发布者的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span>&lt;S&gt;<span class="params">(subscriber: S)</span></span> <span class="keyword">where</span> <span class="type">S</span>:<span class="type">Subscriber</span>, <span class="type">Self</span>.<span class="type">Failure</span>==<span class="type">S</span>.<span class="type">Failure</span>, <span class="type">Self</span>.<span class="type">OutPut</span>==<span class="type">S</span>.<span class="type">Intput</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 虽然在协议中定义了订阅该Publisher的方法接口</span></span><br><span class="line"><span class="comment">// 但实际上订阅者并不是通过该接口订阅Publisher的</span></span><br><span class="line"><span class="comment">// 而是使用另外扩展的一个方法</span></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Publisher</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">subcribe</span>&lt;S&gt;<span class="params">(subscriber: S)</span></span> <span class="keyword">where</span> <span class="type">S</span>:<span class="type">Subscriber</span>, <span class="type">Self</span>.<span class="type">Failure</span>==<span class="type">S</span>.<span class="type">Failure</span>, <span class="type">Self</span>.<span class="type">OutPut</span>==<span class="type">S</span>.<span class="type">Intput</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于Publisher我们值得注意的一点是：对于一般的Publisher来说，如果没有任何订阅者订阅该Publisher，Publisher并不会处理之后出现的需要发送的事件或者值，也就是说一般的Publisher在没有订阅者订阅自己的情况下是不会发送任何消息的，这一点我们应该很容易理解，如果没有订阅者接受自己发送的消息，那么发送消息也将是无意义的。在Combine中定义的大多数Publisher如此，但也有例外，当我们接触到这一类Publisher的时候会特别的注明。</p>
+<h2 id="Subscriber订阅者"><a href="#Subscriber订阅者" class="headerlink" title="Subscriber订阅者"></a>Subscriber订阅者</h2><p>Subscriber在Combine中是一个从Publisher那里接受特定类型的事件值作为输入并对其做出反应的角色</p>
+<p>在Combine中使用了名为Subscriber的协议来定义了Subscriber角色的类型</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Subscriber</span>: <span class="title">CustomCombineIndetifierConvertible</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 订阅者接受的事件值类型</span></span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Input</span></span><br><span class="line">    <span class="comment">// 订阅者接受的错误类型</span></span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Failure</span>:<span class="type">Error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以下是定义了一些订阅过程中需要用到的方法</span></span><br><span class="line">    <span class="comment">// 关于订阅过程我们会在下文中提及，这些方法同时也会再次被提起</span></span><br><span class="line">    <span class="comment">// 所以现在暂时不用太过注意这些方法</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(subscription:Subscription)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(<span class="number">_</span> input: <span class="keyword">Self</span>.Input)</span></span> -&gt; <span class="type">Subscribers</span>.<span class="type">Demand</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(completion: Subscribers.Completion&lt;<span class="keyword">Self</span>.Failure&gt;)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果一个Subscriber订阅了某个Publisher，那么该Subscriber接受的事件值类型Input应该与Publisher发布的事件值类型Output一致，他们的Failure类型也应一致</p>
+<p>Combine中为我们提供了两种特别好用的内置的Subscriber：</p>
+<p>第一种是<code>sink</code>，sink订阅者中存储用户提供的两个闭包，一个处理事件值，一个处理completion事件，订阅者会在接收到Publisher发出的事件之后调用对应的闭包方法，并把接收到的事件值或者completion值作为参数传给闭包。作为官方内置的订阅者，还拥有一些更加便捷的使用方法，我们通常使用Publisher的扩展方法sink来对某个发布者完成订阅。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个sink订阅者</span></span><br><span class="line"><span class="keyword">let</span> sink = <span class="type">Sink</span>(receiveCompletion: &#123; completion <span class="keyword">in</span></span><br><span class="line">    <span class="built_in">print</span>(completion)</span><br><span class="line">&#125;, receiveValue: &#123;value <span class="keyword">in</span> </span><br><span class="line">    <span class="built_in">print</span>(value)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 调用方法使sink订阅者订阅某个发布者</span></span><br><span class="line">somePublisher.subscribe(sink)</span><br><span class="line"><span class="comment">// 更为便捷的订阅方法</span></span><br><span class="line"><span class="comment">// 该方法内部的实质其实跟上面一样，创建实例，并进行属性赋值，最后订阅</span></span><br><span class="line"><span class="number">_</span> = somePublisher.sink(receiveCompletion: &#123; completion <span class="keyword">in</span></span><br><span class="line">    <span class="built_in">print</span>(completion)</span><br><span class="line">&#125;, receiveValue: &#123;value <span class="keyword">in</span> </span><br><span class="line">    <span class="built_in">print</span>(value)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>第二种是<code>assign</code>，assign允许我们在接收到Publisher的事件值的时候，将值赋值给指定实例的指定属性。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传统订阅方法</span></span><br><span class="line"><span class="keyword">let</span> assign  = <span class="type">Assign</span>(object:someObj, keyPath:\.someProperty)</span><br><span class="line">somePublisher.subscribe(sink)</span><br><span class="line"><span class="comment">// 使用系统提供的扩展方法便捷订阅</span></span><br><span class="line"><span class="number">_</span> = somePublisher.assign(to: \.someProperty, on: someObj)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Subscription"><a href="#Subscription" class="headerlink" title="Subscription"></a>Subscription</h2><p>Subscription是订阅关系的一个抽象，Publisher与Subscriber依靠他们之间的一个Subscription来交流订阅中所要用到的信息</p>
+<p>我们从Subscription数据的流转去从宏观的角度看一个订阅的流程是如何运转的</p>
+<p><img src="/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/1.png" alt="&quot;123&quot;"></p>
+<ol>
+<li>Subscriber调用Publisher的subscribe方法，告诉Publisher：我想要订阅你</li>
+<li>Publisher随后创建一个subscription实例，并调用Subscriber的receive(subscription:)方法，告诉Subscriber：我收到你的订阅了</li>
+<li>Subscriber收到传回来的subscription实例之后，调用subscription.request()方法，告诉Publisher：我要接受你的若干个事件值通知</li>
+<li>Publisher通过Subscriber的receive(_:)方法来告诉Subscriber：这是你想要的数据</li>
+<li>一直重复步骤4，发送多个事件值通知</li>
+<li>发布结束，Publisher通过Subscriber的receive(completion:)方法告诉Subscriber：发布已经结束</li>
+</ol>
+<p>下面我们通过实现一个自定义的订阅者对象来进一步的理解Combine中订阅的流程，以及在这个流程中subscription所扮演的一个对象</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomSubscriber</span>: <span class="title">Subscriber</span> </span>&#123;</span><br><span class="line">    <span class="keyword">typealias</span> <span class="type">Input</span> = <span class="type">Int</span></span><br><span class="line">    <span class="keyword">typealias</span> <span class="type">Failure</span> = <span class="type">Never</span></span><br><span class="line">    <span class="comment">//在Subscriber订阅了某一个Publisher之后，Publisher会首先调用该方法，通知监听关系已经建立</span></span><br><span class="line">    <span class="comment">//Subscriber在此方法中，会开始向Publisher请求数据，并指定请求的次数</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(subscription:Subscription)</span></span> &#123;</span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        subscription.request(.<span class="built_in">max</span>(<span class="number">5</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//在Publisher产生了值之后，就会调用Subscriber的这个方法</span></span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(<span class="number">_</span> input: Int)</span></span> -&gt; <span class="type">Subscribers</span>.<span class="type">Demand</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(input)</span><br><span class="line">        <span class="comment">// 4</span></span><br><span class="line">        <span class="keyword">return</span> .<span class="keyword">none</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(completion: Subscribers.Completion&lt;Never&gt;)</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;complete!&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Subscriber订阅了一个Publisher之后，Publisher创建一个subscription并通过Subscriber的receive(subscription:)方法将该subscription传给订阅者</li>
+<li>Subscriber拿到发布者创建的subscription之后，调用subscription的request方法告诉发布者我要接受你的若干个事件值的通知，在这里可以指定该Subscriber可以接受发布者事件值通知的个数，可以通过.max指定接受的最大值，通过.unlimited指定不限制接受的数量，通过.none表示不接受任何值，通常.none在这里是没有意义的，因为如果在这里你传入了.none则代表一旦开始订阅，订阅者就主动放弃了之后的所有订阅，这份订阅关系会立即被销毁</li>
+<li>Publisher会通过Subscriber的receive(_:)方法来讲自身内部所产生的事件值通知发送给Subscriber。在该方法中，订阅者可以完成对接收到的事件值通知的响应（比如当前这个例子中，订阅者会对没一个收到的事件值响应进行打印）</li>
+<li>该方法有一个Subscribers.Demand类型的返回值，该类型与调用subscription的request方法时传入的参数是一致的，代表Subscriber可以接受发布者事件值通知的个数，这里的返回值表明你可以在不断地去改变更新这个次数。需要注意的是：该方法的返回值是会以叠加的方式作用到原有的次数之上的。</li>
+<li>当Publisher中产生completion事件的时候，会通过Subscriber的receive(completion:)方法通知订阅者，订阅者可以在这个方法里面做出响应（本例中在接收到Publisher的completion的事件时会直接打印completion）</li>
+</ol>
+<h2 id="Cancellable"><a href="#Cancellable" class="headerlink" title="Cancellable"></a>Cancellable</h2><p>现在我们来开始讨论一组订阅通道的生命周期，一组订阅通道在什么情况下会被关闭并释放资源：</p>
+<ol>
+<li>发布者出发了自身的completion事件，那么该属于发布者的所有订阅通道都会被关闭</li>
+<li>订阅者收到的事件值通知的数量达到了自己可以接受的最大值的时候该订阅者会主动关闭自身的订阅通道。比如订阅者准备开始接受发布者值的时候调用requerst(.max(5))指定了自己最多可以接受5个事件值通知，那么在发布者连续发布了五个事件值通知的时候，该订阅通道就会自己关闭</li>
+<li>显式的执行关闭订阅通道的逻辑</li>
+</ol>
+<p>前两条很显然是发布者自身内部的逻辑，与我们几乎无关（除非你自定义发布者）。可以由我们来具体控制通道何时关闭的方法只有第三种。</p>
+<p>Combine中使用Cancellable协议来规范这种行为，该协议中定义了一个cancel方法用于取消订阅流程</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Cancellable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除此之外Combine还定义了AnyCancellable类，该类遵循了Cancellable协议，这个类的特点就是会在deinit的时候自动调用自身的cancel方法，并且提供了加入集合的能力</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AnyCancellable</span>: <span class="title">Cancellable</span>, <span class="title">Hashable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 该类中的cancel方法并没有实现任何实际的逻辑</span></span><br><span class="line">    <span class="comment">// 只是会调用初始化传入的这个闭包</span></span><br><span class="line">    <span class="comment">// 所以该类的实例的特定的cancel逻辑是由初始化时外部参数决定的</span></span><br><span class="line">    <span class="keyword">init</span>(() -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">AnyCancellable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 提供了加入集合的能力</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">store</span><span class="params">(<span class="keyword">in</span> <span class="keyword">set</span>: <span class="keyword">inout</span> Set&lt;AnyCancellable&gt;)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Combine中内置的两种订阅者Sink和Assign内部都实现了Cancellable协议，并且当我们通过发布者的扩展方法sink以及assign建立订阅关系的时候，会返回一个AnyCancellable实例</p>
+<p>由于AnyCancellable的deinit时会自动调用cancel方法，所以在我们调用sink以及assign方法之后，如果不将其返回值存储起来保留引用计数，那么我们通过sink或者assign方法建立的订阅关系会在代码执行脱离当前域之后立马被cancel</p>
+<p>我们通常的做法是将AnyCancellable对象保存为当前的类实例属性，这样当该类被deinit时也会触发属性的deinit，自动释放该类中所拥有的订阅通道。当一个类会发生多个订阅事件的时候，可以使用AnyCancellable的store方法所提供的加入集合的能力，设置一个集合作为该类的一个实例属性，并把所有订阅产生的AnyCancellable实例添加到这个集合中，当前类执行deinit的时候，会执行集合的deinit，集合的deinit中又会一一执行其所拥有元素的deinit，这样就实现了多个订阅通道的自动关闭。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在一个类中保持订阅关系的方法</span></span><br><span class="line"><span class="comment">// 方法一：将订阅返回的AnyCancellable作为实例属性存储，类deinit是会自动调用实例中存储的AnyCancellable属性的deinit方法</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> cancellable: <span class="type">AnyCancellable</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="keyword">self</span>.cancellable = somePublisher.sink(receiveValue: &#123; value <span class="keyword">in</span></span><br><span class="line">            <span class="built_in">print</span>(value)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 方法二：对订阅返回的AnyCancellable调用store方法，将其添加到类中的set中去。当类deinit时，会自动调用set的deinit方法，而set的deinit方法又会调用其内部存储的所有的AnyCancellable的deinit方法</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> cancelSet = <span class="type">Set</span>&lt;<span class="type">AnyCancellable</span>&gt;()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">someFunc</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="number">_</span> = somePublisher.sink(receiveValue: &#123; value <span class="keyword">in</span></span><br><span class="line">            <span class="built_in">print</span>(value)</span><br><span class="line">        &#125;).store(<span class="keyword">in</span>: &amp;cancelSet)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h2><p>我们在使用Combine编写封装功能模块并在最后将Puiblisher作为对外的接口将数据提供出去的时候，常常会希望不要将Publisher的一些细节（比如类型）暴露出去，因为很多情况下Publisher的一些额外的细节信息并不能给我们的调用提供额外的帮助，反而会在我们从外部进行调用的时候分散我们的注意力，而且使得从外部对内部封装做出一些不合规范的改变成为了可能。而类型擦除就是用来避免这样的情况的。类型擦除将我们的任意一个Publisher封装为一个AnyPublisher结构体，该结构体仅实现了Publisher协议。通过AnyPublisher可以隐藏掉Publisher中你不想暴漏给订阅者的实现细节</p>
+<p><code>eraseToAnyPublisher()</code>是一个操作符，在Publisher之后调用这个方法，会返回一个封装了这个Publisher对象的AnyPublisher实例。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> result = someSubject</span><br><span class="line">            .<span class="built_in">map</span>&#123; $<span class="number">0</span> * <span class="number">2</span>&#125;</span><br><span class="line">            .eraseToAnyPublisher()</span><br><span class="line"><span class="comment">// 类型擦出之后我们还可以正常地订阅发布者</span></span><br><span class="line"><span class="number">_</span> = result.sink &#123;val <span class="keyword">in</span> </span><br><span class="line">    <span class="built_in">print</span>(val)</span><br><span class="line">&#125;.store(<span class="keyword">in</span>: &amp;subscriptions)</span><br><span class="line"><span class="comment">// 但是发布者背后的subject被隐藏了，调用subject的send方法会出错</span></span><br><span class="line">result.send(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>源码解析Combine中的内存管理</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/">
+        <span>iOS自定义转场之Modal转场</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Combine%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">Combine简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Publisher%E5%8F%91%E5%B8%83%E8%80%85"><span class="toc-number">2.</span> <span class="toc-text">Publisher发布者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Subscriber%E8%AE%A2%E9%98%85%E8%80%85"><span class="toc-number">3.</span> <span class="toc-text">Subscriber订阅者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Subscription"><span class="toc-number">4.</span> <span class="toc-text">Subscription</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cancellable"><span class="toc-number">5.</span> <span class="toc-text">Cancellable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E6%93%A6%E9%99%A4"><span class="toc-number">6.</span> <span class="toc-text">类型擦除</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

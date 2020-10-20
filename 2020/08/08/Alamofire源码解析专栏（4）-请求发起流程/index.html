@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Alamofire源码解析专栏（4）- 请求发起流程 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/">Alamofire源码解析专栏（4）- 请求发起流程</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-08-08
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-08-08
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（4）- 请求发起流程&url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（4）- 请求发起流程&url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/&title=Alamofire源码解析专栏（4）- 请求发起流程" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（4）- 请求发起流程&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/&text=Alamofire源码解析专栏（4）- 请求发起流程" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Alamofire源码解析专栏文章地址"><a href="#Alamofire源码解析专栏文章地址" class="headerlink" title="Alamofire源码解析专栏文章地址"></a>Alamofire源码解析专栏文章地址</h2><ul>
+<li><a href="../../../../../2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/#more">Alamofire源码解析专栏（1）-启程</a></li>
+<li><a href="../../../../../2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/#more">Alamofire源码解析专栏（2）- Request</a></li>
+<li><a href="../../../../../2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/#more">Alamofire源码解析专栏（3）- SessionDelegate</a></li>
+<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a></li>
+</ul>
+<p><br><br></p>
+<p>本篇文章主要分析Session类中的源码，主要分析Session类中如何通过对外提供的API创建一个Request对象并管理Request对象的生命周期。在之前的文章中可以了解到，Alamofire中的Request只是一个基类，我们真正使用的主要是它的各种子类，对于各种不同类型的Request，Session类中为其提供了不同的API与逻辑来管理其生命周期，但是逻辑上的差异只是源于不同类型Request所负责的不同的任务而产生的，整体上Alamofire管理Request对象的思路是不变的，所以在这篇文章中不会对每一个类型的Reuquest都进行一次分析，而是挑选其中比较基础，具有代表性的一个类型-DataRequest来做举例分析。如果你对其他类型的处理流程与逻辑有兴趣，请自行去源码文件中查找，只要你理解了DataRequest的创建以及发起的流程，再去看其他不同类型的Request的流程也就轻而易举了。</p>
+<h2 id="DataRequest的创建流程"><a href="#DataRequest的创建流程" class="headerlink" title="DataRequest的创建流程"></a>DataRequest的创建流程</h2><p>首先我们来看Session类中对外提供的用来请求网络的APi方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="number">_</span> convertible: URLConvertible,</span></span></span><br><span class="line"><span class="function"><span class="params">                    method: HTTPMethod = .<span class="keyword">get</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    parameters: Parameters? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    encoding: ParameterEncoding = URLEncoding.<span class="keyword">default</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    headers: HTTPHeaders? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    interceptor: RequestInterceptor? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    requestModifier: RequestModifier? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">DataRequest</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> convertible = <span class="type">RequestConvertible</span>(url: convertible,</span><br><span class="line">                                            method: method,</span><br><span class="line">                                            parameters: parameters,</span><br><span class="line">                                            encoding: encoding,</span><br><span class="line">                                            headers: headers,</span><br><span class="line">                                            requestModifier: requestModifier)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> request(convertible, interceptor: interceptor)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法十分的简单，先是创建了一个RequestConvertible对象，然后调用另外一个request方法，直接讲方法的返回值返回。我们在专栏的第一篇文章中就提到过这种Convertible的模式，在这里RequestConvertible是一个实现了URLRequestConvertible协议的结构体，URLRequestConvertible协议定义了一类可以通过方法转化为URLRequest对象的类型。我们先来看一下这个结构体的定义</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RequestConvertible</span>: <span class="title">URLRequestConvertible</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> url: <span class="type">URLConvertible</span></span><br><span class="line">    <span class="keyword">let</span> method: <span class="type">HTTPMethod</span> </span><br><span class="line">    <span class="keyword">let</span> parameters: <span class="type">Parameters?</span></span><br><span class="line">    <span class="keyword">let</span> encoding: <span class="type">ParameterEncoding</span></span><br><span class="line">    <span class="keyword">let</span> headers: <span class="type">HTTPHeaders?</span></span><br><span class="line">    <span class="keyword">let</span> requestModifier: <span class="type">RequestModifier?</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">asURLRequest</span><span class="params">()</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URLRequest</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> request = <span class="keyword">try</span> <span class="type">URLRequest</span>(url: url, method: method, headers: headers)</span><br><span class="line">        <span class="keyword">try</span> requestModifier?(&amp;request)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">try</span> encoding.encode(request, with: parameters)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意在这个结构体的asURLRequest方法中，在返回原生的URLRequest之前，先对其进行了编码。对于编码器将参数数据编入URLRequest之中的流程不是很清楚的可以倒回去看本专栏的第一篇文章，第一篇文章中有详细解析Alamofire中编码器的定义与使用。所以我们清楚了参数数据的编码是在这一步进行的。下面我们接着上面的流程继续向下走，在Session类对外提供的request方法的最后，调用了另一个request方法，接下来我们来看这个request方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="number">_</span> convertible: URLRequestConvertible, interceptor: RequestInterceptor? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">DataRequest</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> request = <span class="type">DataRequest</span>(convertible: convertible,</span><br><span class="line">                                underlyingQueue: rootQueue,</span><br><span class="line">                                serializationQueue: serializationQueue,</span><br><span class="line">                                eventMonitor: eventMonitor,</span><br><span class="line">                                interceptor: interceptor,</span><br><span class="line">                                delegate: <span class="keyword">self</span>)</span><br><span class="line"></span><br><span class="line">    perform(request)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> request</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DataRequest的请求发起"><a href="#DataRequest的请求发起" class="headerlink" title="DataRequest的请求发起"></a>DataRequest的请求发起</h2><p>上面的request方法中创建了DataReqeust对象，然后对request对象调用了perform方法，最后直接返回了。看到这里我们可以直到，在使用Alamofire发起请求的时候，调用request方法发起请求之后返回的就是一个Request对象。这个方法中比较重要的是调用了perform方法，接下来来看perform方法的逻辑</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">perform</span><span class="params">(<span class="number">_</span> request: DataRequest)</span></span> &#123;</span><br><span class="line">        requestQueue.async &#123;</span><br><span class="line">            <span class="keyword">guard</span> !request.isCancelled <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">self</span>.activeRequests.insert(request)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">self</span>.performSetupOperations(<span class="keyword">for</span>: request, convertible: request.convertible)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>perform方法中，将刚创建的那个Request对象添加到Session的activeRequests集合中，之后对其调用了performSetupOperations方法，继续来看performSetupOperations方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">performSetupOperations</span><span class="params">(<span class="keyword">for</span> request: Request, convertible: URLRequestConvertible)</span></span> &#123;</span><br><span class="line">    <span class="keyword">let</span> initialRequest: <span class="type">URLRequest</span></span><br><span class="line">    <span class="comment">// 尝试从URLRequestConvertible对象中获取原生URLRequest，获取是顺便完成了URLRequest的参数数据编码任务</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        initialRequest = <span class="keyword">try</span> convertible.asURLRequest()</span><br><span class="line">        <span class="keyword">try</span> initialRequest.validate()</span><br><span class="line">    &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">        <span class="comment">// 获取失败，发出错误通知</span></span><br><span class="line">        rootQueue.async &#123; request.didFailToCreateURLRequest(with: error.asAFError(or: .createURLRequestFailed(error: error))) &#125;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    rootQueue.async &#123; request.didCreateInitialURLRequest(initialRequest) &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">guard</span> !request.isCancelled <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="comment">// 尝试获取interceptor中的adapter，这里依然使用了一个帮助函数adapter，与之前的那个retrier帮助函数一样</span></span><br><span class="line">    <span class="comment">// 如果session与request同时都有自己的interceptor，就会将这两个interceptor的adapter重新组合为一个全新的interceptor返回</span></span><br><span class="line">    <span class="comment">// 如果session与request两个只有一个有interceptor，就直接返回不为nil的那个</span></span><br><span class="line">    <span class="comment">// 如果两个都为nil就直接调用didCreateURLRequest进行下一步处理，不需要再进行adapter验证</span></span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> adapter = adapter(<span class="keyword">for</span>: request) <span class="keyword">else</span> &#123;</span><br><span class="line">        rootQueue.async &#123; <span class="keyword">self</span>.didCreateURLRequest(initialRequest, <span class="keyword">for</span>: request) &#125;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果获取到了adapter，则使用adapter进行验证</span></span><br><span class="line">    adapter.adapt(initialRequest, <span class="keyword">for</span>: <span class="keyword">self</span>) &#123; result <span class="keyword">in</span></span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> adaptedRequest = <span class="keyword">try</span> result.<span class="keyword">get</span>()</span><br><span class="line">            <span class="keyword">try</span> adaptedRequest.validate()</span><br><span class="line">            <span class="comment">// 如果验证成功，同样调用didCreateURLRequest进行下一步处理</span></span><br><span class="line">            <span class="keyword">self</span>.rootQueue.async &#123;</span><br><span class="line">                request.didAdaptInitialRequest(initialRequest, to: adaptedRequest)</span><br><span class="line">                <span class="keyword">self</span>.didCreateURLRequest(adaptedRequest, <span class="keyword">for</span>: request)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">            <span class="comment">// 如果验证失败，发出错误通知</span></span><br><span class="line">            <span class="keyword">self</span>.rootQueue.async &#123; request.didFailToAdaptURLRequest(initialRequest, withError: .requestAdaptationFailed(error: error)) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的performSetupOperations方法中主要实现的逻辑是获取DataRequest对应的urlRequest，并且将参数编码进urlRequest之后，随后对获取到的urlRequest进行adapter验证，如果验证成功会调用didCreateURLRequest方法进行下一步流程。现在我们来分析didCreateURLRequest方法的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didCreateURLRequest</span><span class="params">(<span class="number">_</span> urlRequest: URLRequest, <span class="keyword">for</span> request: Request)</span></span> &#123;</span><br><span class="line">    request.didCreateURLRequest(urlRequest)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">guard</span> !request.isCancelled <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="comment">// 创建一个URLSessionDataTask</span></span><br><span class="line">    <span class="keyword">let</span> task = request.task(<span class="keyword">for</span>: urlRequest, using: session)</span><br><span class="line">    <span class="comment">// 并建立task与request之间的映射关系</span></span><br><span class="line">    requestTaskMap[request] = task</span><br><span class="line">    request.didCreateTask(task)</span><br><span class="line"></span><br><span class="line">    updateStatesForTask(task, request: request)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建了之后发起请求要用到的URLSessionDataTask之后，接着调用了updateStatesForTask方法，该方法只是处理一些异常情况，因为在正常情况下Request的发起流程只会在两种情况下被调用，第一种是发起一个新的请求，这个时候Request是刚创建的，状态应该为initialized，第二种是一个已经存在的Request请求失败需要进行重试，这个时候重新发起了请求，在Request的源码中我们可以看到在一个Request在自己要进行重试之前会先对自己的状态进行一些清空以及初始化，Request这个时候的状态为finished。所以看这个方法中，在Request的状态为initialized或finished的时候是什么都不会做的，只有出现其他一些异常情况的时候才会补充一些修复操作</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">updateStatesForTask</span><span class="params">(<span class="number">_</span> task: URLSessionTask, request: Request)</span></span> &#123;</span><br><span class="line">    request.withState &#123; state <span class="keyword">in</span></span><br><span class="line">        <span class="keyword">switch</span> state &#123;</span><br><span class="line">        <span class="keyword">case</span> .initialized, .finished:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">case</span> .resumed:</span><br><span class="line">            task.resume()</span><br><span class="line">            rootQueue.async &#123; request.didResumeTask(task) &#125;</span><br><span class="line">        <span class="keyword">case</span> .suspended:</span><br><span class="line">            task.suspend()</span><br><span class="line">            rootQueue.async &#123; request.didSuspendTask(task) &#125;</span><br><span class="line">        <span class="keyword">case</span> .cancelled:</span><br><span class="line">            task.resume()</span><br><span class="line">            task.cancel()</span><br><span class="line">            rootQueue.async &#123; request.didCancelTask(task) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时Request已经准备就绪了，但是还差临门一脚，由DataRequest创建出来的URLSessionDataTask这个时候还没有真正的启动，Request会开始等待有新的序列化任务加入进来，如果没有序列化任务被添加进来，Request是不会启动自己的task的。我们在使用Alamofire种经常使用这样的方式来拿到请求的数据：<code>AF.request(...).response(...)</code>，在上面的流程分析中我们已经了解到了<code>AF.request(...)</code>最终返回的是一个Request对象，随后调用了Reqeust的response方法，一个简单的response方法源码已经展示在下面，我们可以看到response方法做的事情实际上是通过调用Request的appendResponseSerializer方法向Request种添加一个序列化任务。在专栏文章的第二篇介绍Request时我们已经分析过了Request序列化任务添加的流程，当我们调用appendResponseSerializer方法时，会引发一系列的变化，最终会调用Request的task的resume方法，来正式启动网络请求流程，至此一个DataRequest已经被创建并启动起来了，之后只需要响应URLSessionDataDelegate中的回调，并根据回调给更新自己的状态即可。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">DataRequest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">response</span><span class="params">(queue: DispatchQueue = .main, completionHandler: @escaping <span class="params">(AFDataResponse&lt;Data?&gt;)</span></span></span> -&gt; <span class="type">Void</span>) -&gt; <span class="type">Self</span> &#123;</span><br><span class="line">        appendResponseSerializer &#123;</span><br><span class="line">            <span class="keyword">let</span> result = <span class="type">AFResult</span>&lt;<span class="type">Data?</span>&gt;(value: <span class="keyword">self</span>.data, error: <span class="keyword">self</span>.error)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">self</span>.underlyingQueue.async &#123;</span><br><span class="line">                <span class="keyword">let</span> response = <span class="type">DataResponse</span>(request: <span class="keyword">self</span>.request,</span><br><span class="line">                                            response: <span class="keyword">self</span>.response,</span><br><span class="line">                                            data: <span class="keyword">self</span>.data,</span><br><span class="line">                                            metrics: <span class="keyword">self</span>.metrics,</span><br><span class="line">                                            serializationDuration: <span class="number">0</span>,</span><br><span class="line">                                            result: result)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">self</span>.eventMonitor?.request(<span class="keyword">self</span>, didParseResponse: response)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">self</span>.responseSerializerDidComplete &#123; queue.async &#123; completionHandler(response) &#125; &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此这篇文章就结束了，这篇文章主要分析了一个Request对象是如何创建出来，并启动自身内部的task的。到这里本专栏可能也要告一段落了，Alamofire中的核心逻辑我们已经全部讲解完毕，只剩下一些帮助函数和不是特别重要的外围组件，这些东西可能对应着一些Alamofire中的小功能，但对于核心逻辑并没有太大的影响，大家如果有兴趣可以自己试着去读一下剩下的代码，我相信如果你将这篇专栏的前四篇文章全部认真看完并理解其中的内容，那么剩下的一些本专栏未涉及的源码对你应该是没有什么难度的。我也希望大家这么去做，因为阅读软件的源码绝不仅仅是为了了解某个软件中的逻辑与流程，因为软件有千千万万个，我们现在正在使用的Alamofire框架可能会在未来的某一个时间停止更新，然后又被另外一个新生的网络框架取代，阅读源码更重要的是：一方面要理解一些优秀软件内部所使用的设计模式与编码思想，以此来锻炼你编写优秀代码的能力；另一方面你要锻炼自己阅读源码的能力，如果在未来的工作中使用一个崭新的框架或者软件，遇到了别人没有遇到过的问题，在你毫无头绪的时候试着尝试从软件或者框架的表层入手，一步步深入地阅读其内部的源码实现，可能读着读着就突然恍然大悟：“哦！原来是这样”，在顺利解决了问题的同时也带给你很强的成就感。</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>iOS远程推送通知全解析</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/">
+        <span>Alamofire源码解析专栏（3）- SessionDelegate</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%E6%96%87%E7%AB%A0%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">Alamofire源码解析专栏文章地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DataRequest%E7%9A%84%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">DataRequest的创建流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DataRequest%E7%9A%84%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7"><span class="toc-number">3.</span> <span class="toc-text">DataRequest的请求发起</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

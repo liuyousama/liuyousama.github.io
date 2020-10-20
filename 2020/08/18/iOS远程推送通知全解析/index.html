@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            iOS远程推送通知全解析 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/">iOS远程推送通知全解析</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-08-18
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-08-18
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=iOS远程推送通知全解析&url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=iOS远程推送通知全解析&url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/&title=iOS远程推送通知全解析" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=iOS远程推送通知全解析&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/&text=iOS远程推送通知全解析" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <p>iOS中的推送通知可以分为两种：远程推送通知与本地推送通知。本地通知可以直接通过应用程序中的代码设置用户进入某个区域或者到达某个时间点的时候触发通知，而远程通知必须有远端服务器的参与。</p>
+<p>苹果为远程推送提供了远端服务系统，这个系统叫做APNs（Apple Push Notification service，苹果通知推送服务）。当在远端想要向特定的设备推送内容的时候，我们需要向苹果官方的APNs系统发起一个请求，请求中携带我们想要通知的用户以及通知的内容信息，APNs接收到这个请求吗，确定无误且拥有权限之后，会将这些内容推送给每一个指定的终端，终端在接收到这些内容之后就会触发通知。下面我们来看一下远程通知的大致流程。</p>
+<ol>
+<li>通常在<code>application(_:didFinishLaunchingWithOptions:)</code>方法之中，我们向APNs发起请求，以获取授权并取得本设备的token。token是APNs系统为每一个设备生成的唯一标识，我们在远端请求APNs系统给设备发送通知的时候，需要使用token指明我们要给哪些设备发。</li>
+<li>APNs接收到设备的请求时候返回一个设备token，然后会调用<code>application(_:didRegisterForRemoteNotificationsWithDeviceToken:)</code>方法通知APP设备token已经拿到</li>
+<li>拿到token之后我们通常会将这个token发送给后端处理，后端通常会将这些token存储起来。一些为了精准推送，可能还会在发送token给后端的同时携带上用户账号信息以及设备信息。</li>
+<li>后端服务器推送数据时，向APNs系统发送一个请求，其中包括了一个或多个的token信息</li>
+<li>APNs接收到请求之后将推送的数据发送给这些token对应的设备上去</li>
+</ol>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/1.jpg"></p>
+<h2 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h2><p>后端服务器在向APNs系统发送请求的时候，要携带数据，这个数据被称为Payload。苹果官方指定JSON为Payload的格式，并且预定义了一些特殊的键供推送使用，同时限制Payload数据大小最大为4KB，如果超出这个大小APNs系统在接收到你服务端发来的请求时会拒绝它。使用官方预定义的一些键你可以完成很多关于推送通知的定制化功能，比如：定义通知的消息、在接受到通知的同时设置APP图标的badge数字、定义手机接收到通知时的响声、在推送通知上附加自定义的用户交互逻辑</p>
+<h3 id="一个最基本的alert推送Payload"><a href="#一个最基本的alert推送Payload" class="headerlink" title="一个最基本的alert推送Payload"></a>一个最基本的alert推送Payload</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分组通知"><a href="#分组通知" class="headerlink" title="分组通知"></a>分组通知</h3><p>在alert中提供一个thread_identifier，iOS系统会自动将接收到的拥有同样identifier的通知合并起来，如果我们不提供这个key，那么苹果默认会将该应用的所有通知都合并为一个组</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;thread_identifier&quot;</span>: <span class="string">&quot;Identifier1&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/2.jpg"></p>
+<h3 id="Badge"><a href="#Badge" class="headerlink" title="Badge"></a>Badge</h3><p>在aps字典中，提供一个badge键值对，iOS系统会在接收到该通知时自动更新APP图标上的badge数量。这个数值是一个绝对值，并不是在应用原有badge的基础之上做加减运算，系统接收到的Payload中如果设置了badge，就会直接把badge的值更新到APP中，所以如果要使用这个特性，则服务器需要清楚地知道各个客户端的badge数量</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;thread_identifier&quot;</span>: <span class="string">&quot;Identifier1&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;badge&quot;</span>: <span class="number">12</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="通知声音"><a href="#通知声音" class="headerlink" title="通知声音"></a>通知声音</h3><p>在默认情况下，iOS系统在接收到通知时会播放系统的通知声音来提醒用户，你也可以通过设置Payload来自定义通知声音。在aps字典中提供一个键为sound，值为APP Bundle中存在的一个声音文件即可设置，声音文件不能超过30s，如果超过iOS会忽略你的自定义声音，继续播放系统的通知声音。</p>
+<p>自定义通知声音所支持的音频文件类型：</p>
+<ul>
+<li>Linear PCM</li>
+<li>MA4（IMA/ADPCM）</li>
+<li>uLaW</li>
+<li>aLaW</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;thread_identifier&quot;</span>: <span class="string">&quot;Identifier1&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;sound&quot;</span>: <span class="string">&quot;filename.caf&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了给通知附带自定义的声音之外，还可以为特定的通知指定critical alert sounds，这种声音会无视系统的音量，使用自定义的音量播放通知提示音，适用于一些比较紧急的通知。想要在APP中使用critical alert，需要申请特殊的通知授权。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;thread_identifier&quot;</span>: <span class="string">&quot;Identifier1&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;sound&quot;</span>: &#123;</span><br><span class="line">            <span class="comment">// 设置为1代表这是一个critical alert</span></span><br><span class="line">            <span class="attr">&quot;critical&quot;</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;filename.caf&quot;</span>,</span><br><span class="line">            <span class="comment">// 0-1的浮点数，控制音量大小</span></span><br><span class="line">            <span class="attr">&quot;volume&quot;</span>: <span class="number">0.75</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义数据"><a href="#自定义数据" class="headerlink" title="自定义数据"></a>自定义数据</h3><p>aps字典中的数据都是iOS预留的字段，除此之外我们可以提供自定以的一些数据。比如以下Payload中除了发送通知内容，还附加了一组地理信息。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;coords&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;latitude&quot;</span>: <span class="number">37.33182</span>,</span><br><span class="line">        <span class="attr">&quot;longitude&quot;</span>: <span class="number">-122.03118</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTP-Header"><a href="#HTTP-Header" class="headerlink" title="HTTP Header"></a>HTTP Header</h2><p>远程服务器向APNs发送的请求是HTTP请求，苹果还定义了一系列的HTTP Header来明确更多信息。</p>
+<ul>
+<li>apns-collapse-id</li>
+</ul>
+<p>你可以为这个Header提供一个最大64bytes的标识符，当一个<code>apns-collapse-id</code>不为空的通知到达设备时，iOS系统会删除当前通知中心中具有相同的<code>apns-collapse-id</code>值的通知，也就是说系统在任何时候最多只会保持一个具有特定<code>apns-collapse-id</code>值的通知</p>
+<ul>
+<li>push-type</li>
+</ul>
+<p>在iOS13之后规定，必须要通过这个头部来明确你要进行的通知类型，如果你想触发一个alert弹出式通知，就设置为alert，如果你想要触发一个静默的通知，就设置为background</p>
+<ul>
+<li>apns-priority</li>
+</ul>
+<p>该Header定义了通知的优先级，如果没有设置，默认值为10。苹果规定如果你的Payload中含有<code>content-available</code>这个键，那么你的anps-priority必须被设置为5，当设置为5的时候通知可能会延迟到达。</p>
+<h2 id="为项目添加通知能力"><a href="#为项目添加通知能力" class="headerlink" title="为项目添加通知能力"></a>为项目添加通知能力</h2><ol>
+<li>在XCode项目左侧的导航栏中选择最上面的一项</li>
+<li>在弹出的页面中选择代表你APP的Target，而不是Project</li>
+<li>选择Signing&amp;Capabilities选项卡</li>
+<li>点击左上角<code>+Capability</code>按钮</li>
+<li>从弹出的页面中搜索到<code>Push Notification</code></li>
+<li>确定PushNotification的能力已经被添加到你的签名信息下面</li>
+</ol>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/3.jpg"></p>
+<h2 id="代码演示基本的远程推送"><a href="#代码演示基本的远程推送" class="headerlink" title="代码演示基本的远程推送"></a>代码演示基本的远程推送</h2><h3 id="请求授权"><a href="#请求授权" class="headerlink" title="请求授权"></a>请求授权</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">application</span><span class="params">(<span class="number">_</span> application: UIApplication, didFinishLaunchingWithOptions launchOptions:[UIApplication.LaunchOptionsKey: <span class="keyword">Any</span>]?)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="type">UNUserNotificationCenter</span>.current().requestAuthorization(options: [.badge, .sound, .alert]) &#123;granted, <span class="number">_</span> <span class="keyword">in</span> </span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        <span class="keyword">guard</span> granted <span class="keyword">else</span> &#123;<span class="keyword">return</span>&#125;</span><br><span class="line">        <span class="comment">// 3</span></span><br><span class="line">        <span class="type">DispatchQueue</span>.main.async &#123;</span><br><span class="line">            application.registerForRemoteNotifications()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>调用UNUserNotificationCenter的requestAuthorization方法来向用户申请通知权限，这里申请了通知、声音以及更改Badge的权限。另外当你的options参数中包含<code>.provisional</code>时，iOS系统就不需要向用户询问通知权限，所有的通知会悄悄地（没有声音，也没有弹出通知）被送进用户的通知中心。当你需要弹出critical alert通知时，你需要在options中加入<code>.criticalAlert</code>，criticalAlert会在用户已经在设置中设置了拒绝通知的时候依然显示，并且可以自己控制音量，当你在授权中加入了这个的时候，你必须向苹果申请特殊的entitlement。</li>
+<li>闭包中的granted参数表示用户是否接受了这个权限申请</li>
+<li>用于requestAuthorization方法的闭包并不是在主队列中运行的，所以你需要声明在主队列中运行，然后调用UIApplication的<code>registerForRemoteNotifications</code>方法向APNs申请设备token</li>
+</ol>
+<p>这个样子，当你首次打开应用程序时，就会弹出一个请求通知权限的弹框</p>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/4.jpg"></p>
+<h3 id="处理返回的token"><a href="#处理返回的token" class="headerlink" title="处理返回的token"></a>处理返回的token</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">application</span><span class="params">(<span class="number">_</span> application: UIApplication,didRegisterForRemoteNotificationsWithDeviceToken deviceToken:Data)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">let</span> token = deviceToken.<span class="built_in">reduce</span>(<span class="string">&quot;&quot;</span>) &#123; $<span class="number">0</span> + <span class="type">String</span>(format:</span><br><span class="line">    <span class="string">&quot;%02x&quot;</span>, $<span class="number">1</span>) &#125;</span><br><span class="line">    <span class="built_in">print</span>(token)</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="type">UploadTokenToServer</span>(token)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>当APNs系统受理了你的请求，并返回了你这个设备的token，则该回调方法就会被调用</li>
+<li>可以通过这种方式将接收到的token数据转化为一个十六进制字符串，方便服务器存储与使用</li>
+<li>获取到token之后你可以调用你自定义的方法将token发送给后端服务器</li>
+</ol>
+<h2 id="使用通知代理"><a href="#使用通知代理" class="headerlink" title="使用通知代理"></a>使用通知代理</h2><p>默认情况下，当一个通知到达时，如果你正位于该<code>APP</code>的界面，通知弹框是不会显示的。当点击通知中心的某个通知时，默认是直接打开<code>APP</code>加载首屏。这些行为都由<code>UNUserNotificationCenter</code>的代理定义，如果以上这些情况不符合我们的需求时，可以为通知中心提供一个自定义的代理，在代理中控制这些行为。</p>
+<p>为了代码整洁，且拥有条理性，我们对上一节远程推送的演示代码做一些改变。首先我们将在程序启动时向用户请求通知授权以及进行的其他一系列对与通知相关的逻辑抽离成一个单独的方法。在该代码中我们添加了一行代码，指定了<code>UNUserNotificationCente</code>单例对象的代理对象，同样这里我们为了精简<code>AppDelegate类</code>的代码，将代理抽取作为一个新的类</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">registerForPushNotifications</span><span class="params">(application: UIApplication)</span></span> &#123;</span><br><span class="line">    <span class="keyword">let</span> center = <span class="type">UNUserNotificationCenter</span>.current()</span><br><span class="line">    center.requestAuthorization(options: [.badge, .sound, .alert])&#123; [<span class="keyword">weak</span> <span class="keyword">self</span>] granted, <span class="number">_</span> <span class="keyword">in</span></span><br><span class="line">        <span class="keyword">guard</span> granted <span class="keyword">else</span> &#123;<span class="keyword">return</span>&#125;</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        center.delegate = <span class="type">NotificationDelegate</span>()</span><br><span class="line">        <span class="type">DispatchQueue</span>.main.async &#123;</span><br><span class="line">            application.registerForRemoteNotifications()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在AppDelegate程序刚启动会调用的方法中调用我们这个函数</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">application</span><span class="params">(<span class="number">_</span> application: UIApplication, didFinishLaunchingWithOptions launchOptions:[UIApplication.LaunchOptionsKey: <span class="keyword">Any</span>]?)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">    registerForPushNotifications(application: application)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后我们就可以覆写我们通知代理中的方法来实现对通知各种各样的控制了</p>
+<h3 id="应用处于前台时通知的处理"><a href="#应用处于前台时通知的处理" class="headerlink" title="应用处于前台时通知的处理"></a>应用处于前台时通知的处理</h3><p>默认情况下，当一个通知到达时，如果你的APP位于系统前台，该条通知就会静悄悄的添加到用户的通知中心，没有弹框也没有声音。当位于前台的APP收到一条通知时，就会调用通知中心的代理方法<code>userNotificationCenter(_:willPresent:withCompletionHandler:)</code>，iOS系统处理此次通知的行为也有该方法定义</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotificationDelegate</span>: <span class="title">UNUserNotificationCenterDelegate</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">userNotificationCenter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="number">_</span> center: UNUserNotificationCenter,</span></span></span><br><span class="line"><span class="function"><span class="params">    willPresent notification: UNNotification,</span></span></span><br><span class="line"><span class="function"><span class="params">    withCompletionHandler completionHandler:</span></span></span><br><span class="line"><span class="function"><span class="params">    @escaping <span class="params">(UNNotificationPresentationOptions)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">    <span class="comment">// 默认实现是传入一个空的options列表，表示什么都不做</span></span><br><span class="line">    completionHandler([])    </span><br><span class="line">    <span class="comment">// 在前台的APP收到通知时，只弹出</span></span><br><span class="line">    completionHandler([.alert])</span><br><span class="line">    <span class="comment">// 在前台的APP收到通知时，弹出、播放声音并更新badge</span></span><br><span class="line">    completionHandler([.alert, .sound, .badge])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="处理通知被点击而启动应用"><a href="#处理通知被点击而启动应用" class="headerlink" title="处理通知被点击而启动应用"></a>处理通知被点击而启动应用</h3><p>在很多APP中，我们都会遇到以下的情景：用户点击一个文章推送通知之后，打开APP立即跳转到该篇文章的详情页。这样的行为也是在代理方法中控制的，当用户点击了通知之后，系统会启动对应的APP，启动之后会调用代理的<code>userNotificationCenter(_:,didReceive:,withCompletionHandler:)</code>方法来通知系统处理。当然，默认实现是什么都不做，继续进行以下步骤。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">userNotificationCenter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="number">_</span> center: UNUserNotificationCenter,</span></span></span><br><span class="line"><span class="function"><span class="params">didReceive response: UNNotificationResponse,</span></span></span><br><span class="line"><span class="function"><span class="params">withCompletionHandler completionHandler: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 在该方法结束之前必须调用参数中的completionHandler闭包</span></span><br><span class="line">    <span class="keyword">defer</span> &#123; completionHandler() &#125;</span><br><span class="line">    <span class="keyword">guard</span> response.actionIdentifier == <span class="type">UNNotificationDefaultActionIdentifier</span> <span class="keyword">else</span> &#123;<span class="keyword">return</span>&#125;</span><br><span class="line">    <span class="comment">// 接下来下面可以放处理用户点击通知事件的逻辑代码，这里有一个小例子</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">let</span> payload = response.notification.request.content</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> articleId = payload.userInfo[<span class="string">&quot;articleID&quot;</span>] <span class="keyword">else</span> &#123;<span class="keyword">return</span>&#125;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">let</span> vc = <span class="type">ArticleDetailVC</span>(articleID)</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">let</span> appDelegate = <span class="type">UIApplication</span>.shared.delegate <span class="keyword">as</span>! <span class="type">AppDelegate</span></span><br><span class="line">    appDelegate.window?.rootViewController?.navigationController?.push(vc, animated: <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>拿到此次通知的payload，并检查其中是否有设置的自定义键值articleID</li>
+<li>如果有就根据这个ID创建一个文章详情控制器，该控制器会根据id去网络请求文章详情数据</li>
+<li>之后拿到rootController，通过navigationController将刚刚创建的文章详情控制器push弹出</li>
+</ol>
+<h3 id="静默通知"><a href="#静默通知" class="headerlink" title="静默通知"></a>静默通知</h3><p>静默通知没有弹出通知、没有声音、甚至不会出现在用户的通知中心中，正是因为这些特性使用静默通知无需获取用户授权。静默通知一般用来通知APP更新数据，比如在一个RSS订阅APP时，服务器发送一个静默通知通知APP，APP接收到通知之后去更新相应的内容到本地，用户下次打开APP不需要等待网络请求就可以看到新内容。</p>
+<ol>
+<li>设置静默通知的Payload。</li>
+</ol>
+<ul>
+<li><strong>注意</strong>：不要以为把content-available的值设置为1就是关闭了静默通知，当你不需要静默通知的时候不要在payload中附带content-availabel这个键</li>
+<li><strong>注意</strong>：在payload中设置了content-available开启静默通知的时候，请不要忘记在HTTPHeader中将apns-priority值设为5。</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="comment">// 在aps字典中设置content-availabel为1</span></span><br><span class="line">        <span class="attr">&quot;content-available&quot;</span>: <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 自定义的键</span></span><br><span class="line">    <span class="attr">&quot;article&quot;</span>: <span class="string">&quot;https://someDomain/api/xxx&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>在APP项目的<code>Sign&amp;Capabilities</code>选项卡中，为你的APP添加<code>Background Modes</code>选项</li>
+</ol>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/5.jpg"></p>
+<ol start="3">
+<li>在AppDelegate中响应静默通知<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 应用收到静默通知时会调用以下代理方法</span></span><br><span class="line"><span class="comment">// 该方法结束前必须调用completionHandler闭包，通知系统此次通知数据更新的结果</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">application</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="number">_</span> application: UIApplication,</span></span></span><br><span class="line"><span class="function"><span class="params">    didReceiveRemoteNotification userInfo: [AnyHashable : <span class="keyword">Any</span>],</span></span></span><br><span class="line"><span class="function"><span class="params">    fetchCompletionHandler completionHandler:</span></span></span><br><span class="line"><span class="function"><span class="params">    @escaping <span class="params">(UIBackgroundFetchResult)</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 先拿到payload中的数据</span></span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> article = userInfo[<span class="string">&quot;article&quot;</span>] <span class="keyword">as</span>? <span class="type">String</span>,</span><br><span class="line">        <span class="keyword">let</span> url = <span class="type">URL</span>(string:article) <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 调用completionHandler传入noData，向系统说明此次通知不需要更新数据 </span></span><br><span class="line">        completionHandler(.noData)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 根据通知发送过来的URL，去请求数据并保存在本地</span></span><br><span class="line">    <span class="type">SaveArticleDataToLocal</span>(url) &#123; result <span class="keyword">in</span> </span><br><span class="line">        <span class="comment">// 最后根据结果，向completionHandler闭包中传入不同的参数</span></span><br><span class="line">        <span class="keyword">switch</span> result &#123;</span><br><span class="line">        <span class="keyword">case</span> .success:</span><br><span class="line">            completionHandler(.newData)</span><br><span class="line">        <span class="keyword">case</span> .fail:</span><br><span class="line">            completionHandler(.failed)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="带有按钮的通知"><a href="#带有按钮的通知" class="headerlink" title="带有按钮的通知"></a>带有按钮的通知</h3></li>
+<li>在iOS中，一类带有相同按钮以及相同点击逻辑的通知被称作一个category，每个通知上附加的每个按钮对应一个action。我们在使用带有按钮的通知之前，首先要想通知系统注册category和action，这两个都需要唯一的identifier来标识，为了之后的编码不出错，我们定义一系列用来标识各种identifier的常量<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">let</span> categoryId = <span class="string">&quot;AcceptOrReject&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">enum</span> <span class="title">ActinoId</span>: <span class="title">String</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> accept, reject</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>注册category和action。以下定义了一个方法用来注册category以及对应的action到通知中心中去，你可以在每次申请到用户的用户的通知授权之后调用下面的方法。<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">registerCustomActions</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 创建两个Action</span></span><br><span class="line">    <span class="keyword">let</span> accept = <span class="type">UNNotificationAction</span>(identifier: <span class="type">ActionIdentifier</span>.accept.rawValue, title: <span class="string">&quot;接受&quot;</span>)</span><br><span class="line">    <span class="keyword">let</span> reject = <span class="type">UNNotificationAction</span>(identifier: <span class="type">ActionIdentifier</span>.reject.rawValue, title: <span class="string">&quot;拒绝&quot;</span>)</span><br><span class="line">    <span class="comment">// 创建一个category，并将刚创建的两个Action添加该category中</span></span><br><span class="line">    <span class="keyword">let</span> category = <span class="type">UNNotificationCategory</span>(</span><br><span class="line">        identifier: categoryIdentifier,</span><br><span class="line">        actions: [accept, reject],</span><br><span class="line">        intentIdentifiers: [])</span><br><span class="line">    <span class="comment">// 将创建的category添加到通知中心中</span></span><br><span class="line">    <span class="type">UNUserNotificationCenter</span>.current().setNotificationCategories([category])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>设置按钮通知的payload，除了常规的payload信息之外，在aps字典中新增一个category键值对，其值要设置为第二步中你注册到通知中心的category的Identifier。这样在iOS收到通知之后就可以根据categoryIdentifier找到该通知需要附加多少个按钮，每个按钮的名称是什么，点击每个按钮之后要怎么做<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Long-press this notification&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;AcceptOrReject&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;sound&quot;</span>: <span class="string">&quot;default&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>响应按钮点击<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 点击了通知中的某个按钮之后，会调用通知中心代理的下面这个方法</span></span><br><span class="line"><span class="comment">// 注意：该方法与上面用户点击通知本身唤醒APP时调用的方法是同一个，所以注意该方法要处理多个事件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">userNotificationCenter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="number">_</span> center: UNUserNotificationCenter,</span></span></span><br><span class="line"><span class="function"><span class="params">    didReceive response: UNNotificationResponse,</span></span></span><br><span class="line"><span class="function"><span class="params">    withCompletionHandler completionHandler: @escaping <span class="params">()</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 在方法结束之前必须调用completionHandler回调</span></span><br><span class="line">    <span class="keyword">defer</span> &#123; completionHandler() &#125;</span><br><span class="line">    <span class="comment">// 获取到此次点击的按钮所属的categoryId与actionId</span></span><br><span class="line">    <span class="keyword">let</span> categoryId = response.notification.request.content.categoryIdentifier</span><br><span class="line">    <span class="keyword">let</span> actionId = response.actionIdentifier</span><br><span class="line">    <span class="comment">// 判断此次点击的categoryID与actionId是否正确 </span></span><br><span class="line">    <span class="keyword">guard</span> categoryId == categoryIdentifier,</span><br><span class="line">        <span class="keyword">let</span> action = <span class="type">ActionIdentifier</span>(rawValue:actionId) <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 处理按钮点击相关逻辑</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;你点击了 \(actionId)&quot;</span>) </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="使用通知服务扩展"><a href="#使用通知服务扩展" class="headerlink" title="使用通知服务扩展"></a>使用通知服务扩展</h2><p>当手机收到一个<code>APNs</code>发来的远程通知时，我们可以使用通知服务扩展在这条通知显示在通知中心之前对通知进行一些处理。我们可以将通知扩展想象成是位于<code>APNs</code>系统与手机之间的一个中间件。</p>
+<h3 id="创建并使能通知服务扩展"><a href="#创建并使能通知服务扩展" class="headerlink" title="创建并使能通知服务扩展"></a>创建并使能通知服务扩展</h3><p>首先你需要添加<code>Notification Service Target</code>到你的工程项目中去：</p>
+<ol>
+<li>在<code>Xcode</code>中，选择File-&gt;New-&gt;Target</li>
+<li>在<code>iOS</code>选项卡中选择<code>Notification Service Target</code></li>
+<li>给你的Target命名，可以是任何具有一定意义的名字</li>
+<li>点击完成</li>
+<li>如果<code>Xcode</code>询问你<code>scheme activation</code>的话，选择<code>Cancel</code></li>
+</ol>
+<p>完成创建之后，在你的工程文件导航栏中，就会出现一个你刚刚新创建的通知扩展的文件夹。该文件夹下有一个<code>NotificationService.swift</code>文件，该文件中已经为你提供了通知扩展的模板代码。其中有两个方法：<code>didReceive(_:withContentHandler:)</code>和<code>serviceExtensionTimeWillExpire</code>。模板代码如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotificationService</span>: <span class="title">UNNotificationServiceExtension</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> contentHandler: ((<span class="type">UNNotificationContent</span>) -&gt; <span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">var</span> bestAttemptContent: <span class="type">UNMutableNotificationContent?</span></span><br><span class="line">	<span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> request: UNNotificationRequest, withContentHandler contentHandler: @escaping <span class="params">(UNNotificationContent)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        <span class="keyword">self</span>.contentHandler = contentHandler</span><br><span class="line">        bestAttemptContent = (request.content.mutableCopy() <span class="keyword">as</span>? <span class="type">UNMutableNotificationContent</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> bestAttemptContent = bestAttemptContent &#123;</span><br><span class="line">            <span class="comment">// 3</span></span><br><span class="line">            bestAttemptContent.title = <span class="string">&quot;\(bestAttemptContent.title) [modified]&quot;</span></span><br><span class="line">            <span class="comment">// 4</span></span><br><span class="line">            contentHandler(bestAttemptContent)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">serviceExtensionTimeWillExpire</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> contentHandler = contentHandler, <span class="keyword">let</span> bestAttemptContent =  bestAttemptContent &#123;</span><br><span class="line">            contentHandler(bestAttemptContent)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>系统在接收到通知之后会调用这个方法，该方法的第一个参数是接收到的通知，第二个参数是一个闭包回调，我们在逻辑处理完成之后需要调用这个闭包将一个<code>UNNotificationContent</code>对象传递给系统。<code>UNNotificationContent</code>对象中装载着应用程序显示一个通知所需要的所有信息，包括标题、文字、badge、attachment等。</li>
+<li>这里先将参数接收到的闭包回调保存起来，以便之后使用。之后根据接受到的通知生成一个<code>UNMutableNotificationContent</code>对象并保存起来，该对象只是<code>UNNotificationContent</code>的可变版本。我们之后可以对该对象中的内容进行修改，最后再将该对象通过闭包回调传递给系统，以达到修改通知的目的</li>
+<li>在这里我们就可以进行真正的通知修改和一系列逻辑代码的书写了</li>
+<li>在完成所有的逻辑之后，调用闭包回调传递给系统一个<code>UNNotificationContent</code>对象，系统会根据这个对象来显示一个通知</li>
+<li>如果系统在第一个方法中等待了30s，闭包回调还没有被调用，系统就会调用这个函数。该函数是再给你最后一次更新通知数据的机会，系统一旦调用该函数，说明通知扩展系统马上就会被关闭，所以该方法中只能书写一些可以立即完成的逻辑代码，并且一定要在最后调用回调函数，如果第二次函数结束或者通知扩展系统被关闭之前，回调函数还没有被调用，系统就会显示默认的没有经过修改的通知</li>
+</ol>
+<p>另外值得注意的是，如果想要让通知可以被通知扩展处理，那么需要在发送通知的payload的<code>aps</code>字典中添加j键为<code>mutable-content</code>，值为1的键值对，示例payload如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;alert&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;通知标题&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;body&quot;</span>: <span class="string">&quot;通知内容&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;mutable-content&quot;</span>: <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例：修改通知内容并下载数据"><a href="#示例：修改通知内容并下载数据" class="headerlink" title="示例：修改通知内容并下载数据"></a>示例：修改通知内容并下载数据</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> request: UNNotificationRequest, withContentHandler contentHandler: @escaping <span class="params">(UNNotificationContent)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">    <span class="keyword">self</span>.contentHandler = contentHandler</span><br><span class="line">    bestAttemptContent = (request.content.mutableCopy() <span class="keyword">as</span>? <span class="type">UNMutableNotificationContent</span>)</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">self</span>.handleNotification()</span><br><span class="line">&#125;</span><br><span class="line">            </span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">handleNotification</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> content = <span class="keyword">self</span>.bestAttemptContent <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    content.title = content.title.decrypt</span><br><span class="line">    content.body = content.body.decrypt</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> urlPath = request.content.userInfo[<span class="string">&quot;media-url&quot;</span>] <span class="keyword">as</span>? <span class="type">String</span>,</span><br><span class="line">    	<span class="keyword">let</span> url = <span class="type">URL</span>(string: urlPath) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="comment">// 5</span></span><br><span class="line">    <span class="keyword">let</span> destination = <span class="type">URL</span>(fileUrlWithPath: <span class="type">NSTemporaryDirectory</span>().appendingPathComponent(url.lastPathComponent))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="comment">// 6</span></span><br><span class="line">        <span class="keyword">let</span> data = <span class="keyword">try</span> <span class="type">Data</span>(contentOf: url)</span><br><span class="line">        <span class="keyword">try</span> data.write(to: destination)</span><br><span class="line">        <span class="comment">// 7</span></span><br><span class="line">        <span class="keyword">let</span> attachment = <span class="keyword">try</span> <span class="type">UNNotificationAttachment</span>(</span><br><span class="line">            identifier: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            url: destination</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 8</span></span><br><span class="line">        content.attachments = [attachment]</span><br><span class="line">    &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">        <span class="comment">// 9</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 10</span></span><br><span class="line">    <span class="keyword">self</span>.contentHandler?(content)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>为了避免过度嵌套，在第一个方法中，在系统模板代码完成对对象的保存之后，我们调用了一个自定义的方法来完成后续的处理</li>
+<li>首先取得由通知所生成的<code>UNMutableNotificationContent</code>对象，之后就是对该对象中内容的读取与修改</li>
+<li>这里我们假设服务器发来的通知数据是加了密的，通知要显示解密后的数据，修改了通知显示的标题和文本</li>
+<li>检查payload中是否有自定义的文件下载地址</li>
+<li>拼接出一个用来临时存储下载的数据的路径</li>
+<li>下载数据，并将数据暂存到本地</li>
+<li>基于下载的数据创建一个attachment</li>
+<li>将刚创建的attachment附加到要显示的通知内容之上</li>
+<li>如果下载或者文件存储出了错，什么也做不了，只能放弃此次下载，或者修改通知中的文字来提醒用户网络异常等错误</li>
+<li>最后调用保存的<code>contentHandler</code>，将修改后的通知数据交给系统处理</li>
+</ol>
+<h3 id="示例：通知扩展与主target共享数据"><a href="#示例：通知扩展与主target共享数据" class="headerlink" title="示例：通知扩展与主target共享数据"></a>示例：通知扩展与主target共享数据</h3><p>通知扩展与你的主target是两个彼此独立的进程。我们可以通过<code>ApplicationGroups</code>来进行，<code>ApplicationGroups</code>允许我们在多个应用或者扩展之间共享数据</p>
+<p>首先我们需要使能应用的这项能力：</p>
+<ol>
+<li>在<code>Xcode</code>的导航栏中选择你的工程，并点击应用的主target</li>
+<li>选择<code>Signing &amp; Capabilities</code>选项卡，点击左上角的加号按钮添加Capability</li>
+<li>在弹出的Capabilities选择框中选择<code>App Groups</code>并添加</li>
+<li>添加之后会在<code>Signing &amp; Capabilities</code>选项卡中看到一个名字叫做<code>App Group</code>的新section</li>
+<li>在<code>App Group</code>中点击加号按钮，为你要添加的<code>Group</code>设置一个名字，这个名字由<code>group</code>前缀加上你的应用的<code>BundleID</code>组成，代表你要共享该应用下的扩展</li>
+</ol>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/6.jpg"></p>
+<p>我们已经知道，通知时可以通过payload的设置来使应用程序在接收到通知的时候更改对应的 <code>badge</code>值，但是payload中设置的badge值是一个绝对值，应用程序在接收到通知之后，如果看到payload中设置了badge值那么就直接将这个值设置为当前的badge值，而不是采用一种累加的策略。这个样子如果我们想要让远端通知具有增加应用程序的badge的能力，那么远端服务器就不得不追踪所有用户当前应该有的badge数量，这对于服务器还是客户端都是比较难实现的。下面我们会使用通知扩展与主target共享数据来实现一个自增badge的通知。</p>
+<p>首先在主target中做一些扩展</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UserDefaults</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">let</span> suiteName = <span class="string">&quot;group.com.xxx.PushNotifications&quot;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">let</span> extensions = <span class="type">UserDefaults</span>(suiteName: suiteName)!</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> badge: <span class="type">Int</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="type">UserDefaults</span>.extensions.integer(forKey: <span class="string">&quot;badge&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123;</span><br><span class="line">            <span class="type">UserDefaults</span>.extensions.<span class="keyword">set</span>(newValue, forKey: <span class="string">&quot;badge&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该扩展只是为了方便使用<code>UserDefaults</code>将程序的badge存储起来，由于该代码是写在主target中的，而我们想要在通知扩展target中使用上面的代码，所以我们需要进行一些设置，使该文件中的代码可以被主target与通知扩展target同时访问。首先打开这个文件，然后在编辑器右边的<code>File inspector</code>的`Target Membership 中同时勾选两个target，这样会使该文件在编译时暴露给两个target。</p>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/7.jpg"></p>
+<p>然后我们就可以在通知扩展中来处理远程通知发送过来的badge</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">handleNotification</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> content = <span class="keyword">self</span>.bestAttemptContent <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> incr = content.badge <span class="keyword">as</span>? <span class="type">Int</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="keyword">switch</span> incr &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>：</span><br><span class="line">    	<span class="comment">// 2</span></span><br><span class="line">        <span class="type">UserDefaults</span>.extensions.badge = <span class="number">0</span></span><br><span class="line">        content.badge = <span class="number">0</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="comment">// 3</span></span><br><span class="line">        <span class="keyword">let</span> current = <span class="type">UserDefaults</span>.badge</span><br><span class="line">        <span class="keyword">let</span> new = current + incr</span><br><span class="line">        <span class="type">UserDefaults</span>.extensions.badge = new</span><br><span class="line">        content.badge = <span class="type">NSNumber</span>(value: new)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    <span class="keyword">self</span>.contentHandler?(content)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>与上面的方法一样，我们将处理通知的逻辑代码封装到一个方法中，并在该方法的开头确定条件的满足</li>
+<li>我们的逻辑是如果发送的通知中badge设置为0，则说明要对程序的badge进行清空</li>
+<li>如果没有设置0，则将该值与程序中存储的旧的badge值累加，得到新值，再应用这个新值</li>
+<li>最后调用<code>contentHandler</code>回调函数将修改后的通知内容交给系统</li>
+</ol>
+<h2 id="使用通知内容扩展"><a href="#使用通知内容扩展" class="headerlink" title="使用通知内容扩展"></a>使用通知内容扩展</h2><p>在手机收到通知并经过通知服务扩展处理之后，我们可以使用通知内容扩展来自定义通知的UI，并且处理通知中的交互</p>
+<h3 id="创建通知内容扩展"><a href="#创建通知内容扩展" class="headerlink" title="创建通知内容扩展"></a>创建通知内容扩展</h3><ol>
+<li>打开<code>Xcode</code>，在菜单栏中选择<code>File -&gt; New -&gt; Target</code>来创建一个Target</li>
+<li>选择<code>Notification Content Extension</code>并点击下一步创建</li>
+<li>为你的Target输入一个名字，这个名字可以是有意义的任何内容</li>
+<li>点击Finish完成创建，如果Xcode询问你<code>scheme activation</code>相关内容，选择cancel</li>
+</ol>
+<p>通知内容扩展是靠一个唯一的<code>Category Identifier</code>触发的，每一个通知内容扩展都有一个唯一对应的<code>Category Identifier</code>。当发送来的通知payload中有<code>category</code>值时，系统根据这个值去寻找对应的通知内容扩展并应用到这个通知上。在Xcode工程的设置界面，选择一个创建的通知内容扩展Target，然后展开<code>NSExtension</code>项，找到<code>UNNotificationExtensionCategory</code>后修改其值即可为当前的通知内容扩展设置<code>Category Identifier</code></p>
+<p><img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/8.jpg"></p>
+<h3 id="设计通知界面"><a href="#设计通知界面" class="headerlink" title="设计通知界面"></a>设计通知界面</h3><p>我们打开新创建的通知内容扩展Target时，会在其目录中发现默认存在一个<code>storyboard</code>和一个<code>viewController</code>，这里就是我们设计通知UI的地方。这里我们会创建一个可以显示地图的通知界面，服务器在通知信息中携带一个坐标信息，我们接收到通知之后使用坐标信息来初始化地图显示的位置。</p>
+<p>首先在<code>MainInterface.storyboard</code>文件中拖拽一个<code>MKMapView</code>到你的界面中。</p>
+<p>打开<code>NotificationViewController.swift</code>文件，将刚刚拖拽的控件绑定到你的<code>ViewController</code>中，并依据自己的逻辑书写<code>didReceive(_:)</code>方法中的代码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> notification: UNNotification)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">let</span> userInfo = notification.request.content.userInfo</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> latitude = userInfo[<span class="string">&quot;latitude&quot;</span>] <span class="keyword">as</span>? <span class="type">CLLocationDistance</span>,</span><br><span class="line">    	<span class="keyword">let</span> longitude = userInfo[<span class="string">&quot;longitude&quot;</span>] <span class="keyword">as</span>? <span class="type">CLLocationDistance</span>,</span><br><span class="line">    	<span class="keyword">let</span> radius = userInfo[<span class="string">&quot;radius&quot;</span>] <span class="keyword">as</span>? <span class="type">CLLocationDistance</span> <span class="keyword">else</span> &#123;</span><br><span class="line">    	<span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">let</span> location = <span class="type">CLLocation</span>(latitude: latitude, longitude: longitude)</span><br><span class="line">    <span class="keyword">let</span> region = <span class="type">MKCoordinateRegion</span>(center: location.coordinate,</span><br><span class="line">                                    latitudinalMeters: radius,</span><br><span class="line">                                    longitudinalMeters: radius)</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    mapView.setRegion(region, animated: <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>当一个通知到达并经过通知服务扩展的处理（可选）之后，就会调用该方法</li>
+<li>根据参数传入的通知对象拿到payload数据，并视图从中解析出我们自定义提供的内容</li>
+<li>根据payload中的数据初始化一个<code>MKCoordinateRegion</code>对象</li>
+<li>设置通知界面中的<code>MapView</code>的显示区域</li>
+</ol>
+<p>之后在我们远端发送通知Payload来测试通知</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;aps&quot;</span>: &#123;</span><br><span class="line">    	<span class="attr">&quot;alert&quot;</span> : &#123;</span><br><span class="line">    		<span class="attr">&quot;title&quot;</span> : <span class="string">&quot;长按以展开&quot;</span></span><br><span class="line">    	&#125;,</span><br><span class="line">        <span class="comment">// 设置与我们创建的通知内容扩展的Category Identifier一样的category以激活此次通知的内容扩展</span></span><br><span class="line">        <span class="attr">&quot;category&quot;</span> : <span class="string">&quot;ShowMap&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;sound&quot;</span>: <span class="string">&quot;default&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 我们自定义的数据</span></span><br><span class="line">    <span class="attr">&quot;latitude&quot;</span> : <span class="number">-33.859574</span>,</span><br><span class="line">    <span class="attr">&quot;longitude&quot;</span> : <span class="number">151.204576</span>,</span><br><span class="line">    <span class="attr">&quot;radius&quot;</span> : <span class="number">500</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后我们就可以在应用程序中看到对应的通知到达，我们长按这个通知就会使之展开，显示我们自定义的界面</p>
+<img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/9.jpg" style="zoom:40%;">
+
+<p>不过这里还有个小问题，如果你仔细观察这个自定义界面弹出的过程，你会发现这个UI界面的高度并不是一开始就是你在<code>storyboard</code>中设置的高度，而是会以一个你不知道是多少的高度出现，随后又立马变成你设置的高度。这是因为，苹果将通知界面的初始宽度设置为一个与宽度的比值，我们可以在对应的通知内容扩展Target中的<code>Info.plist</code>文件中修改这个比值。打开当前通知内容扩展Target的<code>Info.plist</code>文件，展开<code>NSExtension</code>，你可以看到一个<code>UNNotificationExtensionInitialContentSizeRatio</code>的配置项，其默认值为1，你可以为其设置一个小数值，来指定你的通知UI的高度与宽度之比。</p>
+<h3 id="为通知界面添加按钮或文本输入"><a href="#为通知界面添加按钮或文本输入" class="headerlink" title="为通知界面添加按钮或文本输入"></a>为通知界面添加按钮或文本输入</h3><p>在前面介绍通知代理的时候，我们讲解了如何通过向当前的通知中心中注册一个<code>Category</code>来向某个特定的通知中添加按钮。除此之外，我们还可以通过通知内容扩展来向通知中添加按钮，并且使用通知内容扩展会使按钮的添加更加灵活与高效</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceice</span><span class="params">(<span class="number">_</span> notification: UNNotification)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">let</span> comment = <span class="type">UNTextInputNotificationAction</span>(identifier: <span class="string">&quot;comment&quot;</span>, title: <span class="string">&quot;评论&quot;</span>)</span><br><span class="line">    <span class="keyword">let</span> acceptAction = <span class="type">UNNotificationAction</span>(identifier: <span class="string">&quot;accept&quot;</span>)</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    extensionContext?.notificationActions = [comment, acceptAction]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>因为我们想要让通知刚被展开就有一系列的按钮，所以我们在<code>didReceice(_:)</code>方法中来书写添加按钮的逻辑</li>
+<li>其他的逻辑代码</li>
+<li>创建一系列的Actions，每个action代表一个用户输入，comment是一个文本输入，accept是一个按钮。如果你给一个通知只创建了一个文本输入的时候，那么当通知被展开是，这个文本输入框会自动被设置为<code>FirstResponder</code>对象，键盘会直接自动弹出。</li>
+<li>通过类中个属性<code>extensionContext</code>来获取到当前显示的通知，将我们创建的action设置进去</li>
+</ol>
+<h3 id="处理用户与通知的交互"><a href="#处理用户与通知的交互" class="headerlink" title="处理用户与通知的交互"></a>处理用户与通知的交互</h3><p>通知内容扩展对应的控制器中有两个方法值得我们注意，一个是<code>didReceive(_:)</code>，这个我们前面已经了解并使用过了，另外一个是<code>didReceive(_:completionHandler:)</code>。前一个方法是在通知将要显示到手机上之前调用，以供我们在这个方法中配置通知的UI和其他信息；后一个方法会在用户点击了按钮或者输入了文本之后调用，以供我们的应用对用户的交互做出反应。下面我们使用这个方法来响应用户的输入</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> response: UNNotificationResponse, completionHandler completion: @escaping <span class="params">(UNNotificationContentExtensionResponseOption)</span></span></span>-&gt;<span class="type">Void</span>) &#123;</span><br><span class="line">    <span class="keyword">switch</span> response.actionIdetifier &#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;comment&quot;</span>:</span><br><span class="line">        <span class="keyword">let</span> res = response <span class="keyword">as</span>! <span class="type">UNTextInputNotificationResponse</span></span><br><span class="line">        handleUserText(res.text)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;accept&quot;</span>:</span><br><span class="line">       	<span class="comment">// 3</span></span><br><span class="line">        handleUserAccept()</span><br><span class="line">        <span class="comment">// 4</span></span><br><span class="line">        <span class="keyword">let</span> refuseAction = <span class="type">UNNotificationAction</span>(identifier:<span class="string">&quot;refuse&quot;</span>, title:<span class="string">&quot;拒绝&quot;</span>)</span><br><span class="line">        <span class="comment">// 5</span></span><br><span class="line">        <span class="keyword">let</span> currentActions = extensionContext?.notificationActions ?? []</span><br><span class="line">        extensionContext?.notificationActions = currentActions.<span class="built_in">map</span> &#123;</span><br><span class="line">            $<span class="number">0</span>.identifier == <span class="string">&quot;accept&quot;</span> ? cancelAction : $<span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// 6</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;refuse&quot;</span>:</span><br><span class="line">        handleUserRefuse()</span><br><span class="line">        <span class="keyword">let</span> acceptAction = <span class="type">UNNotificationAction</span>(identifier: <span class="string">&quot;accept&quot;</span>, title: <span class="string">&quot;接受&quot;</span>)</span><br><span class="line">        <span class="keyword">let</span> currentActions = extensionContext?.notificationActions ?? []</span><br><span class="line">        extensionContext?.notificationActions = currentActions.<span class="built_in">map</span> &#123;</span><br><span class="line">            $<span class="number">0</span>.identifier == <span class="string">&quot;refuse&quot;</span> ? acceptAction : $<span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 7</span></span><br><span class="line">    completion(.doNotDismiss)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>该方法会在用户响应通知的输入之后调用，第一个参数使用户的交互响应对象，第二个参数是一个回调闭包，作用是用于通知系统已经完成对用户输入的响应，我们需要在代码逻辑结束之后调用这个回调函数</li>
+<li>如果我们收到的是文字响应，就取出文字对其进行处理，比如网络请求</li>
+<li>如果用户点击了接受按钮，那么就先调用函数发送网络请求</li>
+<li>然后创建一个拒绝按钮</li>
+<li>将通知中的接受按钮替换为接受按钮</li>
+<li>如果用户点击了拒绝按钮，则与接受按钮类似，先发送网络请求再将拒绝按钮替换为接受按钮</li>
+<li>在方法的最后，调用completion回调函数，并传入一个枚举值。这个枚举常见有三个值：<code>dismiss</code>代表立即清理通知、<code>doNotDismiss</code>代表让通知还保持被展开为自定义UI的状态、<code>dimissAndForwardAction</code>代表让通知收缩成原始未被展开为自定义UI的状态</li>
+</ol>
+<h3 id="自定义的用户输入界面"><a href="#自定义的用户输入界面" class="headerlink" title="自定义的用户输入界面"></a>自定义的用户输入界面</h3><p>上文中我们为了让用户可以在通知界面中与应用进行交互创建了一系列的Action，这些Action都是以系统自定义的UI而展现的，而这有时并不符合我们的要求，苹果还为我们提供了一种可以自定义用户输入的UI界面的方式。</p>
+<p>首先我们给通知添加一个系统原生的按钮，用来触发自定义的用户输入界面的显示</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> request: notification: UNNotification)</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">let</span> pay = <span class="type">UNNotificationAction</span>(identifier: <span class="string">&quot;pay&quot;</span>, title: <span class="string">&quot;支付&quot;</span>)</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    extensionContext?.notificationActions = [pay]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>随后在用户点击按钮之后，将该通知设置为应用的<code>First Responder</code>。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="keyword">var</span> canBecameFirstResponder: <span class="type">Bool</span> &#123; <span class="keyword">return</span> <span class="literal">true</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> response: UNNotificationResponse, completionHandler completion: @escaping <span class="params">(UNNotificationContentExtensionResponseOption)</span></span></span>-&gt;<span class="type">Void</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> response.actionIndetifier == <span class="string">&quot;pay&quot;</span> &#123;</span><br><span class="line">        becomeFirstResponder()</span><br><span class="line">    &#125;</span><br><span class="line">    completion(.doNotDismiss)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你将代表通知内容的<code>ViewController</code>设置为了<code>First Responder</code>，iOS系统就会自动访问该<code>ViewController</code>的<code>inputView</code>属性，并把返回值作为该通知的自定义的用户输入，所以我们需要重新<code>inputView</code>这个属性，并返回我们自定义的交互界面。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="keyword">private</span> <span class="built_in">lazy</span> <span class="keyword">var</span> customPayView: <span class="type">PayView</span> = &#123;</span><br><span class="line">    <span class="keyword">let</span> payView = <span class="type">PayView</span>()</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    payView.onPayFinished = &#123;[<span class="keyword">weak</span> <span class="keyword">self</span>] <span class="keyword">in</span> </span><br><span class="line">    	<span class="keyword">self</span>?.resignFirstResponder()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> payView</span><br><span class="line">&#125;()</span><br><span class="line"><span class="comment">// 3</span></span><br><span class="line"><span class="keyword">override</span> <span class="keyword">var</span> inputView: <span class="type">UIView?</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> customPayView</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>为了提升性能，自定义的用户输入界面使用懒加载的方式初始化</li>
+<li>在自定义的输入界面中完成了交互之后，调用<code>resignFirstResponder</code>，iOS系统会隐藏这个自定义的界面，继续回到原始的自定义通知的状态</li>
+<li>重写<code>inputView</code>属性，返回我们的自定义界面</li>
+</ol>
+<p>这些工作全部做完之后，发送一个通知，在系统中收到通知之后长按这个通知出现了自定义的通知界面以及界面下方的<code>支付</code>按钮，点击界面下方的<code>支付</code>按钮，之后就可以看到系统的<code>Action</code>消失不见，取而代之的是我们自定义的输入界面出现在自定义通知界面下方。当我们点击界面上的按钮完成交互之后，就会调用对应的闭包，由于上面的代码我们在闭包中执行了<code>resignFirstResponder</code>方法，所以自定义的输入界面就会消失，取而代之的是系统的<code>Action</code>出现在自定义通知界面的下方。</p>
+<img src="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/10.jpg" style="zoom:30%;">
+
+<h3 id="隐藏系统默认元素"><a href="#隐藏系统默认元素" class="headerlink" title="隐藏系统默认元素"></a>隐藏系统默认元素</h3><p>仔细观看上一张图片可以发现，在自定义界面的下方，还会存在着原始通知的<code>title</code>和<code>body</code>（<code>The Sydney Observatory</code>），如果你不想要这个默认显示的元素，需要在通知内容扩展Target中的<code>Info.plist</code>文件中做修改。打开<code>Info.plist</code>文件，展开<code>NSExtension</code>行，再展开<code>NSExtensionAttributes</code>行，找到一个叫做<code>UNNotificatinoExtensionDefaultContentHidden</code>的布尔型属性，将其值更改为<code>YES</code>即可。</p>
+<h3 id="使自定义通知界面可交互"><a href="#使自定义通知界面可交互" class="headerlink" title="使自定义通知界面可交互"></a>使自定义通知界面可交互</h3><p>默认情况下，自定义通知界面不支持触摸交互，如果你像要在你自定义的通知界面中支持用户触摸交互，需要修改通知内容扩展Target中的<code>Info.plist</code>文件。打开<code>Info.plist</code>文件，展开<code>NSExtension</code>行，再展开<code>NSExtensionAttributes</code>行，添加一个名字叫做<code>UNNotificationExtensionUserInteractionEnabled</code>的布尔型属性，并将其值设置为<code>YES</code></p>
+<h3 id="在通知内容扩展中启动APP"><a href="#在通知内容扩展中启动APP" class="headerlink" title="在通知内容扩展中启动APP"></a>在通知内容扩展中启动APP</h3><p>在你的自定义通知界面上提供一个按钮，当用户点击这个按钮的时候启动对应的应用，这是一个再正常不过的需求，苹果也提供了非常简单的实现方式。当你在通知内容扩展的Target中执行以下代码的时候，该通知内容扩展进程就会结束，转而启动应用并调用应用中的通知代理方法<code>userNotifcationCenter(_:didReceive:withCompletionHandler:)</code>方法通知应用已经因为通知被启动。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extensionContext?.performNotificationDefaultAction()</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本篇文章从零开始讲解了iOS远程通知的基本所有的知识。首先我们认识了iOS应用中一个远程通知是如何从服务器发送到手机上的，也就是iOS远程通知的工作流程，介绍了与远程推送通知相关的<code>Payload</code>与<code>HTTPHeader</code>，还提供了一个最基础的远程通知案例；之后我们介绍了通知代理的使用，我们可以使用通知代理来处理用户点击通知打开应用的行为、为通知添加一些基本的按钮等；然后我们又介绍了通知服务扩展，我们可以使用服务通知扩展来完成类似中间件的任务，在通知真正到达手机之前对通知的内容进行一些修改或者发起一些网络请求等动作；最后我们介绍了通知内容代理，我们可以使用通知内容代理给通知设置一个自定义的UI界面，并且可以灵活的管理其中的按钮以及用户交互。在介绍这些与远程通知相关的特性的时候，中间穿插着许多小案例，这些案例所实现的功能是非常有用的，比如使通知中的<code>badge</code>可以累加到本地应用中的<code>badge</code>之上，你在这篇文章中除了可以学习关于iOS远程通知的API特性之外，还可以学到很多使用这些特性来解决一些问题的思想。看完了这篇文章即使发现自己记不住这些东西也没有问题，只要对文章的内容有一个印象，如果遇到问题及时来查阅就可以，本篇文章分章脉络清晰，就是为了可以让你快速找到你想要的答案。我是六游，现在我走了！</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/10/18/Kingfisher%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Kingfisher源码阅读</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/">
+        <span>Alamofire源码解析专栏（4）- 请求发起流程</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/08/18/iOS%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E5%85%A8%E8%A7%A3%E6%9E%90/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Payload"><span class="toc-number">1.</span> <span class="toc-text">Payload</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84alert%E6%8E%A8%E9%80%81Payload"><span class="toc-number">1.1.</span> <span class="toc-text">一个最基本的alert推送Payload</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%BB%84%E9%80%9A%E7%9F%A5"><span class="toc-number">1.2.</span> <span class="toc-text">分组通知</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Badge"><span class="toc-number">1.3.</span> <span class="toc-text">Badge</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E7%9F%A5%E5%A3%B0%E9%9F%B3"><span class="toc-number">1.4.</span> <span class="toc-text">通知声音</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE"><span class="toc-number">1.5.</span> <span class="toc-text">自定义数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-Header"><span class="toc-number">2.</span> <span class="toc-text">HTTP Header</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0%E9%80%9A%E7%9F%A5%E8%83%BD%E5%8A%9B"><span class="toc-number">3.</span> <span class="toc-text">为项目添加通知能力</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%BC%94%E7%A4%BA%E5%9F%BA%E6%9C%AC%E7%9A%84%E8%BF%9C%E7%A8%8B%E6%8E%A8%E9%80%81"><span class="toc-number">4.</span> <span class="toc-text">代码演示基本的远程推送</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E6%8E%88%E6%9D%83"><span class="toc-number">4.1.</span> <span class="toc-text">请求授权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E8%BF%94%E5%9B%9E%E7%9A%84token"><span class="toc-number">4.2.</span> <span class="toc-text">处理返回的token</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%80%9A%E7%9F%A5%E4%BB%A3%E7%90%86"><span class="toc-number">5.</span> <span class="toc-text">使用通知代理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%A4%84%E4%BA%8E%E5%89%8D%E5%8F%B0%E6%97%B6%E9%80%9A%E7%9F%A5%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">应用处于前台时通知的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E9%80%9A%E7%9F%A5%E8%A2%AB%E7%82%B9%E5%87%BB%E8%80%8C%E5%90%AF%E5%8A%A8%E5%BA%94%E7%94%A8"><span class="toc-number">5.2.</span> <span class="toc-text">处理通知被点击而启动应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E9%BB%98%E9%80%9A%E7%9F%A5"><span class="toc-number">5.3.</span> <span class="toc-text">静默通知</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%A6%E6%9C%89%E6%8C%89%E9%92%AE%E7%9A%84%E9%80%9A%E7%9F%A5"><span class="toc-number">5.4.</span> <span class="toc-text">带有按钮的通知</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%80%9A%E7%9F%A5%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95"><span class="toc-number">6.</span> <span class="toc-text">使用通知服务扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%B9%B6%E4%BD%BF%E8%83%BD%E9%80%9A%E7%9F%A5%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95"><span class="toc-number">6.1.</span> <span class="toc-text">创建并使能通知服务扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E4%BF%AE%E6%94%B9%E9%80%9A%E7%9F%A5%E5%86%85%E5%AE%B9%E5%B9%B6%E4%B8%8B%E8%BD%BD%E6%95%B0%E6%8D%AE"><span class="toc-number">6.2.</span> <span class="toc-text">示例：修改通知内容并下载数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E9%80%9A%E7%9F%A5%E6%89%A9%E5%B1%95%E4%B8%8E%E4%B8%BBtarget%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE"><span class="toc-number">6.3.</span> <span class="toc-text">示例：通知扩展与主target共享数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%80%9A%E7%9F%A5%E5%86%85%E5%AE%B9%E6%89%A9%E5%B1%95"><span class="toc-number">7.</span> <span class="toc-text">使用通知内容扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%80%9A%E7%9F%A5%E5%86%85%E5%AE%B9%E6%89%A9%E5%B1%95"><span class="toc-number">7.1.</span> <span class="toc-text">创建通知内容扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E9%80%9A%E7%9F%A5%E7%95%8C%E9%9D%A2"><span class="toc-number">7.2.</span> <span class="toc-text">设计通知界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E9%80%9A%E7%9F%A5%E7%95%8C%E9%9D%A2%E6%B7%BB%E5%8A%A0%E6%8C%89%E9%92%AE%E6%88%96%E6%96%87%E6%9C%AC%E8%BE%93%E5%85%A5"><span class="toc-number">7.3.</span> <span class="toc-text">为通知界面添加按钮或文本输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E7%94%A8%E6%88%B7%E4%B8%8E%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="toc-number">7.4.</span> <span class="toc-text">处理用户与通知的交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E7%94%A8%E6%88%B7%E8%BE%93%E5%85%A5%E7%95%8C%E9%9D%A2"><span class="toc-number">7.5.</span> <span class="toc-text">自定义的用户输入界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E7%B3%BB%E7%BB%9F%E9%BB%98%E8%AE%A4%E5%85%83%E7%B4%A0"><span class="toc-number">7.6.</span> <span class="toc-text">隐藏系统默认元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E8%87%AA%E5%AE%9A%E4%B9%89%E9%80%9A%E7%9F%A5%E7%95%8C%E9%9D%A2%E5%8F%AF%E4%BA%A4%E4%BA%92"><span class="toc-number">7.7.</span> <span class="toc-text">使自定义通知界面可交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E9%80%9A%E7%9F%A5%E5%86%85%E5%AE%B9%E6%89%A9%E5%B1%95%E4%B8%AD%E5%90%AF%E5%8A%A8APP"><span class="toc-number">7.8.</span> <span class="toc-text">在通知内容扩展中启动APP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

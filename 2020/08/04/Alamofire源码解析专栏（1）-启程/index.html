@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Alamofire源码解析专栏（1）- 启程 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/">Alamofire源码解析专栏（1）- 启程</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-08-04
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-08-08
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Alamofire源码解析专栏（1）- 启程&url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Alamofire源码解析专栏（1）- 启程&url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/&title=Alamofire源码解析专栏（1）- 启程" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Alamofire源码解析专栏（1）- 启程&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/&text=Alamofire源码解析专栏（1）- 启程" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Alamofire源码解析专栏文章地址"><a href="#Alamofire源码解析专栏文章地址" class="headerlink" title="Alamofire源码解析专栏文章地址"></a>Alamofire源码解析专栏文章地址</h2><ul>
+<li><a href="../../../../../2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/#more">Alamofire源码解析专栏（1）- 启程</a></li>
+<li><a href="../../../../../2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/#more">Alamofire源码解析专栏（2）- Request</a></li>
+<li><a href="../../../../../2020/08/07/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%883%EF%BC%89-SessionDelegate/#more">Alamofire源码解析专栏（3）- SessionDelegate</a></li>
+<li><a href="../../../../../2020/08/08/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%884%EF%BC%89-%E8%AF%B7%E6%B1%82%E5%8F%91%E8%B5%B7%E6%B5%81%E7%A8%8B/#more">Alamofire源码解析专栏（4）- 请求发起流程</a></li>
+</ul>
+<p><br><br></p>
+<p>Alamofire是Swift最流行的网络请求框架，其简易的使用方法和强大的可定制能力使得框架本身备受iOS开发人员的喜爱。我在使用这个框架的时候经常会产生这样的好奇：这个框架到底是通过什么样的方式去管理如此庞大的网络请求系统的？又是如何给每一个请求提供了高定制化的接口的？于是这样的好奇心驱使我给自己开了个新坑，没错，就是这个Alamofire框架源码阅读专栏，不知道自己是否能够坚持下来把所有东西都写完，但是我会尽量努力。本篇是Alamlfire源码阅读专栏的开篇，主要介绍了框架程序的入口，Session类中的成员属性以及一些进一步阅读源码之前需要了解的小组件</p>
+<h2 id="程序入口"><a href="#程序入口" class="headerlink" title="程序入口"></a>程序入口</h2><p>程序的入口存在于Alamofire.swift文件之中，该文件中只有简简单单的一行代码，将Session类的一个default单例赋值给了AF这个常量变量。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> <span class="type">AF</span> = <span class="type">Session</span>.<span class="keyword">default</span></span><br></pre></td></tr></table></figure>
+<p>经常使用Alamofire的朋友们看到这一行代码可能就会感觉到自己已经到达了Alamofire宇宙的大门前了。我们在平常使用的过程中，经常使用AF.request这样的代码去发起一个请求，实际上是在调用Session类实例的方法，Session是Alamofire中的一个核心入口类，该类定义在Session.swift文件中。Session这个类在Alamofire中主要负责创建/发起请求、管理请求、响应URLSession的代理方法、管理URLSession、响应/发起Alamofire系统中的各种通知等，从它的职责就可以看到这个类是Alamofire中的核心类，事实也确实是这样，Session类管理的所有请求的整个生命周期，所以我们阅读源码也要围绕这个类去展开，但是不用着急地去死磕这个类的源码，因为Session的源码中包含了许多与外围组件交互的代码，直接去死磕这样一个类是很难理解的。跟随我的脚步，我会一步步带你逐渐深入Alamofire</p>
+<h2 id="Session类中的实例变量"><a href="#Session类中的实例变量" class="headerlink" title="Session类中的实例变量"></a>Session类中的实例变量</h2><p>这里我们主要先简要介绍一下Session类中的实例变量，只是为了对其有个印象，有些实例变量你可能看不懂是什么意思或者什么作用，不要去纠结，看不懂的直接跳过，只需要对这些属性有个大概的印象，之后用到了这些属性再回来看，你就能很清楚每个属性的作用了</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Session类的共享单例对象 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> `<span class="keyword">default</span>` = <span class="type">Session</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 一个Session中持有一个URLSession对象，底层使用这个URLSession发起各种请求 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> session: <span class="type">URLSession</span></span><br><span class="line"><span class="comment">/* 处理URLSession的代理方法的一个类，其本身实现了URLSessionDelegate、URLSessionDataDelegate、URLSessionDownloadDelegate等多个原生Session代理协议 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> delegate: <span class="type">SessionDelegate</span></span><br><span class="line"><span class="comment">/* rootQueue用来执行所有内部的回调方法和状态更新操作，必须是串行队列（为了保证对资源操作的有序性） */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> rootQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 下面这个值决定实例是否对所有创建的request自动调用resume()，如果为true则会在request创建完成后自动立马调用resume方法 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> startRequestsImmediately: <span class="type">Bool</span></span><br><span class="line"><span class="comment">/* 用来异步创建URLRequest的queue，默认情况直接使用上面的rootQueue，如果创建URLRequest成为了你的系统的瓶颈可以尝试引入另外一个附加的queue */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> requestQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 用来序列化请求响应数据的queue，默认情况直接使用上面的rootQueue，如果对response的序列化成为了你的系统的瓶颈，可以尝试引入一个附加的queue */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> serializationQueue: <span class="type">DispatchQueue</span></span><br><span class="line"><span class="comment">/* 全局的请求拦截器，可以在请求发出前或者响应前做出一些判断，并根据需要拦截或者放行请求。 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> interceptor: <span class="type">RequestInterceptor?</span></span><br><span class="line"><span class="comment">/* 全局的证书验证器 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> serverTrustManager: <span class="type">ServerTrustManager?</span></span><br><span class="line"><span class="comment">/* 全局的请求重定向处理器，当一个请求被系统代理告知需要重定向，而请求又没有自己的一个重定向处理器的时候，就会调用全局的处理器来处理重定向 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> redirectHandler: <span class="type">RedirectHandler?</span></span><br><span class="line"><span class="comment">/* 全局的缓存处理器，响应请求所产生的缓存 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> cachedResponseHandler: <span class="type">CachedResponseHandler?</span></span><br><span class="line"><span class="comment">/* 事件监听器，是一个集中的事件分发中心 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> eventMonitor: <span class="type">CompositeEventMonitor</span></span><br><span class="line"><span class="comment">/* 默认的事件监听器订阅者列表，事件监听器中的所有订阅者由默认的订阅者加初始化传入的监听者组成 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> defaultEventMonitors: [<span class="type">EventMonitor</span>] = [<span class="type">AlamofireNotifications</span>()]</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 内部的map，存储着创建的Request与对应的URLSessionTask之间的映射 */</span></span><br><span class="line"><span class="keyword">var</span> requestTaskMap = <span class="type">RequestTaskMap</span>()</span><br><span class="line"><span class="comment">/* 一个set，存储这当前活跃的（还未被关闭）的所有request */</span></span><br><span class="line"><span class="keyword">var</span> activeRequests: <span class="type">Set</span>&lt;<span class="type">Request</span>&gt; = []</span><br><span class="line"><span class="comment">/*  */</span></span><br><span class="line"><span class="keyword">var</span> waitingCompletions: [<span class="type">URLSessionTask</span>: () -&gt; <span class="type">Void</span>] = [:]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Session类中的入口方法"><a href="#Session类中的入口方法" class="headerlink" title="Session类中的入口方法"></a>Session类中的入口方法</h2><p>前面说到我们使用AF.request()这样的方式来发起一个请求，这样做实际上是调用的Session的request实例方法，接下来我们就来看一下这个实例方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="number">_</span> convertible: URLConvertible,</span></span></span><br><span class="line"><span class="function"><span class="params">                method: HTTPMethod = .<span class="keyword">get</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                parameters: Parameters? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                encoding: ParameterEncoding = URLEncoding.<span class="keyword">default</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                headers: HTTPHeaders? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                interceptor: RequestInterceptor? = <span class="literal">nil</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                requestModifier: RequestModifier? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">DataRequest</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> convertible = <span class="type">RequestConvertible</span>(url: convertible,</span><br><span class="line">                                        method: method,</span><br><span class="line">                                        parameters: parameters,</span><br><span class="line">                                        encoding: encoding,</span><br><span class="line">                                        headers: headers,</span><br><span class="line">                                        requestModifier: requestModifier)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> request(convertible, interceptor: interceptor)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个方法是非常的简单，但是使用到了许多我们不知道的类型，接下来主要介绍这个方法中出现的一些类型以及这些类型的作用，这也是这篇文章主要分析的地方</p>
+<h3 id="URLConvertible"><a href="#URLConvertible" class="headerlink" title="URLConvertible"></a>URLConvertible</h3><p>URLConvertible是一个协议类型，其定义了一类可以通过asURL方法转换为系统原生URL的对象，协议定义如下</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">URLConvertible</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">asURL</span><span class="params">()</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URL</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了定义了这个协议，Alamofire中还对系统原生类做了URLConvertible的扩展。比如：Alamofire将原生的String扩展为URLConvertible类型，这样我们就可以直接使用URL字符串来发起请求，使得从外部调用方法发起一个请求变得十分的简便</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">String</span>: <span class="title">URLConvertible</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">asURL</span><span class="params">()</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URL</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> url = <span class="type">URL</span>(string: <span class="keyword">self</span>) <span class="keyword">else</span> &#123; <span class="keyword">throw</span> <span class="type">AFError</span>.invalidURL(url: <span class="keyword">self</span>) &#125;</span><br><span class="line">        <span class="keyword">return</span> url</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">URL</span>: <span class="title">URLConvertible</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">asURL</span><span class="params">()</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URL</span> &#123; <span class="keyword">self</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种Convertible的模式是一种值得学习的思想，它可以将一个类型与几个其他相关的类型以一种非常优雅的方式关联起来，即几个其他相关类型可以非常便捷的转换为一个目标类型。Alamofire中还有许多运用到了这种思想的地方，等我们遇到的时候再说</p>
+<h3 id="HTTPMethod"><a href="#HTTPMethod" class="headerlink" title="HTTPMethod"></a>HTTPMethod</h3><p>这个类型很好理解，就像名字那样，HTTPMethod是用来表示HTTP请求的方法的类型，其本身是一个结构体，只是通过多个静态变量，将请求方法字符串与各个变量对应起来，这样在使用的时候就不容易出错。至于为什么使用了结构体而不是用枚举，我想大概是因为使用结构体更易定制化，如果这里有使用一些比较不常见的方法的需求时，可以直接重新创建一个结构体的实例来表示这个方法</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">HTTPMethod</span>: <span class="title">RawRepresentable</span>, <span class="title">Equatable</span>, <span class="title">Hashable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> connect = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;CONNECT&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> delete = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;DELETE&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> <span class="keyword">get</span> = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;GET&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> head = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;HEAD&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> options = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;OPTIONS&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> patch = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;PATCH&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> post = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;POST&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> put = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;PUT&quot;</span>)</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> trace = <span class="type">HTTPMethod</span>(rawValue: <span class="string">&quot;TRACE&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> rawValue: <span class="type">String</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(rawValue: <span class="type">String</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.rawValue = rawValue</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="parameters"><a href="#parameters" class="headerlink" title="parameters"></a>parameters</h3><p>这个非常简单，就是一个String-Any类型的字典，用来接收用户这次请求想要传递的参数</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Parameters</span> = [<span class="type">String</span>: <span class="type">Any</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="ParameterEncoding"><a href="#ParameterEncoding" class="headerlink" title="ParameterEncoding"></a>ParameterEncoding</h3><p>ParameterEncoding是一个协议类型，该协议中只定义了一个encode方法，该方法实际的作用是将给定的参数parameters按照某种特定的策略编码，并将编码后的数据放到request合适的位置（比如get请求放到URL中，post请求经常需要将数据放到body中）</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">ParameterEncoding</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(<span class="number">_</span> urlRequest: URLRequestConvertible, with parameters: Parameters?)</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URLRequest</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过编码这件事情听起来简单，但其实需要处理很多细节，所以Alamofire这样完备的框架一定不会只提供一个协议让你自己去实现，相反，你在日常开发中几乎不需要自定义ParameterEncoding的协议实现，Alamofire系统中提供的两个遵循协议的结构体基本可以满足我们日常开发中的需求。这两个结构体分别是URLEncoding与JSONEncoding，我们先来分析URLEncoding的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 在结构体的开头先定义了一系列内部类型 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">URLEncoding</span>: <span class="title">ParameterEncoding</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 该类型表示编码后的数据会被添加到哪里去 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Destination</span> </span>&#123;</span><br><span class="line">        <span class="comment">/* methodDependent表示会依靠方法来确定编码后的数据会添加到哪里，如果是GET，DELETE，HEAD则会将数据添加到URL末尾，其他方法则会添加到HTTP Body中，这个是默认的 */</span></span><br><span class="line">        <span class="keyword">case</span> methodDependent</span><br><span class="line">        <span class="comment">/* 将编码后的结果添加到已经存在的URL的末尾作为Query String */</span></span><br><span class="line">        <span class="keyword">case</span> queryString</span><br><span class="line">        <span class="comment">/* 将编码后的结果添加到request的HTTP Body中 */</span></span><br><span class="line">        <span class="keyword">case</span> httpBody</span><br><span class="line">        <span class="comment">// 返回数据是否会被直接添加到URL中</span></span><br><span class="line">        <span class="function"><span class="keyword">func</span> <span class="title">encodesParametersInURL</span><span class="params">(<span class="keyword">for</span> method: HTTPMethod)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">            <span class="keyword">switch</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> .methodDependent: <span class="keyword">return</span> [.<span class="keyword">get</span>, .head, .delete].<span class="built_in">contains</span>(method)</span><br><span class="line">            <span class="keyword">case</span> .queryString: <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">            <span class="keyword">case</span> .httpBody: <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 该类型表示对于数组类型的参数如何进行编码</span></span><br><span class="line">    <span class="comment">/// 例如：[&quot;arr&quot;: [1,2,3]]这样的参数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">ArrayEncoding</span> </span>&#123;</span><br><span class="line">        <span class="comment">/// 该值表示编码时键后面都会跟一个方括号：arr[]=0&amp;arr[]=1&amp;arr[]=2</span></span><br><span class="line">        <span class="keyword">case</span> brackets</span><br><span class="line">        <span class="comment">/// 按照键本身来编码：arr=0&amp;arr=1&amp;arr=2</span></span><br><span class="line">        <span class="keyword">case</span> noBrackets</span><br><span class="line">        <span class="comment">/// 输入键，输出编码后的键名</span></span><br><span class="line">        <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(key: String)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">            <span class="keyword">switch</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> .brackets:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;\(key)[]&quot;</span></span><br><span class="line">            <span class="keyword">case</span> .noBrackets:</span><br><span class="line">                <span class="keyword">return</span> key</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 该类型表示对于布尔类型的参数如何进行编码</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">BoolEncoding</span> </span>&#123;</span><br><span class="line">        <span class="comment">/// true编码为1，false编码为0</span></span><br><span class="line">        <span class="keyword">case</span> numeric</span><br><span class="line">        <span class="comment">/// true编码为“true”， false编码为“false”</span></span><br><span class="line">        <span class="keyword">case</span> literal</span><br><span class="line">        <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(value: Bool)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">            <span class="keyword">switch</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> .numeric:</span><br><span class="line">                <span class="keyword">return</span> value ? <span class="string">&quot;1&quot;</span> : <span class="string">&quot;0&quot;</span></span><br><span class="line">            <span class="keyword">case</span> .literal:</span><br><span class="line">                <span class="keyword">return</span> value ? <span class="string">&quot;true&quot;</span> : <span class="string">&quot;false&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们来看URLEncoding结构体的具体实现</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">URLEncoding</span>: <span class="title">ParameterEncoding</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 以下三个都是该类的单例，default返回所有策略都默认的URLEncoding对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> `<span class="keyword">default</span>`: <span class="type">URLEncoding</span> &#123; <span class="type">URLEncoding</span>() &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> queryString: <span class="type">URLEncoding</span> &#123; <span class="type">URLEncoding</span>(destination: .queryString) &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> httpBody: <span class="type">URLEncoding</span> &#123; <span class="type">URLEncoding</span>(destination: .httpBody) &#125;</span><br><span class="line">    <span class="comment">/// 以下三个变量存储上述帮助类型，是三种不同的编码策略。分别是编码数据存储的位置，数组的编码策略，布尔值的编码策略</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> destination: <span class="type">Destination</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> arrayEncoding: <span class="type">ArrayEncoding</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> boolEncoding: <span class="type">BoolEncoding</span></span><br><span class="line">    <span class="comment">/// 初始化方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(destination: <span class="type">Destination</span> = .methodDependent,</span><br><span class="line">                arrayEncoding: <span class="type">ArrayEncoding</span> = .brackets,</span><br><span class="line">                boolEncoding: <span class="type">BoolEncoding</span> = .numeric) &#123;</span><br><span class="line">        <span class="keyword">self</span>.destination = destination</span><br><span class="line">        <span class="keyword">self</span>.arrayEncoding = arrayEncoding</span><br><span class="line">        <span class="keyword">self</span>.boolEncoding = boolEncoding</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 实现了ParameterEncoding协议，声明了encode方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(<span class="number">_</span> urlRequest: URLRequestConvertible, with parameters: Parameters?)</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URLRequest</span> &#123;</span><br><span class="line">        <span class="comment">// 拿到URLRequest与parameters</span></span><br><span class="line">        <span class="keyword">var</span> urlRequest = <span class="keyword">try</span> urlRequest.asURLRequest()</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> parameters = parameters <span class="keyword">else</span> &#123; <span class="keyword">return</span> urlRequest &#125;</span><br><span class="line">        <span class="comment">// 首先根据destination策略，决定将编码后的数据放入url中还是http body中</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> method = urlRequest.method, destination.encodesParametersInURL(<span class="keyword">for</span>: method) &#123;</span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> url = urlRequest.url <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="type">AFError</span>.parameterEncodingFailed(reason: .missingURL)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 对参数进行各种拼接操作，拼接为queryString的格式</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">var</span> urlComponents = <span class="type">URLComponents</span>(url: url, resolvingAgainstBaseURL: <span class="literal">false</span>), !parameters.isEmpty &#123;</span><br><span class="line">                <span class="keyword">let</span> percentEncodedQuery = (urlComponents.percentEncodedQuery.<span class="built_in">map</span> &#123; $<span class="number">0</span> + <span class="string">&quot;&amp;&quot;</span> &#125; ?? <span class="string">&quot;&quot;</span>) + query(parameters)</span><br><span class="line">                urlComponents.percentEncodedQuery = percentEncodedQuery</span><br><span class="line">                urlRequest.url = urlComponents.url</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 在这里我们可以看到，如果我们使用URLEncoding的方式发送http body数据，是使用x-www-form-urlencoded的编码方式发送的</span></span><br><span class="line">            <span class="keyword">if</span> urlRequest.value(forHTTPHeaderField: <span class="string">&quot;Content-Type&quot;</span>) == <span class="literal">nil</span> &#123;</span><br><span class="line">                urlRequest.setValue(<span class="string">&quot;application/x-www-form-urlencoded; charset=utf-8&quot;</span>, forHTTPHeaderField: <span class="string">&quot;Content-Type&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            urlRequest.httpBody = <span class="type">Data</span>(query(parameters).utf8)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> urlRequest</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>先拿到urlRequest与parameters对象</li>
+<li>让destination策略来决定编码后的数据应该被放入url中还是httpBody中</li>
+<li>如果应该被放入url中，那么就调用帮助函数query，将参数编码为queryString的格式，最后与原URL进行拼接，最后再将拼接好的url设置进request。注意urlComponents.percentEncodedQuery是在拿URL中原本就拥有的queryString，如果原本的url中存在一些queryString，那么就会将旧的和新的一起拼接起来</li>
+<li>如果数据是应该被放入httpBody中的，那么就会将request的Content-Type的Head设置为application/x-www-form-urlencoded，并且使用帮助函数query将参数转为queryString之后将字符串转为data，并放入http的body中</li>
+</ol>
+<p>接下来让我们来看一下上面的encode方法中所用到的工具函数吧</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 该方法将参数字典，转换为queryString的形式</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">query</span><span class="params">(<span class="number">_</span> parameters: [String: <span class="keyword">Any</span>])</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> components: [(<span class="type">String</span>, <span class="type">String</span>)] = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> parameters.keys.sorted(by: &lt;) &#123;</span><br><span class="line">        <span class="keyword">let</span> value = parameters[key]!</span><br><span class="line">        components += queryComponents(fromKey: key, value: value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> components.<span class="built_in">map</span> &#123; <span class="string">&quot;\($0)=\($1)&quot;</span> &#125;.joined(separator: <span class="string">&quot;&amp;&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// 1</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">queryComponents</span><span class="params">(fromKey key: String, value: <span class="keyword">Any</span>)</span></span> -&gt; [(<span class="type">String</span>, <span class="type">String</span>)] &#123;</span><br><span class="line">    <span class="keyword">var</span> components: [(<span class="type">String</span>, <span class="type">String</span>)] = []</span><br><span class="line">    <span class="comment">/// 2</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> dictionary = value <span class="keyword">as</span>? [<span class="type">String</span>: <span class="type">Any</span>] &#123;</span><br><span class="line">        <span class="keyword">for</span> (nestedKey, value) <span class="keyword">in</span> dictionary &#123;</span><br><span class="line">            components += queryComponents(fromKey: <span class="string">&quot;\(key)[\(nestedKey)]&quot;</span>, value: value)</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">/// 3</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> array = value <span class="keyword">as</span>? [<span class="type">Any</span>] &#123;</span><br><span class="line">        <span class="keyword">for</span> value <span class="keyword">in</span> array &#123;</span><br><span class="line">            components += queryComponents(fromKey: arrayEncoding.encode(key: key), value: value)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> value = value <span class="keyword">as</span>? <span class="type">NSNumber</span> &#123;</span><br><span class="line">        <span class="comment">/// 4</span></span><br><span class="line">        <span class="keyword">if</span> value.isBool &#123;</span><br><span class="line">            <span class="comment">/// escape的作用是将普通字符串URL要求转义的部分转义</span></span><br><span class="line">            components.append((escape(key), escape(boolEncoding.encode(value: value.boolValue))))</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            components.append((escape(key), escape(<span class="string">&quot;\(value)&quot;</span>)))</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">/// 4</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> bool = value <span class="keyword">as</span>? <span class="type">Bool</span> &#123;</span><br><span class="line">        components.append((escape(key), escape(boolEncoding.encode(value: bool))))</span><br><span class="line">    <span class="comment">/// 5</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        components.append((escape(key), escape(<span class="string">&quot;\(value)&quot;</span>)))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> components</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>queryComponents这个方法参数字典中的一个键值对，而这个键值对的值的类型是Any的，也就是可以是任何类型，这个方法的目的就是针对不同的类型做出不同的转化，最终将一个键值对转换为一个或多个纯字符串键值对。</li>
+<li>如果传进来的值是一个字典，则在编码是会生成 <code>[(key[nestedKey1],val1),(key[nestedKey2], val2)...]</code>，并且还会对其中的value继续进行递归</li>
+<li>如果传进来的值是一个数组，则会根据数组数据的编码策略生成 <code>[(a[],1),(a[],2)...]</code> 或者 <code>[(a,1), (a,2),...]</code> 这样的键值数据。</li>
+<li>如果传进来的值是一个布尔值，则按照布尔类型的编码策略，将布尔值转化为”true”/“1”和”false”/“0”这样的字符串</li>
+<li>如果这些类型都不是，则直接将Any类型的对象转换为一个字符串来显示</li>
+</ol>
+<p>上述就是关于URLEncoding的所有内容，下面我们再来看一个开发中也经常会被用到的编码器：JSONEncoding</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">JSONEncoding</span>: <span class="title">ParameterEncoding</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 不同参数设置的单例对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> `<span class="keyword">default</span>`: <span class="type">JSONEncoding</span> &#123; <span class="type">JSONEncoding</span>() &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> prettyPrinted: <span class="type">JSONEncoding</span> &#123; <span class="type">JSONEncoding</span>(options: .prettyPrinted) &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// jsonSerialization相关的设置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> options: <span class="type">JSONSerialization</span>.<span class="type">WritingOptions</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(options: <span class="type">JSONSerialization</span>.<span class="type">WritingOptions</span> = []) &#123;</span><br><span class="line">        <span class="keyword">self</span>.options = options</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 实现了ParameterEncoding协议，声明了encode方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(<span class="number">_</span> urlRequest: URLRequestConvertible, with parameters: Parameters?)</span></span> <span class="keyword">throws</span> -&gt; <span class="type">URLRequest</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> urlRequest = <span class="keyword">try</span> urlRequest.asURLRequest()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> parameters = parameters <span class="keyword">else</span> &#123; <span class="keyword">return</span> urlRequest &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> data = <span class="keyword">try</span> <span class="type">JSONSerialization</span>.data(withJSONObject: parameters, options: options)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> urlRequest.value(forHTTPHeaderField: <span class="string">&quot;Content-Type&quot;</span>) == <span class="literal">nil</span> &#123;</span><br><span class="line">                urlRequest.setValue(<span class="string">&quot;application/json&quot;</span>, forHTTPHeaderField: <span class="string">&quot;Content-Type&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            urlRequest.httpBody = data</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="type">AFError</span>.parameterEncodingFailed(reason: .jsonEncodingFailed(error: error))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> urlRequest</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JSONEncoding的encode方法非常简单：首先获取到参数和request，然后直接使用JSONSerialization将参数字典转换为jsonData，然后将该data放进httpData中，最后设置请求的Content-Type Header为”application/json”，仅仅是这样就完成了jsonEncoding的任务。</p>
+<h3 id="HTTPHeaders"><a href="#HTTPHeaders" class="headerlink" title="HTTPHeaders"></a>HTTPHeaders</h3><p>该类型很简单，只是用来存储此次请求需要设置的HTTPHeader列表</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">HTTPHeaders</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> headers: [<span class="type">HTTPHeader</span>] </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>() &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(<span class="number">_</span> headers: [<span class="type">HTTPHeader</span>]) &#123;</span><br><span class="line">        <span class="keyword">self</span>.<span class="keyword">init</span>()</span><br><span class="line"></span><br><span class="line">        headers.forEach &#123; update($<span class="number">0</span>) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(<span class="number">_</span> dictionary: [<span class="type">String</span>: <span class="type">String</span>]) &#123;</span><br><span class="line">        <span class="keyword">self</span>.<span class="keyword">init</span>()</span><br><span class="line"></span><br><span class="line">        dictionary.forEach &#123; update(<span class="type">HTTPHeader</span>(name: $<span class="number">0</span>.key, value: $<span class="number">0</span>.value)) &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">(name: String, value: String)</span></span> &#123;</span><br><span class="line">        update(<span class="type">HTTPHeader</span>(name: name, value: value))</span><br><span class="line">    &#125;.</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">(<span class="number">_</span> header: HTTPHeader)</span></span> &#123;</span><br><span class="line">        update(header)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">update</span><span class="params">(name: String, value: String)</span></span> &#123;</span><br><span class="line">        update(<span class="type">HTTPHeader</span>(name: name, value: value))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">update</span><span class="params">(<span class="number">_</span> header: HTTPHeader)</span></span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> index = headers.index(of: header.name) <span class="keyword">else</span> &#123;</span><br><span class="line">            headers.append(header)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        headers.replaceSubrange(index...index, with: [header])</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">remove</span><span class="params">(name: String)</span></span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> index = headers.index(of: name) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line"></span><br><span class="line">        headers.remove(at: index)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 后面还有很多诸如此类的便捷方法，就不全部放出了...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RequestInterceptor"><a href="#RequestInterceptor" class="headerlink" title="RequestInterceptor"></a>RequestInterceptor</h3><p>RequestInterceptor是Alamofire中定义的继承自两个其他协议的空协议，这两个协议分别是RequestAdapter和RequestRetrier。我们可以通过RequestInterceptor来实现很强大的请求自适应和失败重试功能，比如网络请求发起前的账户检查，添加通用的header以及网络请求失败后使用自定义的重传策略。Session与Request中都有一个属性用来存储RequestInterceptor拦截器，Session中的拦截器可以作用于Session发起的所有Request之上，而Request中的拦截器只能作用到自身Request之上。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">RequestInterceptor</span>: <span class="title">RequestAdapter</span>, <span class="title">RequestRetrier</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">RequestAdapter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">adapt</span><span class="params">(<span class="number">_</span> urlRequest: URLRequest, <span class="keyword">for</span> session: Session, completion: @escaping <span class="params">(Result&lt;URLRequest, Error&gt;)</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">RequestRetrier</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">retry</span><span class="params">(<span class="number">_</span> request: Request, <span class="keyword">for</span> session: Session, dueTo error: Error, completion: @escaping <span class="params">(RetryResult)</span></span></span> -&gt; <span class="type">Void</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RequestAdapter 协议允许在通过网络发出之前检查和修改Session执行的每个URLRequest，一个比较常见的用法是，在某些网络请求发出之前首先检查本地存储的身份验证信息，如果正常则附加到authorization请求头中，如果不正常则放弃请求。RequestAdapter协议中只规定了一个方法adapt，该方法会在每个Session执行每个URLRequest之前执行，方法的第三个参数，是一个回调函数，你在完成判断之后必须调用该回调函数，并传入你判断的结果以继续请求流程，如果允许执行就传递.success，如果不允许继续执行就传递.fail(someError)，someError是说明此次不允许继续执行的错误原因</p>
+<p>RequestRetrier 协议允许重试在执行时遇到错误的请求。协议中只规定了一个方法retry，该方法的最后一个参数同样也是一个回调，你在判断这个请求是否可以进行重试之后，需要将结果以回调函数参数的方式传递给Alamofire系统以继续重试流程，Alamofire中还定义了一个用来表示判断结果的枚举RetryResult</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">RetryResult</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 立即重试</span></span><br><span class="line">    <span class="keyword">case</span> retry</span><br><span class="line">    <span class="comment">/// 在TimeInterval之后重试</span></span><br><span class="line">    <span class="keyword">case</span> retryWithDelay(<span class="type">TimeInterval</span>)</span><br><span class="line">    <span class="comment">/// 不重试</span></span><br><span class="line">    <span class="keyword">case</span> doNotRetry</span><br><span class="line">    <span class="comment">/// 不重试，并把错误传递进去，之后的处理中可以获取到此次的错误</span></span><br><span class="line">    <span class="keyword">case</span> doNotRetryWithError(<span class="type">Error</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，系统给RequestInterceptor协议提供了方法默认空实现，这样可以使得在Adapter和Retyier这两个功能只需要其中一种功能的情况下编写起来更加方便，只需要覆写需要的方法就可以了</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">RequestInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">adapt</span><span class="params">(<span class="number">_</span> urlRequest: URLRequest, <span class="keyword">for</span> session: Session, completion: @escaping <span class="params">(Result&lt;URLRequest, Error&gt;)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        completion(.success(urlRequest))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">retry</span><span class="params">(<span class="number">_</span> request: Request,</span></span></span><br><span class="line"><span class="function"><span class="params">                      <span class="keyword">for</span> session: Session,</span></span></span><br><span class="line"><span class="function"><span class="params">                      dueTo error: Error,</span></span></span><br><span class="line"><span class="function"><span class="params">                      completion: @escaping <span class="params">(RetryResult)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        completion(.doNotRetry)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Alamofire中还为我们提供了一个实现RequestInterceptor协议的RetryPolicy类，这个类可以快速地帮助我们实现网络错误重试的需求</p>
+<p>在RetryPolicy类定义了一系列的默认值，我们可以选择直接忽略这个部分</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">RetryPolicy</span>: <span class="title">RequestInterceptor</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 开头定义了一系列的默认值，可以直接忽略</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultRetryLimit: <span class="type">UInt</span> = <span class="number">2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultExponentialBackoffBase: <span class="type">UInt</span> = <span class="number">2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultExponentialBackoffScale: <span class="type">Double</span> = <span class="number">0.5</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultRetryableHTTPMethods: <span class="type">Set</span>&lt;<span class="type">HT</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultRetryableHTTPStatusCodes: <span class="type">Set</span>&lt;<span class="type">Int</span>&gt; = [<span class="number">408</span>, <span class="number">500</span>, <span class="number">502</span>, <span class="number">503</span>, <span class="number">504</span> ]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> defaultRetryableURLErrorCodes: <span class="type">Set</span>&lt;<span class="type">URLError</span>.<span class="type">Code</span>&gt; = [</span><br><span class="line">        .backgroundSessionInUseByAnotherProcess,</span><br><span class="line">        .backgroundSessionWasDisconnected,</span><br><span class="line">        .badServerResponse,</span><br><span class="line">        .callIsActive,</span><br><span class="line">        .cannotConnectToHost,</span><br><span class="line">        .cannotFindHost,</span><br><span class="line">        .cannotLoadFromNetwork,</span><br><span class="line">        .dataNotAllowed,</span><br><span class="line">        .dnsLookupFailed,</span><br><span class="line">        .downloadDecodingFailedMidStream,</span><br><span class="line">        .downloadDecodingFailedToComplete,</span><br><span class="line">        .internationalRoamingOff,</span><br><span class="line">        .networkConnectionLost,</span><br><span class="line">        .notConnectedToInternet,</span><br><span class="line">        .secureConnectionFailed,</span><br><span class="line">        .serverCertificateHasBadDate,</span><br><span class="line">        .serverCertificateNotYetValid,</span><br><span class="line">        .timedOut</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来是RetryPolicy类的核心代码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">RetryPolicy</span>: <span class="title">RequestInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 一个请求最多可以重试多少次</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> retryLimit: <span class="type">UInt</span></span><br><span class="line">    <span class="comment">/// 延时时间计算的相关系数，这两个参数的用处可以看下面retry方法中的分析</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> exponentialBackoffBase: <span class="type">UInt</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> exponentialBackoffScale: <span class="type">Double</span></span><br><span class="line">    <span class="comment">/// 可以进行重试的方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> retryableHTTPMethods: <span class="type">Set</span>&lt;<span class="type">HTTPMethod</span>&gt;</span><br><span class="line">    <span class="comment">/// 可以进行重试的响应状态码</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> retryableHTTPStatusCodes: <span class="type">Set</span>&lt;<span class="type">Int</span>&gt;</span><br><span class="line">    <span class="comment">/// 可以进行重试的错误</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> retryableURLErrorCodes: <span class="type">Set</span>&lt;<span class="type">URLError</span>.<span class="type">Code</span>&gt;</span><br><span class="line">    <span class="comment">/// 初始化方法中所有参数都提供了默认值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(retryLimit: <span class="type">UInt</span> = <span class="type">RetryPolicy</span>.defaultRetryLimit,</span><br><span class="line">                exponentialBackoffBase: <span class="type">UInt</span> = <span class="type">RetryPolicy</span>.defaultExponentialBackoffBase,</span><br><span class="line">                exponentialBackoffScale: <span class="type">Double</span> = <span class="type">RetryPolicy</span>.defaultExponentialBackoffScale,</span><br><span class="line">                retryableHTTPMethods: <span class="type">Set</span>&lt;<span class="type">HTTPMethod</span>&gt; = <span class="type">RetryPolicy</span>.defaultRetryableHTTPMethods,</span><br><span class="line">                retryableHTTPStatusCodes: <span class="type">Set</span>&lt;<span class="type">Int</span>&gt; = <span class="type">RetryPolicy</span>.defaultRetryableHTTPStatusCodes,</span><br><span class="line">                retryableURLErrorCodes: <span class="type">Set</span>&lt;<span class="type">URLError</span>.<span class="type">Code</span>&gt; = <span class="type">RetryPolicy</span>.defaultRetryableURLErrorCodes) &#123;</span><br><span class="line">        <span class="built_in">precondition</span>(exponentialBackoffBase &gt;= <span class="number">2</span>, <span class="string">&quot;The `exponentialBackoffBase` must be a minimum of 2.&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">self</span>.retryLimit = retryLimit</span><br><span class="line">        <span class="keyword">self</span>.exponentialBackoffBase = exponentialBackoffBase</span><br><span class="line">        <span class="keyword">self</span>.exponentialBackoffScale = exponentialBackoffScale</span><br><span class="line">        <span class="keyword">self</span>.retryableHTTPMethods = retryableHTTPMethods</span><br><span class="line">        <span class="keyword">self</span>.retryableHTTPStatusCodes = retryableHTTPStatusCodes</span><br><span class="line">        <span class="keyword">self</span>.retryableURLErrorCodes = retryableURLErrorCodes</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 重试方法</span></span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">func</span> <span class="title">retry</span><span class="params">(<span class="number">_</span> request: Request,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">for</span> session: Session,</span></span></span><br><span class="line"><span class="function"><span class="params">                    dueTo error: Error,</span></span></span><br><span class="line"><span class="function"><span class="params">                    completion: @escaping <span class="params">(RetryResult)</span></span></span> -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        <span class="keyword">if</span>  request.retryCount &lt; retryLimit,</span><br><span class="line">            <span class="keyword">let</span> httpMethod = request.request?.method,</span><br><span class="line">            retryableHTTPMethods.<span class="built_in">contains</span>(httpMethod),</span><br><span class="line">            shouldRetry(response: request.response, error: error) &#123;</span><br><span class="line">            <span class="comment">// 2</span></span><br><span class="line">            <span class="keyword">let</span> timeDelay = pow(<span class="type">Double</span>(exponentialBackoffBase), <span class="type">Double</span>(request.retryCount)) * exponentialBackoffScale</span><br><span class="line">            completion(.retryWithDelay(timeDelay))</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            completion(.doNotRetry)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">shouldRetry</span><span class="params">(response: HTTPURLResponse?, error: Error)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> statusCode = response?.statusCode, retryableHTTPStatusCodes.<span class="built_in">contains</span>(statusCode) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> errorCode = (error <span class="keyword">as</span>? <span class="type">URLError</span>)?.code</span><br><span class="line">            <span class="keyword">let</span> afErrorCode = (error.asAFError?.underlyingError <span class="keyword">as</span>? <span class="type">URLError</span>)?.code</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> code = errorCode ?? afErrorCode, retryableURLErrorCodes.<span class="built_in">contains</span>(code) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>首先会进行一系列的条件判断，判断当前发生错误的request是否满足可以进行重试的条件。具体的条件包括：状态码是否在可重试状态码集合中，请求方法是否在可重试请求方法集合中，发生的错误Error是否在可重试错误集合中。如果判断通过，则开始计算重试的延时事件，如果判断不通过，则不允许重试</li>
+<li>系统提供的RetryPolicy使用延时重试的策略，基于提供的相关系数以及重试的次数计算出延时的时间，是关于重试次数的指数函数，重试次数越多，延时越久</li>
+</ol>
+<h3 id="RequestModifier"><a href="#RequestModifier" class="headerlink" title="RequestModifier"></a>RequestModifier</h3><p>RequestModifier的定义很简单，其定义的目的就是为了增强可扩展性，允许用户对request做出更加细化的修改和定制</p>
+<p><code>typealias RequestModifier = (inout URLRequest) throws -&gt; Void</code></p>
+<p>系统会在创建了URLRequest之后，对其调用resume之前，调用你传入的RequestModifier闭包。</p>
+<p>本小节所要分析的源码已经全部展示完毕了，未完待续……</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/08/05/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%882%EF%BC%89-Request/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Alamofire源码解析专栏（2）- Request</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+        <span>源码解析Combine中的内存管理</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%E6%96%87%E7%AB%A0%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">Alamofire源码解析专栏文章地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3"><span class="toc-number">2.</span> <span class="toc-text">程序入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Session%E7%B1%BB%E4%B8%AD%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F"><span class="toc-number">3.</span> <span class="toc-text">Session类中的实例变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Session%E7%B1%BB%E4%B8%AD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%B9%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">Session类中的入口方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#URLConvertible"><span class="toc-number">4.1.</span> <span class="toc-text">URLConvertible</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTPMethod"><span class="toc-number">4.2.</span> <span class="toc-text">HTTPMethod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parameters"><span class="toc-number">4.3.</span> <span class="toc-text">parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParameterEncoding"><span class="toc-number">4.4.</span> <span class="toc-text">ParameterEncoding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTPHeaders"><span class="toc-number">4.5.</span> <span class="toc-text">HTTPHeaders</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RequestInterceptor"><span class="toc-number">4.6.</span> <span class="toc-text">RequestInterceptor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RequestModifier"><span class="toc-number">4.7.</span> <span class="toc-text">RequestModifier</span></a></li></ol></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

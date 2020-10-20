@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Golang中的反射与接口详解 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/">Golang中的反射与接口详解</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-09-26
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-09-26
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Golang中的反射与接口详解&url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Golang中的反射与接口详解&url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/&title=Golang中的反射与接口详解" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Golang中的反射与接口详解&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/&text=Golang中的反射与接口详解" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/Golang/ >Golang</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><p>反射是许多强类型语言都会具有的功能，我们先看一下维基百科中对反射的定义</p>
+<blockquote>
+<p>在计算机科学中，反射是指计算机程序在运行时（Run time）可以访问、检测和修改它本身状态或行为的一种能力。用比喻来说，反射就是程序在运行的时候能够“观察”并且修改自己的行为。</p>
+</blockquote>
+<p>反射带给我们了一种在高级语言中直接获取对象内存中的数据的途径，如果没有反射但我们却想获取对象的类型与内存信息，就只能使用汇编才能做到</p>
+<p>为什么我们需要反射（反射的优点）</p>
+<ul>
+<li>使用反射可以让我们在编写程序时，避免一部分的硬代码，使代码具有灵活性，变通性</li>
+<li>使用反射给我们了在程序运行时修改源码结构（如方法，隐藏字段值，结构体定义等），可以给程序带来更大的可能性</li>
+</ul>
+<p>反射有什么缺点？</p>
+<ul>
+<li>因为反射的语法与概念都比较抽象，所以使用了反射的代码会使人难以阅读，不利于合作与交流</li>
+<li>因为反射将部分信息检查工作从编译期推到了运行期，所以会影响代码执行的效率，滥用反射可能会很大程度降低程序的运行效率</li>
+<li>面向反射的编程需要较多的高级知识，学习成本高。并且写出错误的反射代码的代价也很高，通常会直接引起程序的panic</li>
+</ul>
+<h3 id="Golang中的接口"><a href="#Golang中的接口" class="headerlink" title="Golang中的接口"></a>Golang中的接口</h3><p>因为Golang中的反射主要依赖于Golang中的接口类型，所以在我们正式开始学习反射之前，要先了解一下Golang中的接口。我想接触过Golang的程序员应该都知道Golang的Duck Typing，即“一个东西像鸭子一样有嘴巴，有眼睛，会游泳，会嘎嘎叫，那么我们就可以把这个东西看成鸭子”。在Golang中一个类型只要实现了某个接口中所有的方法，那么该类型就可以看作是实现了这个接口，使用隐式的接口声明。</p>
+<p>在Golang的源码中，与接口相关的结构体主要有eface与iface这两个，这两个结构体的区别是，eface主要用来保存空接口对象，iface则用来保存实现了其他非空接口的对象。为什么空接口与非空接口需要两个不同的结构体来保存呢？这是与Golang的类型系统有关的，隐式的接口类型声明决定了某个对象的接口类型是在运行时才能被确定的，这种可能随程序运行而改变的类型，被称作动态类型。这样Golang中的空接口因为没有实现任何接口，所以只拥有静态类型数据，而实现了其他接口的对象，则同时拥有静态类型与动态类型。下面贴出了iface，eface以及其中涉及到的一些结构体的源码，可以看到iface与eface中都有data字段，该字段保存了一个指向接口对象数据的指针。_type用来存储静态类型，itab做了一层包装，同时存储动态类型与静态类型。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> iface <span class="keyword">struct</span> &#123;</span><br><span class="line">	tab  *itab</span><br><span class="line">	data unsafe.Pointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> eface <span class="keyword">struct</span> &#123;</span><br><span class="line">	_type *_type</span><br><span class="line">	data  unsafe.Pointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> itab <span class="keyword">struct</span> &#123;</span><br><span class="line">	inter *interfacetype</span><br><span class="line">	_type *_type</span><br><span class="line">	hash  <span class="keyword">uint32</span> <span class="comment">// 与type结构体中的hash一致，用于类型转换</span></span><br><span class="line">	_     [<span class="number">4</span>]<span class="keyword">byte</span></span><br><span class="line">	fun   [<span class="number">1</span>]<span class="keyword">uintptr</span> <span class="comment">// variable sized. fun[0]==0 means _type does not implement inter.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> _type <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">//类型大小相关</span></span><br><span class="line">    size       <span class="keyword">uintptr</span></span><br><span class="line">    ptrdata    <span class="keyword">uintptr</span></span><br><span class="line">    <span class="comment">//类型的hash值</span></span><br><span class="line">    hash       <span class="keyword">uint32</span></span><br><span class="line">    <span class="comment">//与反射相关</span></span><br><span class="line">    tflag      tflag</span><br><span class="line">    <span class="comment">//与内存对齐相关</span></span><br><span class="line">    align      <span class="keyword">uint8</span></span><br><span class="line">    fieldalign <span class="keyword">uint8</span></span><br><span class="line">    <span class="comment">//类型的编号，标注类型是bool，slice，struct等等</span></span><br><span class="line">    kind       <span class="keyword">uint8</span></span><br><span class="line">    alg        *typeAlg</span><br><span class="line">    <span class="comment">//以下字段存储与GC相关的数据</span></span><br><span class="line">    gcdata    *<span class="keyword">byte</span></span><br><span class="line">    str       nameOff</span><br><span class="line">    ptrToThis typeOff</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="反射的基本函数"><a href="#反射的基本函数" class="headerlink" title="反射的基本函数"></a>反射的基本函数</h3><p>在reflect包中定义了一个Type接口以及一个Value结构体，分别用来获取对象的类型信息，与获取修改对象的数据。同时也提供了两个基本函数分别来返回一个对象的Type接口与Value结构体</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//首先将传入的对象数据转换会eface类型（emptyInterface与eface一致），再拿到eface中的_type字段中的数据，从而获取到对象的类型信息</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TypeOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Type</span></span> &#123;</span><br><span class="line">    eface := *(*emptyInterface)(unsafe.Pointer(&amp;i))</span><br><span class="line">    <span class="keyword">return</span> toType(eface.typ)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValueOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Value</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> i == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Value&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    escapes(i)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> unpackEface(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们来看一下Type接口中拥有哪些方法，以及Value结构体中的字段以及实现的方法</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Type <span class="keyword">interface</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回变量对齐后占用的字节数</span></span><br><span class="line">    Align() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//struct中的字段对齐后占用的字节数</span></span><br><span class="line">    FieldAlign() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回方法集中第i个方法</span></span><br><span class="line">    Method(<span class="keyword">int</span>) Method</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过方法名称获取方法</span></span><br><span class="line">    MethodByName(<span class="keyword">string</span>) (Method, <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回类型方法集中的方法个数</span></span><br><span class="line">    NumMethod() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果是已定义的类型，则返回包内类型名称，如果未定义则返回空字符串</span></span><br><span class="line">    Name() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回包路径名，也就是我们需要import的那一串字符</span></span><br><span class="line">    PkgPath() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回类型大小</span></span><br><span class="line">    Size() <span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回类型的字符形式</span></span><br><span class="line">    String() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回类型的类型值</span></span><br><span class="line">    Kind() Kind</span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断该类型是否实现了类型u</span></span><br><span class="line">    Implements(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断该类型是否可以复制给u类型变量</span></span><br><span class="line">    AssignableTo(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断该类型是否可以转换为u类型</span></span><br><span class="line">    ConvertibleTo(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断该类型是否可以进行比较</span></span><br><span class="line">    Comparable() <span class="keyword">bool</span></span><br><span class="line">    <span class="comment">//类型所占据的位数</span></span><br><span class="line">    Bits() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回channel的方向，只能channel类型调用</span></span><br><span class="line">    ChanDir() ChanDir</span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断方法是否含有可变参数，只能方法类型调用</span></span><br><span class="line">    IsVariadic() <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回子元素类型，只能map，slice，chan，array等类型调用</span></span><br><span class="line">    Elem() Type</span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回结构体第i个字段，只能结构体类型调用</span></span><br><span class="line">    Field(i <span class="keyword">int</span>) StructField</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    FieldByIndex(index []<span class="keyword">int</span>) StructField</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过结构体字段名获取字段</span></span><br><span class="line">    FieldByName(name <span class="keyword">string</span>) (StructField, <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//传入一个名称过滤函数，根据函数获取结构体字段</span></span><br><span class="line">    FieldByNameFunc(matchfunc(<span class="keyword">string</span>)<span class="keyword">bool</span>(StructField,<span class="keyword">bool</span>)）</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取函数类型第i个参数的类型，只能函数类型调用</span></span><br><span class="line">    In(i <span class="keyword">int</span>) Type</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取Map key的类型，只能map类型调用</span></span><br><span class="line">    Key() Type</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取array类型的长度</span></span><br><span class="line">    Len() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取struc类型中的字段数量</span></span><br><span class="line">    NumField() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取函数类型中参数的个数，只能函数类型调用</span></span><br><span class="line">    NumIn() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取函数类型返回值个数，只能函数类型调用</span></span><br><span class="line">    <span class="comment">// It panics if the type&#x27;s Kind is not Func.</span></span><br><span class="line">    NumOut() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取函数类型第i个返回值的类型，只能函数类型调用</span></span><br><span class="line">    Out(i <span class="keyword">int</span>) Type</span><br><span class="line"></span><br><span class="line">    common() *rtype</span><br><span class="line">    uncommon() *uncommonType</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Value结构体以及Value结构体实现的方法</span></span><br><span class="line"><span class="keyword">type</span> Value <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">//等同于eface中的_type字段</span></span><br><span class="line">    typ *rtype</span><br><span class="line">    <span class="comment">//指向对象数据的指针</span></span><br><span class="line">    ptr unsafe.Pointer</span><br><span class="line">    flag</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置切片的 len 字段，如果类型不是切片，就会panic</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span><span class="title">SetLen</span><span class="params">(n <span class="keyword">int</span>)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置切片的 cap 字段</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">SetCap</span><span class="params">(n <span class="keyword">int</span>)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置字典的 kv</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">SetMapIndex</span><span class="params">(key, val Value)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回切片、字符串、数组的索引 i 处的值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Index</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">Value</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 根据名称获取结构体的内部字段值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">FieldByName</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">Value</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 int 类型的值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Int</span><span class="params">()</span> <span class="title">int64</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取结构体字段（成员）数量</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">NumField</span><span class="params">()</span> <span class="title">int</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 尝试向通道发送数据（不会阻塞）</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">TrySend</span><span class="params">(x reflect.Value)</span> <span class="title">bool</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过参数列表 in 调用 v 值所代表的函数（或方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Call</span><span class="params">(in[]Value)</span> <span class="params">(r []Value)</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用变参长度可变的函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">CallSlice</span><span class="params">(in[]Value)</span> []<span class="title">Value</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="反射代码用例"><a href="#反射代码用例" class="headerlink" title="反射代码用例"></a>反射代码用例</h3><h4 id="导出结构体中的未导出成员"><a href="#导出结构体中的未导出成员" class="headerlink" title="导出结构体中的未导出成员"></a>导出结构体中的未导出成员</h4><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span>(</span><br><span class="line">    <span class="string">&quot;reflect&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> People <span class="keyword">struct</span>&#123;</span><br><span class="line"></span><br><span class="line">     Name <span class="keyword">string</span></span><br><span class="line">     age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    liuyou := People&#123;Name: <span class="string">&quot;Liuyou&quot;</span>, age: <span class="number">19</span>&#125;</span><br><span class="line"></span><br><span class="line">    v := reflect.ValueOf(&amp;liuyou)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//首先使用反射对已导出字段操作</span></span><br><span class="line">    f := v.Elem().FieldByName(<span class="string">&quot;Name&quot;</span>)</span><br><span class="line">    fmt.Println(f.String())</span><br><span class="line">    f.SetString(<span class="string">&quot;yqz&quot;</span>)</span><br><span class="line">    fmt.Println(f.String())</span><br><span class="line">    <span class="comment">//接着获取结构体内未到处字段</span></span><br><span class="line">    f = v.Elem().FieldByName(<span class="string">&quot;age&quot;</span>)</span><br><span class="line">    f.SetInt(<span class="number">20</span>)</span><br><span class="line">    fmt.Println(f.Int())</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="使用反射实现简易的validate"><a href="#使用反射实现简易的validate" class="headerlink" title="使用反射实现简易的validate"></a>使用反射实现简易的validate</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Validate</span><span class="params">(value <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(ok <span class="keyword">bool</span>, msg <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">//获取传入interface对象所对应的Value与Type</span></span><br><span class="line">    t := reflect.TypeOf(value)</span><br><span class="line">    v := reflect.ValueOf(value)</span><br><span class="line">    <span class="comment">//这是基于结构体的验证器，判断如果传入的不是一个结构体就返回</span></span><br><span class="line">    <span class="keyword">if</span> t.Kind() != reflect.Struct &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>, <span class="string">&quot;传入对象必须是一个结构体&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//遍历结构体中的所有字段，如果对应字段设置了我们所指定的tag标签(这里是validate)，就将该字段的值与标签中用户所写下的规则匹配</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; v.NumField(); i++ &#123;</span><br><span class="line">        tag := t.Field(i).Tag</span><br><span class="line">        pattern := tag.Get(<span class="string">&quot;validate&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> pattern == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//多个规则使用逗号隔开</span></span><br><span class="line">        patternList := strings.Split(pattern, <span class="string">&quot;,&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> _, pattern = <span class="keyword">range</span> patternList &#123;</span><br><span class="line">            <span class="comment">//每匹配到一个特定的规则，就交给对应规则的处理函数</span></span><br><span class="line">            <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;required&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkRequired(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;number&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkNumber(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;max&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkMax(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;min&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkMin(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;email&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkEmail(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(pattern, <span class="string">&quot;phone&quot;</span>) &#123;</span><br><span class="line">                ok, msg = checkPhone(pattern, v.Field(i))</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里只给出checkRequired(检查字段是否为空)的规则处理函数，其余函数的实现原理大致一致，就是对每个字段对应的Value进行正则匹配，检查等，判断该字段的值是否符合对应的规则</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkRequired</span><span class="params">(pattern <span class="keyword">string</span>, value reflect.Value)</span> <span class="params">(ok <span class="keyword">bool</span>, msg <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">//required规则的书写方式定义为required:msg,msg为判断出错的时候返回的错误信息，如果没有填写msg则按照默认的信息提示返回</span></span><br><span class="line">    ruleList := strings.Split(pattern, <span class="string">&quot;:&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> value.IsValid() &#123;</span><br><span class="line">        ok = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(ruleList) &gt;= <span class="number">2</span> &#123;</span><br><span class="line">        msg = ruleList[<span class="number">1</span>]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        msg = <span class="string">&quot;某个必需的字段为空&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    ok = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h3><p>好了，关于Golang反射的机制我们今天就先学习到这里了。每个事物都有自己的优点也有自己的缺点，反射可以通过获取对象的动态类型或者接口对象的值来让我们的代码更加具有兼容性与变通性，但程序中过多的反射代码，不仅会拖慢程序的运行，而且会使代码难以令外人阅读。所以在你的代码中适当(注意是适当哦)的使用反射，来使你的代码更加优雅！</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>从Kubernetes的架构和其中的对象开始</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+        <span>Channel&Select源码分析</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">1.</span> <span class="toc-text">反射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Golang%E4%B8%AD%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.</span> <span class="toc-text">Golang中的接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%87%BD%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">反射的基本函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E4%BB%A3%E7%A0%81%E7%94%A8%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">反射代码用例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%BC%E5%87%BA%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%AD%E7%9A%84%E6%9C%AA%E5%AF%BC%E5%87%BA%E6%88%90%E5%91%98"><span class="toc-number">4.1.</span> <span class="toc-text">导出结构体中的未导出成员</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E5%AE%9E%E7%8E%B0%E7%AE%80%E6%98%93%E7%9A%84validate"><span class="toc-number">4.2.</span> <span class="toc-text">使用反射实现简易的validate</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F"><span class="toc-number">5.</span> <span class="toc-text">结束</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

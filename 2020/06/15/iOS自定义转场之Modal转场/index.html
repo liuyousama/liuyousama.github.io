@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            iOS自定义转场之Modal转场 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/">iOS自定义转场之Modal转场</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-06-15
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-06-28
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=iOS自定义转场之Modal转场&url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=iOS自定义转场之Modal转场&url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/&title=iOS自定义转场之Modal转场" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=iOS自定义转场之Modal转场&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/&text=iOS自定义转场之Modal转场" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <p>iOS中的转场动画一共有三种：Modal转场，Navigation转场，Tabbar转场。这篇文章主要来介绍如何在iOS中自定义Modal转场的动画效果</p>
+<h2 id="Modal转场中的一些核心概念"><a href="#Modal转场中的一些核心概念" class="headerlink" title="Modal转场中的一些核心概念"></a>Modal转场中的一些核心概念</h2><blockquote>
+<p>关于命名：</p>
+</blockquote>
+<p>在Modal转场的过程中，iOS对于参与转场的角色有两种命名法。第一种是Presenting-Presented，发起presentation的那个控制器在整个过程中永远命名为presenting，被弹出的那个控制器在整个过程中永远被命名为presented。第二种是from-to，在presented（发起调用，弹出控制器）的过程中，发起的那个为from，要弹出的那个为to，在dismiss（发起返回，返回父级）的过程中，发起返回的那个为from，返回的那个父级为to</p>
+<p><img src="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/1.png" alt="转场中的控制器角色"></p>
+<blockquote>
+<p>转场中动画如何实施</p>
+</blockquote>
+<p>发生Modal转场动画时，系统会在屏幕上为我们提供一个containerView用来承载涉及转场的两个控制器的view，并且将涉及跳转操作的两个控制器中的view提供给我们操作，它们分别是fromView和toView。我们无需关心该containerView在哪里创建，以及层级如何，我们只需要关心，在我们要进行转场动画的时候，UIKit总会为我们提供一个可用的containerView，并且自动的将fromView添加为containerView的子视图。比如一个Modal跳出的时候，前一个view缩小旋转并向左移动出屏幕，后一个view从右向左滑出的一个转场动画，我们可以使用UIView的animation，在动画实施的时候分别操作fromView的frame与transition属性，以及toView的frame属性来实现这个动画。可以看下面的图片来理解这个过程</p>
+<p><img src="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/2.png" alt="转场中的控制器角色"></p>
+<h2 id="Modal转场动画中的关键角色"><a href="#Modal转场动画中的关键角色" class="headerlink" title="Modal转场动画中的关键角色"></a>Modal转场动画中的关键角色</h2><h3 id="UIViewControllerContextTransitioning-动画上下文"><a href="#UIViewControllerContextTransitioning-动画上下文" class="headerlink" title="UIViewControllerContextTransitioning:动画上下文"></a>UIViewControllerContextTransitioning:动画上下文</h3><blockquote>
+<p>作用：</p>
+</blockquote>
+<p>在一次转场开始之前，UIKit会为我们自动创建一个上下文对象，并且填充里面的属性，我们在动画执行的过程中经常需要用到上下文中设置的属性。上下文存在于整个转场的过程中，我们需要通过上下文拿到需要的属性，以及通过上下文通知系统一些时间，比如动画已经完成的事件。该协议只用来声明上下文中有哪些我们可以使用的属性以及方法，我们不能去自定义一个该协议的实现类，因为这么做没有意义，上下文是由系统自动创建并且传递给特定方法的。</p>
+<blockquote>
+<p>定义：</p>
+</blockquote>
+<p>这里只给出部分比较重要的方法或者属性，context中定义了许多东西，但这些东西一般都是用来传递上下文信息或者控制动画过程的，有需要可以去官方文档看</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">UIViewControllerContextTransitioning</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 动画进行时系统提供的containerView</span></span><br><span class="line">    <span class="keyword">var</span> containerView: <span class="type">UIView</span></span><br><span class="line">    <span class="comment">// 可以通过这个方法传入不同的key来拿到FromController与ToController</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">viewController</span><span class="params">(forKey: UITransitionContextViewControllerKey)</span></span> -&gt; <span class="type">UIViewController?</span></span><br><span class="line">    <span class="comment">// 传入不同的key来拿到FromView与ToView</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">view</span><span class="params">(forKey: UITransitionContextViewKey)</span></span> -&gt; <span class="type">UIView?</span></span><br><span class="line">    <span class="comment">// 获取一个控制器的view在转场开始时其view所在的初始位置</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">initialFrame</span><span class="params">(<span class="keyword">for</span>: UIViewController)</span></span> -&gt; <span class="type">CGRect</span></span><br><span class="line">    <span class="comment">// 获取一个控制器的view在转场完成之后应该处于的位置。这是系统给我们提供的一个参考</span></span><br><span class="line">    <span class="comment">// 我们应该遵循系统给我们的参考</span></span><br><span class="line">    <span class="comment">// 在我们自定义动画的最后应该将fromView与toView移动到其应该的位置</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">finalFrame</span><span class="params">(<span class="keyword">for</span>: UIViewController)</span></span> -&gt; <span class="type">CGRect</span></span><br><span class="line">    <span class="comment">// 通知系统我们已经完成自定义的转场动画过程，每个自定义动画结束的时候都应该调用该方法 </span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">completeTransition</span><span class="params">(Bool)</span></span></span><br><span class="line">    <span class="comment">// 指示当前的转场动画是否因为某些原因被关闭</span></span><br><span class="line">    <span class="keyword">var</span> transitionWasCancelled: <span class="type">Bool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// UIViewControllerContextTransitioning中还定义了一组用来执行可交互动画的方法</span></span><br><span class="line">    <span class="comment">// 你不用过于关注下面这些方法，这些方法不会由你自己去调用，而是会依靠于其他的组件去调用</span></span><br><span class="line">    <span class="comment">// 在这里写出来，只是为了之后你可以更好的理解交互式动画是怎么实现的</span></span><br><span class="line">    <span class="comment">// 是否开启了可交互执行模式的动画，如果没有开启，那么就按照动画执行时间自动渲染动画</span></span><br><span class="line">    <span class="keyword">var</span> isInteractive: <span class="type">Bool</span></span><br><span class="line">    <span class="comment">// 之后是一系列用来控制动画执行关闭完成以及执行进度的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">updateInteractiveTransition</span><span class="params">(CGFloat)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">pauseInteractiveTransition</span><span class="params">()</span></span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">finishInteractiveTransition</span><span class="params">()</span></span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cancelInteractiveTransition</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>使用：</p>
+</blockquote>
+<ul>
+<li>通过<code>view(forKey: .from)</code>与<code>view(forKey: .to)</code>拿到参与转场的两个控制器的rootView</li>
+<li>通过<code>viewController(forKey: .from)</code>与<code>viewController(forKey: .to)</code>拿到参与转场的两个控制器</li>
+<li>通过<code>finalFrame(for: someController)</code>拿到系统给出的控制器rootView最终应该在的位置的参考。我们在自定义动画的过程中，应当让我们的view朝着这个frame与移动，并且在动画完成时应该设置该frame为view的最终frame</li>
+<li>通过<code>transitionWasCancelled</code>属性获知当前的转场动画是否因为意外而取消，在自定义的动画执行过程中，如果发现次属性为true，就需要自己做出相关的处理</li>
+<li>通过<code>completeTransition(true)</code>方法调用来显式声明动画转场已经结束，我们在自定义转场动画代码中，在转场正常完成后，必须要主动调用该方法。因为手动调用该方法之后，iOS系统才会感知到转场的结束从而去做一些“善后”工作，这些工作包括：调用<code>presentViewController:animated:completion:</code>方法中用户传入的闭包、将fromView从containerView上清除、调用动画对象的<code>animationEnded</code>方法，通知动画已经结束。</li>
+</ul>
+<h3 id="UIViewControllerAnimatedTransitioning"><a href="#UIViewControllerAnimatedTransitioning" class="headerlink" title="UIViewControllerAnimatedTransitioning"></a>UIViewControllerAnimatedTransitioning</h3><blockquote>
+<p>作用：</p>
+</blockquote>
+<pre><code>动画实现器，提供一个将fromView隐藏并显现出toView的动画过程</code></pre>
+<blockquote>
+<p>定义：</p>
+</blockquote>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">animationEnded</span><span class="params">(Bool)</span></span></span><br><span class="line"><span class="comment">// 返回一次动画执行需要的时间</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">transitionDuration</span><span class="params">(using: UIViewControllerContextTransitioning?)</span></span> -&gt; <span class="type">TimeInterval</span></span><br><span class="line"><span class="comment">// 在该方法中实现具体的动画效果</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">animateTransition</span><span class="params">(using: UIViewControllerContextTransitioning)</span></span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>实现一个动画类的过程：</p>
+</blockquote>
+<ol>
+<li>设置动画需要执行的时间</li>
+<li>实现animateTransition方法</li>
+</ol>
+<blockquote>
+<p>实现animateTransition方法的过程：</p>
+</blockquote>
+<ol>
+<li>根据上下文参数获取到FromController，ToController，FromView，ToView这些基本信息</li>
+<li>根据上下文参数获取动画结束之后toView的位置frame</li>
+<li>给toView设置合适的位置以及相关属性，同时也给涉及转场的fromView设置合适的相关属性</li>
+<li>将toView添加到containerView中</li>
+<li>使用UIView或者CoreAnimation实现相关的动画，并且在动画的最后，使toView的位置移动到第2步中获取的结束frame处</li>
+<li>在动画结束的completion中，判断转场是否正常结束，如果没有正常结束则进行自己的相关处理，如果正常结束了，那么手动调用上下文的<code>completeTransition(true)</code>方法结束转场</li>
+</ol>
+<h3 id="UIViewControllerInteractiveTransitioning-可交互的动画控制器"><a href="#UIViewControllerInteractiveTransitioning-可交互的动画控制器" class="headerlink" title="UIViewControllerInteractiveTransitioning:可交互的动画控制器"></a>UIViewControllerInteractiveTransitioning:可交互的动画控制器</h3><blockquote>
+<p>作用：</p>
+</blockquote>
+<p>代表一个可以控制动画过程的对象，使用该对象可以控制转场动画的进度，来完成一些可交互的动画效果。比如右滑返回，在我们右滑的过程中需要随时控制动画的进度以及停止和结束</p>
+<blockquote>
+<p>定义：</p>
+</blockquote>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 开始对一个转场动画应用交互控制器，我们在该方法中可以修改动画上下文的相关属性</span></span><br><span class="line"><span class="comment">// 比如用来指示该动画是否是一个可交互控制的动画的属性</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">startInteractiveTransition</span><span class="params">(UIViewControllerContextTransitioning)</span></span></span><br><span class="line"><span class="comment">// 指示一个动画开始时是否是可交互的</span></span><br><span class="line"><span class="keyword">var</span> wantsInteractiveStart: <span class="type">Bool</span></span><br><span class="line"><span class="comment">// 返回系统完成动画所需要的动画完成曲线</span></span><br><span class="line"><span class="keyword">var</span> completionCurve: <span class="type">UIView</span>.<span class="type">AnimationCurve</span></span><br><span class="line"><span class="comment">// 返回系统完成动画所需要的动画速度</span></span><br><span class="line"><span class="keyword">var</span> completionSpeed: <span class="type">CGFloat</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用系统提供的实现类：</p>
+</blockquote>
+<p>我们直接自定义类去实现UIViewControllerInteractiveTransitioning这个协议并不是很轻松的，因为我们需要从头开始，自己控制动画的完成曲线和完成速度，这需要我们做非常多的工作才能写出一个完善的动画控制器。系统给我们提供了一个已经实现了这个协议的类，这个类是UIPercentDrivenInteractiveTransition，他给我们提供了一种通过进度值来控制动画运行的便捷的方式，99%的场景下我们单独使用系统给我们提供的这个类已经够了，而不用去自己自定义类了</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UIPercentDrivenInteractiveTransition</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 一些属性，可以通过这些属性获取一些基本信息</span></span><br><span class="line">    <span class="keyword">var</span> timingCurve: <span class="type">UITimingCurveProvider?</span></span><br><span class="line">    <span class="keyword">var</span> completionCurve: <span class="type">UIView</span>.<span class="type">AnimationCurve</span></span><br><span class="line">    <span class="keyword">var</span> duration: <span class="type">CGFloat</span></span><br><span class="line">    <span class="keyword">var</span> percentComplete: <span class="type">CGFloat</span></span><br><span class="line">    <span class="keyword">var</span> completionSpeed: <span class="type">CGFloat</span></span><br><span class="line">    <span class="keyword">var</span> wantsInteractiveStart: <span class="type">Bool</span></span><br><span class="line">    <span class="comment">// 用来进行动画控制的方法</span></span><br><span class="line">    <span class="comment">// 传入一个0-1的浮点类型，更新动画的进度</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">update</span><span class="params">(CGFloat)</span></span></span><br><span class="line">    <span class="comment">// 暂停动画</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">pause</span><span class="params">()</span></span></span><br><span class="line">    <span class="comment">// 关闭动画</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span></span><br><span class="line">    <span class="comment">// 完成动画</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">finish</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以创建出一个UIPercentDrivenInteractiveTransition的对象，然后绑定一些交互事件，比如我们创建一个对象之后，就给当前页面的手势添加一个响应事件，在事件中根据手势滑动的进度来更新动画的进度，以及在合适的地方调用方法关闭动画（比如手势滑动距离不到一半停止）或者完成动画（比如手势滑动距离超过一半后停止）</p>
+<h3 id="UIViewControllerTransitionCoordinator-动画协调器"><a href="#UIViewControllerTransitionCoordinator-动画协调器" class="headerlink" title="UIViewControllerTransitionCoordinator:动画协调器"></a>UIViewControllerTransitionCoordinator:动画协调器</h3><blockquote>
+<p>作用：</p>
+</blockquote>
+<p>帮助我们在转场动画进行的同时并行执行其他的动画，是我们可以在转场的时候控制一些其他元素与转场动画同步，实现更加自由的转场动画效果。该类型由系统内部创建，不需要我们提供实现类，因为那并没有意义。我们可以通过controller中一个方法transitionCoordinator()来获取到控制器的这个对象。这个对象会在控制器参与转场之前被系统自动创建，在非转场的情况下调用此方法会返回nil。该方法主要记录转场动画的时间等属性，方便将其他动画与其同步</p>
+<blockquote>
+<p>使用：</p>
+</blockquote>
+<ol>
+<li>协调器执行与正常转场动画同步的动画 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*需要执行动画的view是位于containerView中的情况*/</span></span><br><span class="line">coordinator.animate(alongsideTransition: &#123; context <span class="keyword">in</span> </span><br><span class="line">    <span class="comment">/*要执行的动画的代码*/</span></span><br><span class="line">    <span class="comment">/*直接设置特定UIView的属性，协调器会帮助我们自动同步动画*/</span></span><br><span class="line">    someView.alpha = <span class="number">1.0</span></span><br><span class="line">&#125;, completion: &#123; context <span class="keyword">in</span> </span><br><span class="line">    <span class="comment">/*动画执行结束之后的block*/</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">/*需要执行动画的view是位于containerView之外的情况*/</span></span><br><span class="line">coordinator.animateAlongsideTransition(<span class="keyword">in</span>: someView, animation: &#123; context <span class="keyword">in</span> </span><br><span class="line">    <span class="comment">/*要执行的动画的代码*/</span></span><br><span class="line">    <span class="comment">/*直接设置特定UIView的属性，协调器会帮助我们自动同步动画*/</span></span><br><span class="line">    someView.alpha = <span class="number">1.0</span></span><br><span class="line">&#125;, completion: &#123; context <span class="keyword">in</span> </span><br><span class="line">    <span class="comment">/*动画执行结束之后的block*/</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>协调器执行与交互式动画同步的动画 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*该方法会注册一个block，并在每次交互式动画控制器状态改变时（比如动画进度）调用*/</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">notifyWhenInteractionChanges</span> </span>&#123; context <span class="keyword">in</span></span><br><span class="line">    <span class="comment">/*根据现在交互式动画执行的状态来调整自定义的view需要随之变化的属性*/</span></span><br><span class="line">    someView.alpha = someCalc(context.someProps)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="UIPresentationController-Presentation控制器"><a href="#UIPresentationController-Presentation控制器" class="headerlink" title="UIPresentationController:Presentation控制器"></a>UIPresentationController:Presentation控制器</h3><blockquote>
+<p>作用：</p>
+</blockquote>
+<p>其实在iOS系统中，所有通过present弹出的控制器都会包裹在UIPresentationController中。UIPresentationController的作用就是对presentedController提供额外的管理，其内部有一个containerView（注意这个containerView与转场中出现的那个概念是不同的），用来承载presentedController的rootView以及用户额外添加的view。UIPresentationController可以管理presentedController的rootView在containerView中的相对位置与大小，我们可以提供自定义的view作为背景（比如一个模糊的背景view），并且还可以提供额外的手势等交互逻辑（比如触摸周围的透明部分就执行dismiss）</p>
+<blockquote>
+<p>为什么要为自定义的present转场动画中的控制器的<code>modalPresentationStyle</code>属性设置为<code>custom</code>？</p>
+</blockquote>
+<p>系统为系统内置的几种转场动画效果提供了不同的UIPresentationController子类实现，比如<code>UIModalPresentationFullScreen</code>类型就对应着内部设置presentedController的frame充满整个containerView的一个UIPresentationController子类实现。再比如<code>UIModalPresentationFormSheet</code>类型对应着一个内部设置presentedController的frame不充满整个containerView，并且在containerView中添加一个暗视图的一个UIPresentationController子类实现。如果我们没有修改控制器的modalPresentationStyle为Custom，系统在转场的时候为目标控制器提供UIPresentationController的时候就可能使用系统内置的其他实现，从而产生一些歧义</p>
+<blockquote>
+<p>如何实现一个自定义的UIPresentationController：</p>
+</blockquote>
+<ol>
+<li>创建自定义的类继承自系统的UIPresentationController</li>
+<li>重写类中的<code>frameOfPresentedViewInContainerView</code>方法，返回presentedController的rootView在containerView之上的相对位置</li>
+<li>重写类的初始化方法<code>initWithPresentedViewController:presentingController:</code>，在初始化方法中负责创建一些自定义的view，以及添加一些自定义的逻辑（比如手势控制点击rootView之外containerView之上的地方就主动dismiss）</li>
+<li>重写类的方法<code>presentationTransitionWillBegin</code>，该方法会在控制器将要被presented的时候调用，在该方法中将自定义的view添加到containerView上去，并设置一些自定义view的一些动画相关的初始属性（如果有动画效果的话）。注意你不用主动将rootView添加到containerView上，UIKit内部会自动执行这件事情。之后调用presentedController的协调器的方法执行转场时自定义view需要执行的动画效果。</li>
+<li>重写类的方法<code>presentationTransitionDidEnd:</code>，转场动画关闭时调用，如果是正常结束并完成转场则会传入参数YES，如果是中途结束未完成转场（比如交互式动画手势取消）会传入参数NO，针对这种非正常取消的情况我们需要做一些额外操作，比如移除我们之前添加的自定义view</li>
+<li>重写类的方法<code>dismissalTransitionWillBegin</code>，该方法在dismissal将要发生时调用，方法内部的逻辑与第4步中的<code>presentationTransitionWillBegin</code>方法基本一致</li>
+<li>重写类的方法<code>dismissalTransitionDidEnd:</code>，该方法在dismissal将要发生时调用，方法内部的逻辑与第5步中的<code>presentationTransitionDidEnd:</code>方法基本一致</li>
+</ol>
+<h3 id="UIViewControllerTransitioningDelegate-转场代理"><a href="#UIViewControllerTransitioningDelegate-转场代理" class="headerlink" title="UIViewControllerTransitioningDelegate:转场代理"></a>UIViewControllerTransitioningDelegate:转场代理</h3><blockquote>
+<p>在哪里使用：</p>
+</blockquote>
+<p>每一个Controller中拥有一个UIViewControllerTransitioningDelegate协议类型的代理属性，用来响应本Controller中Modal转场的相关事件</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">weak</span> <span class="keyword">var</span> transitionDelegate:<span class="type">UIViewControllerTransitioningDelegate?</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>定义：</p>
+</blockquote>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">UIViewControllerTransitioningDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 控制器被presented时调用会首先调用该控制器的该方法返回一个描述动画的协议类型实例，如果返回nil会直接使用系统的动画方式</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forPresented: UIViewController, presenting:UIViewController, source: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span></span><br><span class="line">    <span class="comment">// 控制器dismiss返回时会先调用该控制器的该方法返回一个描述动画的协议类型实例，如果返回nil会直接使用系统的动画方式</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forDismissed: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span></span><br><span class="line">    <span class="comment">// 询问当前控制器被presented时是否有一个交互式的动画控制器，如果有则会将动画交给这个动画控制器执行，如果没有则会按照原生的动画执行方式，在一个时间间隔内将动画渲染完成</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">interactionControllerForPresentation</span><span class="params">(using: UIViewControllerAnimatedTransitioning)</span></span> -&gt; <span class="type">UIViewControllerInteractiveTransitioning?</span></span><br><span class="line">    <span class="comment">// 询问当前控制器调用dismiss返回时是否有一个交互式的动画控制器</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">interactionControllerForDismissal</span><span class="params">(using: UIViewControllerAnimatedTransitioning)</span></span> -&gt; <span class="type">UIViewControllerInteractiveTransitioning?</span></span><br><span class="line">    <span class="comment">// 返回转场中需要使用的UIPresentationController</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">presentationController</span><span class="params">(forPresented: UIViewController, presenting: UIViewController?, source: UIViewController)</span></span> -&gt; <span class="type">UIPresentationController?</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Modal自定义转场中的调用流程"><a href="#Modal自定义转场中的调用流程" class="headerlink" title="Modal自定义转场中的调用流程"></a>Modal自定义转场中的调用流程</h2><h3 id="Present过程（A-Present-To-B）"><a href="#Present过程（A-Present-To-B）" class="headerlink" title="Present过程（A Present To B）"></a>Present过程（A Present To B）</h3><ol>
+<li>检查B控制器的<code>transitionDelegate</code>是否不为空，如果不为空，代表提供了自定义的转场动画，如果没有则会使用系统默认的动画效果</li>
+<li>访问B控制器的<code>modalPresentationStyle</code>，如果为其他系统中自定义的style，则提供一个与之对应的UIPresentationController，如果为custom，则访问代理的<code>presentationController</code>方法获取自定义的presentationController，如果该方法返回为空，则会返回一个默认实现（rootView的frame充满containerView，无任何其他多余view）</li>
+<li>访问B控制器代理的<code>animationController</code>方法获取一个动画控制器，如果返回为空，则执行系统默认的动画过程</li>
+<li>检查B控制器代理的<code>interactionControllerForPresentation</code>方法是否返回一个非空的交互动画控制器，如果返回了则会更新上下文中相关信息，为交互动画控制做一些准备</li>
+<li>系统准备好所有东西时，转场动画准备开始，调用UIPresentationController的<code>presentationTransitionWillBegin</code>方法</li>
+<li>渲染动画器控制的动画以及向协调器提交的动画</li>
+<li>UIKit等待动画渲染完毕并主动调用上下文的<code>completeTransition:</code>方法</li>
+<li>调用UIPresentationController的<code>presentationTransitionDidEnd</code>方法</li>
+</ol>
+<h3 id="dismissal过程（B-Dismiss-To-A）"><a href="#dismissal过程（B-Dismiss-To-A）" class="headerlink" title="dismissal过程（B Dismiss To A）"></a>dismissal过程（B Dismiss To A）</h3><ol>
+<li>检查B控制器的<code>transitionDelegate</code>是否不为空，如果不为空，代表提供了自定义的转场动画，如果没有则会使用系统默认的动画效果</li>
+<li>访问B控制器的<code>modalPresentationStyle</code>，如果为其他系统中自定义的style，则提供一个与之对应的UIPresentationController，如果为custom，则访问代理的<code>presentationController</code>方法获取自定义的presentationController，如果该方法返回为空，则会返回一个默认实现（rootView的frame充满containerView，无任何其他多余view）</li>
+<li>访问B控制器代理的<code>animationController</code>方法获取一个动画控制器，如果返回为空，则执行系统默认的动画过程</li>
+<li>检查B控制器代理的<code>interactionControllerForDismissal</code>方法是否返回一个非空的交互动画控制器，如果返回了则会更新上下文中相关信息，为交互动画控制做一些准备</li>
+<li>系统准备好所有东西时，转场动画准备开始，调用UIPresentationController的<code>dismissalTransitionWillBegin</code>方法</li>
+<li>渲染动画器控制的动画以及向协调器提交的动画</li>
+<li>UIKit等待动画渲染完毕并主动调用上下文的<code>completeTransition:</code>方法</li>
+<li>调用UIPresentationController的<code>dismissalTransitionDidEnd:</code>方法</li>
+</ol>
+<h2 id="如何实现自定以转场动画"><a href="#如何实现自定以转场动画" class="headerlink" title="如何实现自定以转场动画"></a>如何实现自定以转场动画</h2><ol>
+<li>设置目标控制器的<code>modalPresentationStyle</code>属性为custom</li>
+<li>设置目标控制器的<code>transitionDelegate</code>指向一个实现了<code>UIViewControllerTransitioningDelegate</code>协议的对象</li>
+<li>创建一个实现了<code>UIViewControllerContextTransitioning</code>协议的类，该类的实现方法可以参考上面的<code>UIViewControllerContextTransitioning</code>协议介绍中的<code>如何实现一个动画类的过程</code></li>
+<li>如果是交互式的动画（比如手势拖动控制），那么创建一个继承于<code>UIPercentDrivenInteractiveTransition</code>的子类，在子类中监听手势（或者其他交互方式）的变动，并在合适的地方调用父类的方法控制动画进度</li>
+<li>是否需要使用到UIPresentationController（比如是否需要实现弹出视图并不完全覆盖屏幕，屏幕空白部分需要附加模糊试图，点击屏幕空白部分需要退出等效果），如果需要用到，则创建一个继承于UIPresentationController的子类，重写子类中的相关方法实现你的逻辑。关于实现方法可以参考上面的<code>如何实现一个自定义的UIPresentationController</code></li>
+</ol>
+<h2 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h2><h3 id="最简单的淡入淡出动画实现"><a href="#最简单的淡入淡出动画实现" class="headerlink" title="最简单的淡入淡出动画实现"></a>最简单的淡入淡出动画实现</h3><p>假设A为源控制器，B为跳转的目标控制器</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//首先创建一个动画类，实现UIViewControllerAnimatedTransitioning协议来控制动画</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animation</span>: <span class="title">NSObject</span>, <span class="title">UIViewControllerAnimatedTransitioning</span> </span>&#123;</span><br><span class="line">    <span class="comment">//重写transitionDuration方法，返回动画执行的时长</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">transitionDuration</span><span class="params">(using transitionContext: UIViewControllerContextTransitioning?)</span></span> -&gt; <span class="type">TimeInterval</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.5</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//重写animateTransition方法，内部控制动画</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animateTransition</span><span class="params">(using transitionContext: UIViewControllerContextTransitioning)</span></span> &#123;</span><br><span class="line">        <span class="comment">//根据上下文参数获取到FromController，ToController，FromView，ToView这些基本信息</span></span><br><span class="line">        <span class="keyword">let</span> context = transitionContext</span><br><span class="line">        <span class="keyword">let</span> contentView = context.containerView</span><br><span class="line">        <span class="keyword">let</span> fromVC = context.viewController(forKey: .from)!</span><br><span class="line">        <span class="keyword">let</span> toVC = context.viewController(forKey: .to)!</span><br><span class="line">        <span class="keyword">let</span> fromView = context.view(forKey: .from)!</span><br><span class="line">        <span class="keyword">let</span> toView = context.view(forKey: .to)!</span><br><span class="line">        <span class="comment">//根据上下文参数获取动画结束之后toView的位置frame</span></span><br><span class="line">        <span class="comment">//并在动画开始之前对两个涉及到转场的View设置合适的属性</span></span><br><span class="line">        toView.frame = context.finalFrame(<span class="keyword">for</span>: toVC)</span><br><span class="line">        fromView.frame = context.initialFrame(<span class="keyword">for</span>: fromVC)</span><br><span class="line">        fromView.alpha = <span class="number">1</span></span><br><span class="line">        toView.alpha = <span class="number">0</span></span><br><span class="line">        <span class="comment">//将toView添加到comtainerView中</span></span><br><span class="line">        contentView.addSubview(toView)</span><br><span class="line">        <span class="comment">//开始执行动画，动画执行完毕之后必须确保toView的frame在其finalFrame之上</span></span><br><span class="line">        <span class="keyword">let</span> duration = <span class="keyword">self</span>.transitionDuration(using: context)</span><br><span class="line">        <span class="type">UIView</span>.animate(withDuration: duration, animations: &#123;</span><br><span class="line">            fromView.alpha = <span class="number">0</span></span><br><span class="line">            toView.alpha = <span class="number">1</span></span><br><span class="line">        &#125;) &#123; finished <span class="keyword">in</span></span><br><span class="line">            <span class="comment">//动画执行结束之后，判断转场是否正常完成，并且根据需要调用上下文的completeTransition方法来释放资源</span></span><br><span class="line">            <span class="keyword">let</span> cancelled = context.transitionWasCancelled</span><br><span class="line">            context.completeTransition(!cancelled)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//之后扩展控制器A类，使自己遵循UIViewControllerTransitioningDelegate协议</span></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">A</span>: <span class="title">UIViewControllerTransitioningDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">//实现animationController(forPresented:)返回当前控制器被present出来的时候对应的动画器</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(#function)</span><br><span class="line">        <span class="built_in">print</span>(<span class="keyword">self</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="type">Animation</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//实现animationController(forDismiied:)返回当前控制器要dismiss回其他控制器的时候对应的动画器</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forDismissed dismissed: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(#function)</span><br><span class="line">        <span class="built_in">print</span>(<span class="keyword">self</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="type">Animation</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">presentToB() &#123;</span><br><span class="line">    <span class="keyword">let</span> b = <span class="type">B</span>()</span><br><span class="line">    <span class="comment">//将A控制器自身作为transitionDelegate属性赋值给B控制器示例</span></span><br><span class="line">    b.transitionDelegate = <span class="keyword">self</span></span><br><span class="line">    <span class="comment">//调用present跳转过去</span></span><br><span class="line">    <span class="keyword">self</span>.present(b, withAnimation: <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="可交互的动画应用"><a href="#可交互的动画应用" class="headerlink" title="可交互的动画应用"></a>可交互的动画应用</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//实现一个可交互的动画控制器，遵循UIViewControllerInteractiveTransitioning协议</span></span><br><span class="line"><span class="comment">//这里通过直接继承系统类UIPercentDrivenInteractiveTransition来实现</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InteractionAnimation</span>:<span class="title">UIPercentDrivenInteractiveTransition</span> </span>&#123;</span><br><span class="line">    <span class="keyword">weak</span> <span class="keyword">var</span> context: <span class="type">UIViewControllerContextTransitioning!</span></span><br><span class="line">    <span class="keyword">let</span> gesture:<span class="type">UIScreenEdgePanGestureRecognizer</span></span><br><span class="line">    <span class="comment">//该手势需要一个外部的边缘手势与之配合</span></span><br><span class="line">    <span class="keyword">init</span>(<span class="number">_</span> gesture:<span class="type">UIScreenEdgePanGestureRecognizer</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.gesture = gesture</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        gesture.addTarget(<span class="keyword">self</span>, action: #selector(gestureUpdate(sender:)))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">startInteractiveTransition</span><span class="params">(<span class="number">_</span> transitionContext: UIViewControllerContextTransitioning)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.startInteractiveTransition(transitionContext)</span><br><span class="line">        context = transitionContext</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//在每次手势触发时，计算当前应该所处的动画进度，并通过父类的update(),finish(),cancel()方法来控制动画进度</span></span><br><span class="line">    <span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">gestureUpdate</span><span class="params">(sender:UIScreenEdgePanGestureRecognizer)</span></span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> sender.state &#123;</span><br><span class="line">        <span class="keyword">case</span> .began:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">case</span> .changed:</span><br><span class="line">            <span class="keyword">self</span>.update(<span class="keyword">self</span>.percent)</span><br><span class="line">        <span class="keyword">case</span> .ended:</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">self</span>.percent &gt; <span class="number">0.5</span> &#123;</span><br><span class="line">                <span class="keyword">self</span>.finish()</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">self</span>.cancel()</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">self</span>.cancel()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> percent:<span class="type">CGFloat</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> contentView = context.containerView</span><br><span class="line">        <span class="keyword">let</span> location = gesture.location(<span class="keyword">in</span>: contentView)</span><br><span class="line">        <span class="keyword">let</span> w = contentView.bounds.width</span><br><span class="line">        <span class="keyword">let</span> h = contentView.bounds.height</span><br><span class="line">        <span class="keyword">switch</span> gesture.edges &#123;</span><br><span class="line">        <span class="keyword">case</span> .<span class="keyword">left</span>:</span><br><span class="line">            <span class="keyword">return</span> location.x/w</span><br><span class="line">        <span class="keyword">case</span> .<span class="keyword">right</span>:</span><br><span class="line">            <span class="keyword">return</span> (w-location.x)/w</span><br><span class="line">        <span class="keyword">case</span> .top:</span><br><span class="line">            <span class="keyword">return</span> location.y/h</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建一个动画类，实现UIViewControllerAnimatedTransitioning协议来控制动画</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animation</span>: <span class="title">NSObject</span>, <span class="title">UIViewControllerAnimatedTransitioning</span> </span>&#123;</span><br><span class="line">    <span class="comment">//实现transitionDuration方法，返回动画执行的时长</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">transitionDuration</span><span class="params">(using transitionContext: UIViewControllerContextTransitioning?)</span></span> -&gt; <span class="type">TimeInterval</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.5</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//实现animateTransition方法，内部控制动画</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animateTransition</span><span class="params">(using transitionContext: UIViewControllerContextTransitioning)</span></span> &#123;</span><br><span class="line">        <span class="keyword">let</span> context = transitionContext</span><br><span class="line">        <span class="keyword">let</span> container = context.containerView</span><br><span class="line">        <span class="keyword">let</span> fromVC = context.viewController(forKey: .from)!</span><br><span class="line">        <span class="keyword">let</span> toVC = context.viewController(forKey: .to)!</span><br><span class="line">        <span class="keyword">let</span> fromView = context.view(forKey: .from)!</span><br><span class="line">        <span class="keyword">let</span> toView = context.view(forKey: .to)!</span><br><span class="line">        <span class="comment">// 判断是present还是dismiss</span></span><br><span class="line">        <span class="keyword">let</span> presenting = toVC.presentingViewController == fromVC</span><br><span class="line">        <span class="comment">// 执行动画</span></span><br><span class="line">        <span class="keyword">if</span> presenting &#123;</span><br><span class="line">            fromView.frame = context.initialFrame(<span class="keyword">for</span>: fromVC)</span><br><span class="line">            toView.frame = context.finalFrame(<span class="keyword">for</span>: toVC).offsetBy(dx: <span class="type">UIScreen</span>.main.bounds.width, dy: <span class="number">0</span>)</span><br><span class="line">            container.addSubview(toView)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            fromView.frame = context.initialFrame(<span class="keyword">for</span>: fromVC)</span><br><span class="line">            toView.frame = context.finalFrame(<span class="keyword">for</span>: toVC)</span><br><span class="line">            container.insertSubview(toView, belowSubview: fromView)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> duration = <span class="keyword">self</span>.transitionDuration(using: context)</span><br><span class="line">        <span class="type">UIView</span>.animate(withDuration: duration, animations: &#123;</span><br><span class="line">            <span class="keyword">if</span> presenting &#123;</span><br><span class="line">                toView.frame = context.finalFrame(<span class="keyword">for</span>: toVC)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                fromView.frame = context.initialFrame(<span class="keyword">for</span>: fromVC).offsetBy(dx: <span class="type">UIScreen</span>.main.bounds.width, dy: <span class="number">0</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;) &#123; finished <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">let</span> cancelled = context.transitionWasCancelled</span><br><span class="line">            context.completeTransition(!cancelled)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//扩展控制器A类，使自己遵循UIViewControllerTransitioningDelegate协议</span></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">A</span>: <span class="title">UIViewControllerTransitioningDelegate</span> </span>&#123;</span><br><span class="line">    <span class="comment">//实现animationController(forPresented:)返回当前控制器被present出来的时候对应的动画器</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="type">Animation</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//实现animationController(forDismiied:)返回当前控制器要dismiss回其他控制器的时候对应的动画器</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">animationController</span><span class="params">(forDismissed dismissed: UIViewController)</span></span> -&gt; <span class="type">UIViewControllerAnimatedTransitioning?</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="type">Animation</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//实现两个interactionController方法来分别返回本控制器被present以及dismiss回原控制器时所用到的动画控制器</span></span><br><span class="line">    <span class="comment">//这里我们假设存在一个A，B两个控制器都可以访问到的someGlobalGesture，到了实际项目手势如何处理还需要你们自己结合业务考虑</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">interactionControllerForPresentation</span><span class="params">(using animator: UIViewControllerAnimatedTransitioning)</span></span> -&gt; <span class="type">UIViewControllerInteractiveTransitioning?</span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> someGlobalGesture.state &#123;</span><br><span class="line">        <span class="keyword">case</span> .began, .changed, .recognized:</span><br><span class="line">            <span class="keyword">return</span> <span class="type">InteractionAnimation</span>(someGlobalGesture)</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">interactionControllerForDismissal</span><span class="params">(using animator: UIViewControllerAnimatedTransitioning)</span></span> -&gt; <span class="type">UIViewControllerInteractiveTransitioning?</span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> someGlobalGesture.state &#123;</span><br><span class="line">        <span class="keyword">case</span> .began, .changed, .recognized:</span><br><span class="line">            <span class="keyword">return</span> <span class="type">InteractionAnimation</span>(someGlobalGesture)</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//在A界面出现的时候绑定手势action，手势进入活跃状态时就跳转到B去</span></span><br><span class="line"><span class="comment">//现在我们就可以通过左滑从A进入B了</span></span><br><span class="line"><span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">presentToB</span><span class="params">(<span class="number">_</span> sender:UIScreenEdgePanGestureRecognizer)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> sender.state &#123;</span><br><span class="line">    <span class="keyword">case</span> .began:</span><br><span class="line">        <span class="keyword">let</span> b = <span class="type">B</span>()</span><br><span class="line">        <span class="comment">//将A控制器自身作为transitioningDelegate属性赋值给B控制器示例</span></span><br><span class="line">        b.transitioningDelegate = <span class="keyword">self</span></span><br><span class="line">        <span class="comment">//调用present跳转过去</span></span><br><span class="line">        <span class="keyword">self</span>.present(b, withAnimation: <span class="literal">true</span>)</span><br><span class="line">    <span class="keyword">default</span>:()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//在B界面出现的时候绑定手势action，手势进入活跃状态时就返回到A</span></span><br><span class="line"><span class="comment">//现在我们可以通过右滑从B返回到A了</span></span><br><span class="line"><span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">dismissToA</span><span class="params">(<span class="number">_</span> sender:UIScreenEdgePanGestureRecognizer)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> sender.state &#123;</span><br><span class="line">    <span class="keyword">case</span> .began:</span><br><span class="line">        <span class="keyword">self</span>.dismiss(animated: <span class="literal">true</span>, completion: <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Combine核心概念</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/">
+        <span>从Kubernetes的架构和其中的对象开始</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Modal%E8%BD%AC%E5%9C%BA%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">Modal转场中的一些核心概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Modal%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB%E4%B8%AD%E7%9A%84%E5%85%B3%E9%94%AE%E8%A7%92%E8%89%B2"><span class="toc-number">2.</span> <span class="toc-text">Modal转场动画中的关键角色</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UIViewControllerContextTransitioning-%E5%8A%A8%E7%94%BB%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">2.1.</span> <span class="toc-text">UIViewControllerContextTransitioning:动画上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIViewControllerAnimatedTransitioning"><span class="toc-number">2.2.</span> <span class="toc-text">UIViewControllerAnimatedTransitioning</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIViewControllerInteractiveTransitioning-%E5%8F%AF%E4%BA%A4%E4%BA%92%E7%9A%84%E5%8A%A8%E7%94%BB%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">2.3.</span> <span class="toc-text">UIViewControllerInteractiveTransitioning:可交互的动画控制器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIViewControllerTransitionCoordinator-%E5%8A%A8%E7%94%BB%E5%8D%8F%E8%B0%83%E5%99%A8"><span class="toc-number">2.4.</span> <span class="toc-text">UIViewControllerTransitionCoordinator:动画协调器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIPresentationController-Presentation%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-number">2.5.</span> <span class="toc-text">UIPresentationController:Presentation控制器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UIViewControllerTransitioningDelegate-%E8%BD%AC%E5%9C%BA%E4%BB%A3%E7%90%86"><span class="toc-number">2.6.</span> <span class="toc-text">UIViewControllerTransitioningDelegate:转场代理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Modal%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B8%AD%E7%9A%84%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">Modal自定义转场中的调用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Present%E8%BF%87%E7%A8%8B%EF%BC%88A-Present-To-B%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Present过程（A Present To B）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dismissal%E8%BF%87%E7%A8%8B%EF%BC%88B-Dismiss-To-A%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">dismissal过程（B Dismiss To A）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%BB%A5%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB"><span class="toc-number">4.</span> <span class="toc-text">如何实现自定以转场动画</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">实际应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA%E5%8A%A8%E7%94%BB%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.1.</span> <span class="toc-text">最简单的淡入淡出动画实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BA%A4%E4%BA%92%E7%9A%84%E5%8A%A8%E7%94%BB%E5%BA%94%E7%94%A8"><span class="toc-number">5.2.</span> <span class="toc-text">可交互的动画应用</span></a></li></ol></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

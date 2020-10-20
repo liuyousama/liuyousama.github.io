@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            K最近邻算法 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/">K最近邻算法</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-03-03
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-03-31
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=K最近邻算法&url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=K最近邻算法&url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/&title=K最近邻算法" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=K最近邻算法&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/&text=K最近邻算法" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/ >机器学习</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h3 id="KNN算法的基本思想"><a href="#KNN算法的基本思想" class="headerlink" title="KNN算法的基本思想"></a>KNN算法的基本思想</h3><hr>
+<blockquote>
+<p>之所以选择KNN算法作为我学习的第一个机器学期算法，是因为这个算法的思想很简单，我可以快速的入门机器学习，并且借此算法了解到许多在机器学习经常会出现的概念。</p>
+</blockquote>
+<blockquote>
+<p>首先从一个小例子来了解KNN算法的基本思想。我们首先列出一组虚拟的数据，并且画出该组数据的散点图。</p>
+</blockquote>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/1.jpg" alt="1.jpg"></p>
+<blockquote>
+<p>这组数据一共由两种类型八个数据组成，每个数据都是一个二维向量，散点图上的红蓝两种颜色的点就代表两种不同类型的数据。我们把这八个数据全部作为训练数据，此时又来了一个新数据（图中的绿点），我们需要预测该绿点属于那个类别。<br>让我们来看看KNN算法是怎么处理这个问题的，首先我们先假设K为3，那么KNN算法就会寻找距离该需要预测的点最近的三个训练数据。也就是图中的三个蓝点，然后统计这三个点的标签，进行投票，那个标签的数量最多，KNN就会认定该点属于哪一类别。怎么样KNN算法的思想是不是很简单，很易于理解。</p>
+</blockquote>
+<h3 id="KNN底层代码封装"><a href="#KNN底层代码封装" class="headerlink" title="KNN底层代码封装"></a>KNN底层代码封装</h3><hr>
+<p>我们实现KNN算法的基本思路就是当输入一个预测数据的时候，计算出训练数据集中每个点到预测数据点的距离，然后取出前k个数据，然后计算出该k个数据对应的标签数最多的那个，就是预测结果。为了我们使用方便以及统一格式我们将数据封装为类的形式。<img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/2.jpg" alt="2.jpg"></p>
+<ul>
+<li>init用来初始化算法（一些超参数的设定）</li>
+<li>fit中文翻译为拟合，是由训练数据得出预测模型的过程。然而在KNN中并没有模型这一概念，其实KNN也是少数的不用得出预测模型直接开始预测的机器算法之一。但是我们为了统一封装，所以给KNN也封装了拟合这一过程，在fit中做的仅仅是将训练数据传给对象使其保存起来。</li>
+<li>predict由输入数据得出预测结果的过程。在scikit-learn中，predict的参数要是一个数据列表，输出结果也是一个结果列表</li>
+</ul>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/3.jpg" alt="3.jpg"></p>
+<h3 id="关于test-train-split"><a href="#关于test-train-split" class="headerlink" title="关于test-train-split"></a>关于test-train-split</h3><hr>
+<blockquote>
+<p>当我们需要用机器学习去解决一个实际问题的时候，我们需要为该场景挑选出最合适的机器学习算法，并且确定在这个场景下最合适的超参数。但是在真实场景下测试时间周期长，并且在真实场景下你很难拿到数据的真实的标签。<br>所以我们通常会将测试数据分成两份，一份作为训练数据，一份作为测试数据。用训练数据结合算法和特定的参数，配合训练数据我们可以很快的得出该算法在此场景下的预测准确率</p>
+</blockquote>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/4.jpg" alt="4.jpg"></p>
+<blockquote>
+<p>该方法将传入的数据矩阵和标签向量分为训练与测试两份，在参数中可以指定测试数据在所有数据中所占的比例，默认为20%</p>
+</blockquote>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/5.jpg" alt="5.jpg"></p>
+<blockquote>
+<p>然后将测试数据放进模型由模型预测，最后比较预测的结果与本身的标签向量我们可以得出在该问题场景下特定算法特定参数的准确率</p>
+</blockquote>
+<h3 id="关于KNN中的超参数"><a href="#关于KNN中的超参数" class="headerlink" title="关于KNN中的超参数"></a>关于KNN中的超参数</h3><blockquote>
+<p>超参数：在执行机器学习算法之前就需要指定的参数，我们在机器学习中常说的调参中的参数指的就是超参数，超参数对于一个模型的准确率十分重要，我们接下来来讨论一下KNN最近邻算法中的一些常用超参数</p>
+</blockquote>
+<ul>
+<li>k 取的最近距离点的个数</li>
+<li>weight数 权重方式（uniform：无权重 distance：以连点距离的倒数作为该点的投票权重）</li>
+</ul>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/6.jpg" alt="6.jpg"></p>
+<blockquote>
+<p>如图（k=3），训练数据与测试数据出现了类似这样的情形，如果按照原本的方式，与测试数据最近的三个点分别是两个蓝点和一个红点，蓝点胜出，所以预测结果会是蓝色。但是我们从图中可以很明显的看出，预测点与唯一的一个红色更近一些，也就是说预测点更偏向红色一些。这个时候我们可以给投票加权，以距离的倒数为权重。这样离预测点近的点的票权就重</p>
+</blockquote>
+<ul>
+<li>P(计算距离的方式)<blockquote>
+<p>首先我们来了解一些概念<br>首先是最常见的欧拉距离以及其变形形式<br><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/7.jpg" alt="7.jpg"><br><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/8.jpg" alt="8.jpg"><br>其次就是曼哈顿距离，曼哈顿距离得出的是两点在各个维度上的距离之和<br><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/9.jpg" alt="9.jpg"><br>由欧拉距离和曼哈顿距离公式我们可以进一步得出明可夫斯基距离<br><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/10.jpg" alt="10.jpg"><br>p值默认为2</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="关于Scaler"><a href="#关于Scaler" class="headerlink" title="关于Scaler"></a>关于Scaler</h3><blockquote>
+<p>假如现在我们有一组数据，分别是肿瘤发现的时间和肿瘤的大小，我们要根据这两个数据预测出该肿瘤是否是恶性肿瘤。其中的某条数据为肿瘤发现时间211天，肿瘤大小2.1cm。到这里我们就很容易发现，两点之间的距离主要受了天数的影响，肿瘤大小的对点距离造成的影响很小。显然这不是我们想要看到的结果。<br>所以在拟合与预测之前需要先对样本数据与待预测数据做归一化处理，使所有数据都分布在同一量纲内。<br>这里先来介绍两种常用的归一化方法</p>
+</blockquote>
+<ul>
+<li><h4 id="最值归一化方法"><a href="#最值归一化方法" class="headerlink" title="最值归一化方法"></a>最值归一化方法</h4><a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler">Sklearn中的最值归一化</a></li>
+</ul>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/11.jpg" alt="11.jpg"></p>
+<blockquote>
+<p>从公式中我们可以看出来，这中归一化方法要求数据有很明显的边界，就是说要有明确的最大值与最小值。比如学生的分数（0-100）等，但面对一些边界并不明显的效果就不会很好了，比如股票价格、房价等。</p>
+</blockquote>
+<ul>
+<li><h4 id="均值方差归一化方法"><a href="#均值方差归一化方法" class="headerlink" title="均值方差归一化方法"></a>均值方差归一化方法</h4><a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler">Sklearn中的均值方差归一化</a></li>
+</ul>
+<p><img src="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/12.jpg" alt="12.jpg"></p>
+<blockquote>
+<p>面对那些没有明显边界的数据，我们可以使用均值方差归一化方法</p>
+</blockquote>
+<h3 id="关于KNN算法的更多思考"><a href="#关于KNN算法的更多思考" class="headerlink" title="关于KNN算法的更多思考"></a>关于KNN算法的更多思考</h3>
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2019/03/04/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>线性回归算法</span>
+      </a>
+    
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/03/03/K%E6%9C%80%E8%BF%91%E9%82%BB%E7%AE%97%E6%B3%95/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#KNN%E7%AE%97%E6%B3%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="toc-number">1.</span> <span class="toc-text">KNN算法的基本思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KNN%E5%BA%95%E5%B1%82%E4%BB%A3%E7%A0%81%E5%B0%81%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">KNN底层代码封装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8Etest-train-split"><span class="toc-number">3.</span> <span class="toc-text">关于test-train-split</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EKNN%E4%B8%AD%E7%9A%84%E8%B6%85%E5%8F%82%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">关于KNN中的超参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EScaler"><span class="toc-number">5.</span> <span class="toc-text">关于Scaler</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%80%E5%80%BC%E5%BD%92%E4%B8%80%E5%8C%96%E6%96%B9%E6%B3%95"><span class="toc-number">5.1.</span> <span class="toc-text">最值归一化方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9D%87%E5%80%BC%E6%96%B9%E5%B7%AE%E5%BD%92%E4%B8%80%E5%8C%96%E6%96%B9%E6%B3%95"><span class="toc-number">5.2.</span> <span class="toc-text">均值方差归一化方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EKNN%E7%AE%97%E6%B3%95%E7%9A%84%E6%9B%B4%E5%A4%9A%E6%80%9D%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">关于KNN算法的更多思考</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

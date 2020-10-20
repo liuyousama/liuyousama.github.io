@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            从Kubernetes的架构和其中的对象开始 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/">从Kubernetes的架构和其中的对象开始</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-10-20
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-10-20
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=从Kubernetes的架构和其中的对象开始&url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=从Kubernetes的架构和其中的对象开始&url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/&title=从Kubernetes的架构和其中的对象开始" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=从Kubernetes的架构和其中的对象开始&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/&text=从Kubernetes的架构和其中的对象开始" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/Kubernetes/ >Kubernetes</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <h2 id="Kubernetes出现的背景"><a href="#Kubernetes出现的背景" class="headerlink" title="Kubernetes出现的背景"></a>Kubernetes出现的背景</h2><blockquote>
+<p>&nbsp;&nbsp;在早些年的时候，我们几乎所有的应用都采用单体的模式，他们通常以一个或多个进程的形式运行在一台或多台物理主机之上。在这种模式下，应用的发布周期长，迭代也不会特别的频繁。开发团队会共同开发这一个大的单体应用，并且在开发完成之后将程序打包交给运维人员，之后再由运维人员来负责程序的部署上线以及监控事宜。</p>
+</blockquote>
+<blockquote>
+<p>&nbsp;&nbsp;但在今天，大型的单体应用在逐渐的被分解成一个个小的组件，我们称之为微服务，这些组件彼此之间松耦合，所以可以由开发人员独立开发并且独立部署。这样的架构模式很大程度上增强了程序的可维护性（因为不同组件之间被隔离开，单个程序中的逻辑更加的清晰）与迭代速度。但是各种伴随着微服务架构而出现的难题也不断的出现。在一个大型应用体系之中，会拥有很多个组件，而且组件之间也会有很复杂的依赖关系，组件的迭代速度也要比之前快很多，这就使部署，监控以及管理组件变得越来越困难。手动实现所有这些事情变成了几乎不可能，这就是Kubernetes出现的原因，K8s帮助我们自动地调度、配置、监控这些组件，并且在组件出现错误时及时地对错误进行处理。</p>
+</blockquote>
+<h2 id="Kubernetes整体架构"><a href="#Kubernetes整体架构" class="headerlink" title="Kubernetes整体架构"></a>Kubernetes整体架构</h2><blockquote>
+<p>在如今许多中大型规模的公司中，使用kubernetes管理上百台服务器以及上千个服务组件是一件司空见惯的事情，那Kubernetes是如何让在过去传统的运维时代看起来几乎不可能的事情变得“司空见惯”的呢？下面我们先来讨论下Kubernetes的整体架构，让我们对这个强大的应用有个初步的了解</p>
+</blockquote>
+<blockquote>
+<p>Kubernetes整个系统由一个主节点与若干个工作节点组成，为了能够更好地理解各个节点之间的关系，我花了一幅草图，图画的不是很好，将就着看一下。下图中主节点主要的作用是管理整个系统的配置，对外提供配置系统的接口，同时负责协调各个工作节点之间的工作。工作节点的主要作用就是运行用户实际部署的组件或者应用</p>
+</blockquote>
+<p> <img src="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/1.png" alt="1.png"></p>
+<p> <strong>主节点</strong>：</p>
+<ul>
+<li><p>API服务器：任何受控组件都要与API服务器相连，API服务器可以从这些受控组件处获取当前系统的一个状态，受控组件也可以从API服务器处获取自己要做的事情。</p>
+</li>
+<li><p>调度器：调度器负责调度你的应用，调度器会根据当前系统的状态来得出现在是否需要部署新的应用，以及要交给哪个工作节点来部署这个应用</p>
+</li>
+<li><p>controller manager：主要负责集群之间的关系，如监控跟踪工作节点以及处理工作节点出现错误等</p>
+</li>
+<li><p>Etcd：是Kubernetes所依赖的外部数据存储组件，用来持久化集群配置</p>
+</li>
+<li><p>*工作节点**：</p>
+</li>
+<li><p>kubelet：是工作节点上的受控组件，它会告知API服务器当前节点的状态，并从API服务器那里获取自己需要做的事情</p>
+</li>
+<li><p>Docker：运行在工作节点上的容器系统，这里只是以Docker举例，也可以是其他的容器系统（rkt等等）</p>
+</li>
+<li><p>kube-proxy：负责各个节点之间的网络通信以及流量负载均衡，各个节点之间通过proxy构建了一个属于Kubernetes系统的网络，所有运行在此系统中的组件或者应用都可以看作是在同一个网络当中</p>
+<p>Kubernetes的整体架构大概介绍到这里，关于以上的介绍这里还有几个格外需要注意的点</p>
+</li>
+</ul>
+<ul>
+<li><strong>主节点(Master)只负责跟踪并控制各个工作节点的状态，但并不运行应用</strong></li>
+<li><strong>主节点(Master)和工作节点(Worker)可以部署在同一台物理服务器上</strong></li>
+<li><strong>一个Kubernetes系统只能由一个主节点(Master)和若干个工作节点(Worker)构成</strong></li>
+</ul>
+<h2 id="Kubernetes中的对象"><a href="#Kubernetes中的对象" class="headerlink" title="Kubernetes中的对象"></a>Kubernetes中的对象</h2><blockquote>
+<p>&nbsp;&nbsp;Kubernetes的对象是我们进行应用调度的重要依据，Kubernetes的对象其实就是持久化的实体，这些实体描述了集群中所运行的应用一节这些应用的状态与占用的资源。所以在我们想要继续深入了解Kubernetes这个庞大的系统之前，我们要先关注一下Kubernetes中的对象。<br>&nbsp;&nbsp;Kubernetes中的对象在代码层面上表现为一个接口，而不是一个结构体，对象结构中定义了一系列的Getter/Setter方法 </p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Object <span class="keyword">interface</span> &#123;</span><br><span class="line">	GetNamespace() <span class="keyword">string</span></span><br><span class="line">	SetNamespace(namespace <span class="keyword">string</span>)</span><br><span class="line">	GetName() <span class="keyword">string</span></span><br><span class="line">	SetName(name <span class="keyword">string</span>)</span><br><span class="line">	GetGenerateName() <span class="keyword">string</span></span><br><span class="line">	SetGenerateName(name <span class="keyword">string</span>)</span><br><span class="line">	GetUID() types.UID</span><br><span class="line">	SetUID(uid types.UID)</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>&nbsp;&nbsp;而对使用者来说，Kubernetes中的对象主要有以下几个部分组成</p>
+</blockquote>
+<p><img src="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/2.png" alt="2.png"></p>
+<ul>
+<li><strong>apiVersion</strong>：指定API组，决定了当前的对象应该由哪个组件来处理</li>
+<li><strong>kind</strong>：描述了对象的类型，kubernetes的对象有好多种，这个kind决定了对象的类型以及构建的方式</li>
+<li><strong>metadata</strong>：可以为我们提供一些对象的扩展信息</li>
+<li>**spec(规格)**：描述了我们所期望的一个对象的状态，可以看作是我们所构建的这个对象的构成。</li>
+<li><strong>status</strong>：是Kubernetes集群对外暴露的可以描述对象运行状态的接口</li>
+</ul>
+<blockquote>
+<p>spec与status与kind具有很强的关联性，不同类型的对象的spec与status是不同的，所以我们这里讨论kubernetes中的对象的时候，先只讨论不同类型通用的metadata，其他的会在介绍特定类型对象的时候进行说明</p>
+</blockquote>
+<h3 id="Metadata（元数据）"><a href="#Metadata（元数据）" class="headerlink" title="Metadata（元数据）"></a>Metadata（元数据）</h3><p>Metadata在对象中给我们提供了一些很有用的扩展信息，我们可以基于元数据来唯一识别一个对象，以及将多个对象组织与分类</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">...</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">...</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">userService</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">production</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">myapp</span></span><br><span class="line">    <span class="attr">environment:</span> <span class="string">production</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">    <span class="string">...</span></span><br></pre></td></tr></table></figure>
+<h4 id="标签与选择器"><a href="#标签与选择器" class="headerlink" title="标签与选择器"></a>标签与选择器</h4><p>每一个Kubernetes对象都可以被打上标签，我们可以使用标签选择器来快速匹配到我们想要的对象，当你的系统中的对象越来越多的时候，标签便是一个不可或缺的功能，没有了标签你将难以管理种类繁多数量巨大的对象集合。例如下面的命令可以直接帮助我们获取生产环境中的app为myapp的所有pods。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods -l environment=production,app=myapp</span><br></pre></td></tr></table></figure>
+<p>除了使用以上命令行的方式获取对象之外，我们也可以在构建对象时来指定标签选择器来达到相同的效果。之后我们会了解到，一部分对象是需要靠自己内部定义的标签选择器来工作的</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">selector:</span></span><br><span class="line">  <span class="attr">matchLabels:</span></span><br><span class="line">    <span class="attr">environment:</span> <span class="string">production</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">myapp</span></span><br></pre></td></tr></table></figure>
+<h4 id="namespace（命名空间）"><a href="#namespace（命名空间）" class="headerlink" title="namespace（命名空间）"></a>namespace（命名空间）</h4><p>在上面的标签中我们可以看到，在真是的项目运行环境中，我们经常会有生产环境与测试环境两组不同的运行中的应用，而我们知道，一般生产环境与测试环境的应用是要隔离开来的，以免应用的一些系统级的行为对其他应用造成影响而这就是namespace（命名空间）存在的理由，不同的命名空间可以对资源进行隔离，例如在一个命名空间中的对象无法直接使用服务名称来直接访问另一个命名空间中的服务。</p>
+<h4 id="总结元数据的使用"><a href="#总结元数据的使用" class="headerlink" title="总结元数据的使用"></a>总结元数据的使用</h4><p>通过以上信息，我们可以看到kubernetes的元数据为我们提供了可以快速分类和管理集群中大量对象的方法，为我们的应用实现提供了更大的可能。但是我们需要意识到的是，kubernetes只是给我们提供了这样的一种接口，其中的标签和命名空间仍然是由我们自己来编辑和选择的，如果滥用标签和命名空间，不仅不会是管理不同的对象变得便捷，有时还会对系统的正常功能造成影响。所以我们最好在使用标签与命名空间之前，定义一套属于这个系统的标签使用规范。这些规范应包括：</p>
+<ul>
+<li>可以使用的标签的集合，在使用标签时，应禁止使用集合之外的标签</li>
+<li>集合中的每个标签的可选值以及语义</li>
+<li>集合中有哪些标签是每个对象必须使用的</li>
+<li>集合中有哪些标签是特定类型对象必须使用的</li>
+<li>集合中有哪些标签是特定类型对象不能使用的</li>
+<li>命名空间集合，系统中不应该出现集合之外的命名空间</li>
+<li>命名空间集合中每个空间的语义，以及哪些对象应该放入该空间</li>
+</ul>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/06/15/iOS%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E4%B9%8BModal%E8%BD%AC%E5%9C%BA/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>iOS自定义转场之Modal转场</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/09/26/Golang%E4%B8%AD%E7%9A%84%E5%8F%8D%E5%B0%84%E4%B8%8E%E6%8E%A5%E5%8F%A3%E8%AF%A6%E8%A7%A3/">
+        <span>Golang中的反射与接口详解</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/10/20/%E4%BB%8EKubernetes%E7%9A%84%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B6%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%80%E5%A7%8B/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes%E5%87%BA%E7%8E%B0%E7%9A%84%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">Kubernetes出现的背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">Kubernetes整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.</span> <span class="toc-text">Kubernetes中的对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Metadata%EF%BC%88%E5%85%83%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Metadata（元数据）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E4%B8%8E%E9%80%89%E6%8B%A9%E5%99%A8"><span class="toc-number">3.1.1.</span> <span class="toc-text">标签与选择器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#namespace%EF%BC%88%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%EF%BC%89"><span class="toc-number">3.1.2.</span> <span class="toc-text">namespace（命名空间）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.1.3.</span> <span class="toc-text">总结元数据的使用</span></a></li></ol></li></ol></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

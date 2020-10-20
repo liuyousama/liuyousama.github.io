@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            Context初识、源码解析以及最佳实践 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">Context初识、源码解析以及最佳实践</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2019-06-13
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2019-06-14
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=Context初识、源码解析以及最佳实践&url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=Context初识、源码解析以及最佳实践&url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/&title=Context初识、源码解析以及最佳实践" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=Context初识、源码解析以及最佳实践&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/&text=Context初识、源码解析以及最佳实践" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/Golang/ >Golang</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <p>本篇文章将从Golang Context包的一些基本使用场景开始，逐步深入，从源码的角度来介绍一下Context的实现原理。最后会给出一些在使用Context时候的一些建议</p>
+<h2 id="初识Context"><a href="#初识Context" class="headerlink" title="初识Context"></a>初识Context</h2><blockquote>
+<p>Context是Go1.7之后才出现的一个标准库，Context诞生的主要目的是为了协调多个Goroutine工作，这些协调工作包括：<strong>通信（传递消息）、同步、退出</strong></p>
+</blockquote>
+<h4 id="使用Context实现通知退出"><a href="#使用Context实现通知退出" class="headerlink" title="使用Context实现通知退出"></a>使用Context实现通知退出</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//为我们生成一个用于关闭的context以及关闭的方法</span></span><br><span class="line">    ctx, cancel := context.WithCancel(context.Background())</span><br><span class="line">    <span class="comment">//将生成的context传入下一个groutine中</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(ctx context.Context)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">            fmt.Println(<span class="string">&quot;监控退出，停止了...&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">            fmt.Println(<span class="string">&quot;goroutine监控中...&quot;</span>)</span><br><span class="line">            time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;(ctx)</span><br><span class="line"></span><br><span class="line">    time.Sleep(<span class="number">10</span> * time.Second)</span><br><span class="line">    fmt.Println(<span class="string">&quot;可以了，通知监控停止&quot;</span>)</span><br><span class="line">    cancel()</span><br><span class="line">    <span class="comment">//为了检测监控是否停止，如果没有监控输出，就表示停止了</span></span><br><span class="line">    time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="使用context实现超时控制"><a href="#使用context实现超时控制" class="headerlink" title="使用context实现超时控制"></a>使用context实现超时控制</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ctx,cancel := context.WithTimeout(context.Background(), <span class="number">3</span>*time.Second)</span><br><span class="line">    <span class="keyword">defer</span> cancel()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> read(ctx)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Read方法从一个Channel中读取数据，如果读到了数据，就返回，如果在context规定的时间内没有读到，会直接返回空字符串</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">read</span><span class="params">(ctx context.Context)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span>&#123;</span><br><span class="line">    <span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">case</span> a&lt;-dataChannel:</span><br><span class="line">        <span class="keyword">return</span> a</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="使用context实现goroutine之间的传值"><a href="#使用context实现goroutine之间的传值" class="headerlink" title="使用context实现goroutine之间的传值"></a>使用context实现goroutine之间的传值</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> myContextKey <span class="keyword">string</span></span><br><span class="line"><span class="keyword">var</span> key myContextKey = <span class="string">&quot;myKey&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ctx := context.WithValue(context.Background(), key, <span class="string">&quot;我是要传入其他goroutine的值&quot;</span>)</span><br><span class="line">    <span class="keyword">go</span> handle(ctx)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handle</span><span class="params">(ctx context.Context)</span></span>&#123;</span><br><span class="line">    v := ctx.Value(key)</span><br><span class="line">    <span class="keyword">if</span> v != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.<span class="built_in">println</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Context原理解析"><a href="#Context原理解析" class="headerlink" title="Context原理解析"></a>Context原理解析</h2><h3 id="工作机制"><a href="#工作机制" class="headerlink" title="工作机制"></a>工作机制</h3><blockquote>
+<p>由于各个Goroutine之间并没有显式的联系，对于Go来说每个Goroutine都是平等的，并没有父与子的概念，因此当遇到一些复杂的业务的时候，就难以处理，所以Go推出了Context机制来实现对Goroutine的管理。Context采用树结构来管理，第一个被创建的context为树的根节点，可以根据根节点派生出其他的实现context接口的对象，并将其向下传递至新创建的Goroutine，下游Goroutine可以继续派生并向下传递。就这样由一串实现了Context接口的对象构成的树将许多个Goroutine联系了起来。</p>
+</blockquote>
+<h3 id="Context核心接口与结构体"><a href="#Context核心接口与结构体" class="headerlink" title="Context核心接口与结构体"></a>Context核心接口与结构体</h3><p><strong>Context接口</strong>：是context中最为核心的接口，所有的context对象都要实现这个接口</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Context <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">//如果定义了超时控制，则返回的deadline为超时时间，ok为true。否则ok为false</span></span><br><span class="line">	Deadline() (deadline time.Time, ok <span class="keyword">bool</span>)</span><br><span class="line">    <span class="comment">//返回一个只读的channel，用于通知退出</span></span><br><span class="line">	Done() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    <span class="comment">//返回一个error，来说明退出通知发出的原因</span></span><br><span class="line">	Err() error</span><br><span class="line">    <span class="comment">//根据特定的key来取得特定的值</span></span><br><span class="line">	Value(key <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>canceler接口</strong>：是具有通知关闭功能的context需要实现的一个拓展接口</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> canceler <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">//用来向自己的context发送关闭通知，以及递归关闭自己的其他子context，removeFromParent标识关闭通知是否来源于自己的父context节点，err说明要发送关闭通知的原因</span></span><br><span class="line">    cancel(removeFromParent <span class="keyword">bool</span>, err error)</span><br><span class="line">    Done() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+<p><strong>emptyCtx</strong>：该类型以最小程度实现了Context接口，是一个不具备任何功能，并且也不能被关闭的context，该类型存在的目的是作为context对象树的根节点。在Context包中，Golang已经为我们准备了两个emptyCtx的对象，分别是background与todo，我们可以调用方法Background()与TODO()获取到这两个对象，我们一般使用Background()</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> emptyCtx <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//实现接口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*emptyCtx)</span> <span class="title">Deadline</span><span class="params">()</span> <span class="params">(deadline time.Time, ok <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*emptyCtx)</span> <span class="title">Done</span><span class="params">()</span> &lt;-<span class="title">chan</span> <span class="title">struct</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*emptyCtx)</span> <span class="title">Err</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*emptyCtx)</span> <span class="title">Value</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *emptyCtx)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> e &#123;</span><br><span class="line">	<span class="keyword">case</span> background:</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;context.Background&quot;</span></span><br><span class="line">	<span class="keyword">case</span> todo:</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;context.TODO&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">&quot;unknown empty Context&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//预先定义了两个空的context对象</span></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	background = <span class="built_in">new</span>(emptyCtx)</span><br><span class="line">	todo       = <span class="built_in">new</span>(emptyCtx)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Background</span><span class="params">()</span> <span class="title">Context</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> background</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TODO</span><span class="params">()</span> <span class="title">Context</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Context的衍生"><a href="#Context的衍生" class="headerlink" title="Context的衍生"></a>Context的衍生</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithCancel</span><span class="params">(parent Context)</span> <span class="params">(ctx Context, cancel CancelFunc)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithTimeout</span><span class="params">(parent Context, timeout time.Duration)</span> <span class="params">(Context, CancelFunc)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithDeadline</span><span class="params">(parent Context, d time.Time)</span> <span class="params">(Context, CancelFunc)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithValue</span><span class="params">(parent Context, key, val <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Context</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>以上的这四个方法用来从一个父context对象衍生出子context对象，我们可以看到前三个方法除了返回了衍生的context之外，还返回了一个CancelFunc方法，其实前三个方法返回的context对象，都实现了cancler接口，接下来我们来具体看一下返回的这个cancelFunc方法</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Golang中将CancelFunc定义为一个空参的方法</span></span><br><span class="line"><span class="keyword">type</span> CancelFunc <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//以上衍生方法返回的CancelFunc实际上是由cancel加上参数以及调用对象构成，cancel方法用来关闭自身context，并递归关闭所有自己的所有子context</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *cancelCtx)</span> <span class="title">cancel</span><span class="params">(removeFromParent <span class="keyword">bool</span>, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">&quot;context: internal error: missing cancel error&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">if</span> c.err != <span class="literal">nil</span> &#123;</span><br><span class="line">        c.mu.Unlock()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    c.err = err</span><br><span class="line">    <span class="keyword">if</span> c.done == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">//说明已经关闭</span></span><br><span class="line">        c.done = closedchan</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">close</span>(c.done)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//递归关闭子context</span></span><br><span class="line">    <span class="keyword">for</span> child := <span class="keyword">range</span> c.children &#123;</span><br><span class="line">        child.cancel(<span class="literal">false</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    c.children = <span class="literal">nil</span></span><br><span class="line">    c.mu.Unlock()</span><br><span class="line">    <span class="comment">//如果removeFromParent为true，会获取该context的父节点，并将自己从父节点的字节点列表中删除</span></span><br><span class="line">    <span class="keyword">if</span> removeFromParent &#123;</span><br><span class="line">        removeChild(c.Context, c)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="各个Contex衍生结构的详细分析"><a href="#各个Contex衍生结构的详细分析" class="headerlink" title="各个Contex衍生结构的详细分析"></a>各个Contex衍生结构的详细分析</h3><h4 id="cancelCtx"><a href="#cancelCtx" class="headerlink" title="cancelCtx"></a>cancelCtx</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> cancelCtx <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">//继承Context接口</span></span><br><span class="line">    Context</span><br><span class="line">    <span class="comment">//锁，保证并发安全</span></span><br><span class="line">    mu          sync.Mutex</span><br><span class="line">    <span class="comment">//用来通知退出的channel</span></span><br><span class="line">    done        <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    <span class="comment">//用来存储子context，如果自身的context关闭则需要通知自己的所有子context也关闭</span></span><br><span class="line">    children    <span class="keyword">map</span>[canceler]<span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    <span class="comment">//error功能跟之前一样，不再赘述</span></span><br><span class="line">    err         error</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//根据传入的父节点，派生出cancelContext</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithCancel</span><span class="params">(parent Context)</span> <span class="params">(ctx Context, cancel CancelFunc)</span></span> &#123;</span><br><span class="line">    c := newCancelCtx(parent)</span><br><span class="line">    <span class="comment">//此方法的作用为，判断parent是否为cancelCtx或者timerCtx，如果是，就将新创建的context加到父context的字节点列表中去，否则就开始监听父context的Done()，如果监听到父context退出，则执行本context的退出方法</span></span><br><span class="line">    propagateCancel(parent, &amp;c)</span><br><span class="line">    <span class="keyword">return</span> &amp;c, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; c.cancel(<span class="literal">true</span>, Canceled) &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newCancelCtx</span><span class="params">(parent Context)</span> <span class="title">cancelCtx</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> cancelCtx&#123;Context: parent&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="timerCtx"><a href="#timerCtx" class="headerlink" title="timerCtx"></a>timerCtx</h4><blockquote>
+<p><strong>WithTimeOut()与WithDeadLine()返回的都是timerCtx的实例</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> timerCtx <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">//继承了cancelCtx这个struct</span></span><br><span class="line">    cancelCtx</span><br><span class="line">    <span class="comment">//定时器，用于定时执行关闭context的操作</span></span><br><span class="line">    timer *time.Timer</span><br><span class="line">    <span class="comment">//该context到期的时间</span></span><br><span class="line">    deadline time.Time</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//其中timerCtx相关的核心方法是WithDeadLine()，下面来看一下这个方法做了什么</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithDeadline</span><span class="params">(parent Context, d time.Time)</span> <span class="params">(Context, CancelFunc)</span></span> &#123;</span><br><span class="line">    <span class="comment">//首先判断父context是否拥有DeadLine，并且已经到时，如果是，就没有必要继续创建，直接返回一个cancelCtx</span></span><br><span class="line">    <span class="keyword">if</span> cur, ok := parent.Deadline(); ok &amp;&amp; cur.Before(d) &#123;</span><br><span class="line">        <span class="keyword">return</span> WithCancel(parent)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//创建timerCtx对象</span></span><br><span class="line">    c := &amp;timerCtx&#123;</span><br><span class="line">    cancelCtx: newCancelCtx(parent),</span><br><span class="line">    deadline:  d,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这个方法的作用在上一个cancelCtx的说明中提到过，不再赘述</span></span><br><span class="line">    propagateCancel(parent, c)</span><br><span class="line">    <span class="comment">//根据传入的时间（DeadLine）获取从现在开始到到时时间一共还有多长时间，如果duration小于0，说明已经过期，将context关闭后返回</span></span><br><span class="line">    dur := time.Until(d)</span><br><span class="line">    <span class="keyword">if</span> dur &lt;= <span class="number">0</span> &#123;</span><br><span class="line">    c.cancel(<span class="literal">true</span>, DeadlineExceeded)</span><br><span class="line">    <span class="keyword">return</span> c, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; c.cancel(<span class="literal">false</span>, Canceled) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.Unlock()</span><br><span class="line">    <span class="comment">//如果没有错误，就开启一个计时器，到期后执行context的退出方法</span></span><br><span class="line">    <span class="keyword">if</span> c.err == <span class="literal">nil</span> &#123;</span><br><span class="line">        c.timer = time.AfterFunc(dur, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            c.cancel(<span class="literal">true</span>, DeadlineExceeded)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; c.cancel(<span class="literal">true</span>, Canceled) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//搞懂了WithDeadline方法，WithTimeout方法也就知道了，因为WithTimeout方法内部也是直接调用的WithDeadline方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithTimeout</span><span class="params">(parent Context, timeout time.Duration)</span> <span class="params">(Context, CancelFunc)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> WithDeadline(parent, time.Now().Add(timeout))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="valueCtx"><a href="#valueCtx" class="headerlink" title="valueCtx"></a>valueCtx</h4><blockquote>
+<p><strong>有关于valueCtx的代码非常的简单，主要就有下面两个核心方法，方法内部具体做了什么一看就懂了，就不再赘述了</strong></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> valueCtx <span class="keyword">struct</span> &#123;</span><br><span class="line">    Context</span><br><span class="line">    key, val <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithValue</span><span class="params">(parent Context, key, val <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Context</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> key == <span class="literal">nil</span> &#123;</span><br><span class="line">    	<span class="built_in">panic</span>(<span class="string">&quot;nil key&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> !reflect.TypeOf(key).Comparable() &#123;</span><br><span class="line">    	<span class="built_in">panic</span>(<span class="string">&quot;key is not comparable&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &amp;valueCtx&#123;parent, key, val&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *valueCtx)</span> <span class="title">Value</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">    <span class="keyword">if</span> c.key == key &#123;</span><br><span class="line">        <span class="keyword">return</span> c.val</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c.Context.Value(key)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="关于使用Context时的一些建议与最佳实践"><a href="#关于使用Context时的一些建议与最佳实践" class="headerlink" title="关于使用Context时的一些建议与最佳实践"></a>关于使用Context时的一些建议与最佳实践</h2><ul>
+<li>Context要使用参数传递，不要把它作为一个属性放入结构体中</li>
+<li>以Context作为参数的方法，应该把Context作为第一个参数</li>
+<li>不要给一个Context参数传递nil，当你不需要Context但这个方法的参数里有Context的时候，就传Context.TODO()</li>
+<li>Context的Value必须传递必须的值，不要什么值都用Value来传递。Value应该用来传递一些请求范围值（比如说鉴权生成的用户ID、请求ID、用户IP），而不能是全局的（比如数据库连接）。每当你使用Context的Value的时候，你都应该告诉自己Context.Value要做的事情是通知而不是控制。最后你应该尝试尽量不要去用Value</li>
+<li>所有可能阻塞或者长时间的操作都应该是可取消的</li>
+</ul>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2019/08/27/Channel&Select%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Channel&Select源码分析</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2019/04/14/SpringBoot%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E4%BE%9D%E8%B5%96%E8%AF%A6%E8%A7%A3/">
+        <span>SpringBoot自动配置与依赖详解</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2019/06/13/Context%E5%88%9D%E8%AF%86%E3%80%81%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%BB%A5%E5%8F%8A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E8%AF%86Context"><span class="toc-number">1.</span> <span class="toc-text">初识Context</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Context%E5%AE%9E%E7%8E%B0%E9%80%9A%E7%9F%A5%E9%80%80%E5%87%BA"><span class="toc-number">1.0.1.</span> <span class="toc-text">使用Context实现通知退出</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8context%E5%AE%9E%E7%8E%B0%E8%B6%85%E6%97%B6%E6%8E%A7%E5%88%B6"><span class="toc-number">1.0.2.</span> <span class="toc-text">使用context实现超时控制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8context%E5%AE%9E%E7%8E%B0goroutine%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BC%A0%E5%80%BC"><span class="toc-number">1.0.3.</span> <span class="toc-text">使用context实现goroutine之间的传值</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">Context原理解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-number">2.1.</span> <span class="toc-text">工作机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Context%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3%E4%B8%8E%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">2.2.</span> <span class="toc-text">Context核心接口与结构体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Context%E7%9A%84%E8%A1%8D%E7%94%9F"><span class="toc-number">2.3.</span> <span class="toc-text">Context的衍生</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%84%E4%B8%AAContex%E8%A1%8D%E7%94%9F%E7%BB%93%E6%9E%84%E7%9A%84%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90"><span class="toc-number">2.4.</span> <span class="toc-text">各个Contex衍生结构的详细分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#cancelCtx"><span class="toc-number">2.4.1.</span> <span class="toc-text">cancelCtx</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#timerCtx"><span class="toc-number">2.4.2.</span> <span class="toc-text">timerCtx</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#valueCtx"><span class="toc-number">2.4.3.</span> <span class="toc-text">valueCtx</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E4%BD%BF%E7%94%A8Context%E6%97%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E5%BB%BA%E8%AE%AE%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">3.</span> <span class="toc-text">关于使用Context时的一些建议与最佳实践</span></a></li></ol>
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >

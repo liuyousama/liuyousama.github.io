@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Regular.woff2" as="font">
+        <link rel="preload" crossorigin="crossorigin" href="/fonts/roboto/Roboto-Bold.woff2" as="font">
+    
+    
+    
+        <link rel="shortcut icon" href="/icons/favicon.ico">
+    
+
+    
+    
+        
+<link rel="stylesheet" href="/css/mdui.min.v1.0.0.css">
+
+    
+    
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+    
+    
+    <title>
+        
+            源码解析Combine中的内存管理 | 六游的博客小站
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-blue">
+  
+  <header class="mdui-appbar mdui-appbar-fixed">
+  <div id="toolbar" class="mdui-toolbar mdui-color-theme">
+    <button class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#sidebar', swipe: true}"><i class="iconfont icon-menu"></i></button>
+    <a href="/" class="mdui-typo-headline">六游的博客小站</a>
+    <a href="/" class="header-subtitle mdui-typo-headline"></a>
+    <div class="mdui-toolbar-spacer"></div>
+    <button class="mdui-btn mdui-btn-icon" mdui-dialog="{target: '#search'}" mdui-tooltip="{content: 'search'}"><i class="iconfont icon-search"></i></button>
+  </div>
+</header>
+
+<div class="mdui-dialog" id="search">
+  
+    <div class="search-form">
+      <input type="search" class="search-form-input" placeholder="请输入关键字" onfocus="listenSearchFunc()">
+    </div>
+    <div class="search-result" data-resource="/search.xml"></div>
+  
+</div>
+
+  <aside id="sidebar" class="mdui-drawer">
+    <div class="mdui-tab" mdui-tab>
+        <a href="#sidebar-tab1" id="sidebartab" class="mdui-ripple mdui-tab-active">Overview</a>
+        <a href="#sidebar-tab2" id="sidebartab" class="mdui-ripple">About</a>
+    </div>
+
+    
+    <div id="sidebar-tab1" class="mdui-p-a-2">
+        <div class="mdui-list">
+            
+                
+                <a href="/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-home"></i>
+                    </div>
+                    <div class="mdui-list-item-content">首页</div>
+                </a>
+            
+                
+                <a href="/tags/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-bookmark"></i>
+                    </div>
+                    <div class="mdui-list-item-content">标签</div>
+                </a>
+            
+                
+                <a href="/archives/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-archive"></i>
+                    </div>
+                    <div class="mdui-list-item-content">归档</div>
+                </a>
+            
+                
+                <a href="/about/" class="mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-user"></i>
+                    </div>
+                    <div class="mdui-list-item-content">关于</div>
+                </a>
+            
+            <div class="mdui-list-item mdui-ripple">
+                <div class="mdui-list-item-icon">
+                    <i class="iconfont icon-moon"></i>
+                </div>
+                <div class="mdui-list-item-content">Night Mode</div>
+                <label class="mdui-switch" id="darkmode">
+                  <input type="checkbox" id="nightmode_switch"/>
+                  <i class="mdui-switch-icon"></i>
+                </label>
+            </div>           
+        </div>
+    </div>
+
+    
+    <div id="sidebar-tab2" class="mdui-p-a-2">
+        <div class="sidebar-overview">
+            <div class="sidebar-avatar">
+                
+                    <img src="/about/index/avatar.png"/>
+                
+            </div>
+            <div class="sidebar-author-name">六游</div>
+            <div class="sidebar-description">努力成为一名合格的代码粘贴工</div>
+        </div>
+        <div class="sidebar-links">
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-mail"></i></span>
+                    <a href="/liuyousama@gmail.com" class="mdui-chip-title">E-Mail</a>
+                </div>
+            
+                
+                <div class="mdui-chip">
+                    <span class="mdui-chip-icon"><i class="iconfont icon-github"></i></span>
+                    <a target="_blank" rel="noopener" href="https://github.com/liuyousama" class="mdui-chip-title">GitHub</a>
+                </div>
+            
+        </div>
+        <ul class="mdui-list" mdui-collapse="{accordion: true}">
+            <li class="mdui-collapse-item">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <div class="mdui-list-item-icon">
+                        <i class="iconfont icon-link"></i>
+                    </div>
+                    <div class="mdui-list-item-content">Links</div>
+                    <div class="mdui-collapse-item-arrow">
+                        <i class="mdui-list-item-icon iconfont icon-angle-down"></i>
+                    </div>
+                </div>
+                <ul id="linksList" class="mdui-collapse-item-body mdui-list mdui-list-dense">
+                    
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mdui-divider"></div>
+    
+    
+</aside>
+  
+  <main id="main-contain" class="mdui-container mdui-m-t-5">
+    <article id="article" class="mdui-card mdui-p-b-2 mdui-m-b-5">
+  <header class="mdui-card-media">
+    
+    
+      <div class="post-header"> 
+  <a class="post-header-title" href="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">源码解析Combine中的内存管理</a>
+  <div class="post-header-meta">
+    <span>
+      <span class="iconfont icon-calendar"></span>
+      Posted on:&nbsp;2020-07-02
+    </span>
+    <span>
+      <span class="iconfont icon-calendar-check"></span>
+      Edited on:&nbsp;2020-07-02
+    </span>
+    <span>
+      <span class="iconfont icon-folder"></span>
+      In:&nbsp;
+    </span>
+    
+      <span>
+        <span class="iconfont icon-eye"></span>
+        Views:&nbsp;
+        <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+      </span>
+    
+  </div>
+</div>   
+    
+
+
+
+    
+    
+    <div class="mdui-card-menu">
+    
+      <button class="mdui-btn mdui-btn-icon mdui-text-color-teal" mdui-menu="{target: '#share_menu', align: 'right'}"><i class="iconfont icon-share"></i></button>
+      <ul class="mdui-menu" id="share_menu">
+        <li class="mdui-menu-item">
+          <a href="http://service.weibo.com/share/share.php?appkey=&title=源码解析Combine中的内存管理&url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/&pic=http://blog.liuyousama.top/null&searchPic=false&style=simple" target="_blank" class="mdui-ripple">Share to Weibo</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://twitter.com/intent/tweet?text=源码解析Combine中的内存管理&url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/&via=六游" target="_blank" class="mdui-ripple">Share to Twitter</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_blank" class="mdui-ripple">Share to Facebook</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://plus.google.com/share?url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_blank" class="mdui-ripple">Share to Google+</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/&title=源码解析Combine中的内存管理" target="_blank" class="mdui-ripple">Share to LinkedIn</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="http://connect.qq.com/widget/shareqq/index.html?site=六游的博客小站&title=源码解析Combine中的内存管理&summary=努力成为一名合格的代码粘贴工&pics=http://blog.liuyousama.top/null&url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_blank" class="mdui-ripple">Share to QQ</a>
+        </li>
+        <li class="mdui-menu-item">
+          <a href="https://telegram.me/share/url?url=http://blog.liuyousama.top/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/&text=源码解析Combine中的内存管理" target="_blank" class="mdui-ripple">Share to Telegram</a>
+        </li>
+      </ul>
+    
+  </div>
+  </header>
+  
+  
+  
+  
+  <div class="post-tags">
+    
+      <i class="iconfont icon-tag">
+        <a rel="tag" href = /tags/iOS/ >iOS</a>
+      </i>
+    
+  </div>
+
+  
+  <div class="mdui-card-content mdui-typo mdui-p-x-4">
+    <p>如果对于Combine具有基本的认识并书写过Combine的代码，那么对于下面这样的代码一定不陌生</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">somePublisher.sink(receiveCompletion: &#123; <span class="number">_</span> <span class="keyword">in</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;) &#123; <span class="number">_</span> <span class="keyword">in</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;.store(<span class="keyword">in</span>: &amp;subscriptions)</span><br></pre></td></tr></table></figure>
+<p>对Combine有一定了解的人，一定不止一次的被书籍、博客或者苹果官方文档提醒，订阅某个发布者之后会返回一个AnyCancellable对象，一定要谨慎处理该AnyCancelable对象，如果不对其加以持有，那么订阅关系会在超出当前代码的作用域之后就消失掉，如果一直持有却又不释放，则会引起内存泄漏。我们在编写Combine代码的过程中，谨记书籍中、博客中以及文档中给我们的建议，在类中使用AnyCancellable的属性或者存储AnyCancellable类型的集合来存储订阅之后产生的AnyCancellable对象。正如建议所说的那样，AnyCancellable会在执行自己的deinit时释放自己的资源，按照这些建议去编写Combine代码，一切都如想象中的那样工作良好。</p>
+<p>但是我们不应该止步于此。在我们一次又一次按照建议写出工作良好的Combine代码时一定会有所好奇：我们管理并清除的到底是什么资源？本篇文章由浅入深，举一反三，使用源码一步一步将你带进Combine的奇妙世界，让你了解Combine中的内存管理。</p>
+<p>首先我们从事情的源头开始，最开始我们接触到的就是订阅一个Publisher之后返回的AnyCancellable对象，我们首先来看一下AnyCancellable这个类的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AnyCancellable</span>: <span class="title">Cancellable</span>, <span class="title">Hashable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> _cancel: (() -&gt; <span class="type">Void</span>)?</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(<span class="number">_</span> cancel: @escaping () -&gt; <span class="type">Void</span>) &#123;</span><br><span class="line">        _cancel = cancel</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>&lt;<span class="type">OtherCancellable</span>: <span class="type">Cancellable</span>&gt;(<span class="number">_</span> canceller: <span class="type">OtherCancellable</span>) &#123;</span><br><span class="line">        _cancel = canceller.cancel</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span> &#123;</span><br><span class="line">        _cancel?()</span><br><span class="line">        _cancel = <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    <span class="keyword">deinit</span> &#123;</span><br><span class="line">        _cancel?()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>AnyCancellable可以用过两种方式来初始化，第一种传入遵循Cancellable协议的对象，会保存该对象的cancel方法，第二种通过闭包提供一个cancel方法，并保存起来</li>
+<li>通过实例变量_cancel来保存初始化获得到的cancel方法</li>
+<li>调用AnyCancellable类的cancel方法，自动调用内部保存的_cancel方法并清空资源持有</li>
+<li>在deinit时，AnyCancellable会自动调用_cancel方法</li>
+</ol>
+<p>看过了AnyCancellable我们再去探究AnyCancellable的产生过程。在最开始的代码示例中我们使用了sink，这里我们也就依然使用sink来作为一个例子，虽然Combine中的订阅者除了sink还有assign，但是其内部的逻辑都是一致的，从文章一开头以知道结尾我们一直都是使用的这种举一反三的方法去探究源码。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Publisher</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">sink</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        receiveCompletion: @escaping <span class="params">(Subscribers.Completion&lt;Failure&gt;)</span></span></span> -&gt; <span class="type">Void</span>,</span><br><span class="line">        receiveValue: @escaping ((<span class="type">Output</span>) -&gt; <span class="type">Void</span>)</span><br><span class="line">    ) -&gt; <span class="type">AnyCancellable</span> &#123;</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        <span class="keyword">let</span> subscriber = <span class="type">Subscribers</span>.<span class="type">Sink</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;(</span><br><span class="line">            receiveCompletion: receiveCompletion,</span><br><span class="line">            receiveValue: receiveValue</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        subscribe(subscriber)</span><br><span class="line">        <span class="comment">// 3</span></span><br><span class="line">        <span class="keyword">return</span> <span class="type">AnyCancellable</span>(subscriber)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用方法传入的参数实例化一个新的Subscriber，这个Subscriber是由Combine内部实现的Sink提供</li>
+<li>调用Publisher的subscribe方法，并传入刚刚实例化的那个订阅者，建立两者之间的订阅关系</li>
+<li>将刚刚创建的Subscriber包装为一个AnyCancellable方法返回</li>
+</ol>
+<p>现在焦点从最初的AnyCancellable移动到了具体的Subscriber，我们就继续深入Sink这个Subscriber内部去一探究竟</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Sink</span>&lt;<span class="title">Input</span>, <span class="title">Failure</span>: <span class="title">Error</span>&gt;: <span class="title">Subscriber</span>,<span class="title">Cancellable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> status = <span class="type">SubscriptionStatus</span>.awaitingSubscription</span><br><span class="line">    <span class="keyword">internal</span> <span class="class"><span class="keyword">enum</span> <span class="title">SubscriptionStatus</span> </span>&#123;</span><br><span class="line">        <span class="keyword">case</span> awaitingSubscription</span><br><span class="line">        <span class="keyword">case</span> subscribed(<span class="type">Subscription</span>)</span><br><span class="line">        <span class="keyword">case</span> terminal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(subscription: Subscription)</span></span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> status &#123;</span><br><span class="line">        <span class="keyword">case</span> .subscribed, .terminal:</span><br><span class="line">            subscription.cancel()</span><br><span class="line">        <span class="keyword">case</span> .awaitingSubscription:</span><br><span class="line">            status = .subscribed(subscription)</span><br><span class="line">            subscription.request(.unlimited)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(completion: Subscribers.Completion&lt;Failure&gt;)</span></span> &#123;</span><br><span class="line">        receiveCompletion(completion)</span><br><span class="line">        status = .terminal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">case</span> <span class="keyword">let</span> .subscribed(subscription) = status <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        subscription.cancel()</span><br><span class="line">        status = .terminal</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>SinkSubscriber内部定义了一个status字段，用来表示当前订阅者所处的状态</li>
+<li>这些代码都是Subscriber协议中规定的，与发布者产生交互的方法，对这里不太明白的可以参考之前的博客：Combine核心概念</li>
+<li>在SinkSubscriber的cancel方法中，会检验状态，如果状态为未关闭，则调用subscription的close方法</li>
+</ol>
+<p>我们追踪了一路的各种类型的close方法，最后落在了Subscription之上，Subscription并不是具体的一个类，而是有协议抽象出来的一个角色。由于大部分Publisher都需要Subscription与自己合作来完成特定的发布行为，所以大部分Publisher都拥有Subscription内部实现类，但其实这些不同的Subscription类中不一样的主要是与各自归属的Publisher拥有不同的交互行为，如果我们但看对于内存管理方面的逻辑的话，还是大同小异的。所以依旧举一反三，这里我们就拿Future来做实例，在探究内存管理的同时还能顺便探究一下在项目中很有用的Future的内部逻辑。</p>
+<p>Future内部提供的Subscription的实现类是Conduit</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="keyword">fileprivate</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Conduit</span>: <span class="title">Subscription</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> _parent: <span class="type">Future</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;?</span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> _downstream: <span class="type">AnySubscriber</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;?</span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">init</span>(parent: <span class="type">Future</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;,</span><br><span class="line">                        downstream: <span class="type">AnySubscriber</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;) &#123;</span><br><span class="line">        _parent = parent</span><br><span class="line">        _downstream = downstream</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> _demand: <span class="type">Subscribers</span>.<span class="type">Demand</span> = .<span class="keyword">none</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="function"><span class="keyword">func</span> <span class="title">_receive</span><span class="params">(completion: Subscribers.Completion&lt;Failure&gt;)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> !_isCompleted &#123;</span><br><span class="line">            <span class="comment">// 3</span></span><br><span class="line">            _parent = <span class="literal">nil</span></span><br><span class="line">            _downstream?.receive(completion: completion)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> _isCompleted: <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> _parent == <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="function"><span class="keyword">func</span> <span class="title">request</span><span class="params">(<span class="number">_</span> demand: Subscribers.Demand)</span></span> &#123;</span><br><span class="line">        demand.assertNonZero()</span><br><span class="line">        _parent?._lock.<span class="keyword">do</span> &#123;</span><br><span class="line">            _demand += demand</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 4</span></span><br><span class="line">        _parent?._acknowledgeDownstreamDemand()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="function"><span class="keyword">func</span> <span class="title">cancel</span><span class="params">()</span></span> &#123;</span><br><span class="line">        _parent = <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>这是Future内部定义的实现了Subscription协议的内部类Conduit</li>
+<li>该Subscription内部会存储上游的发布者对象，以及下游的订阅者对象</li>
+<li>接收到completion事件之后，主动做清理工作</li>
+<li>新的订阅者订阅并开始向subscription请求数据时，会先主动询问Future内部的异步任务是否已经完成,如果完成就直接发送结果</li>
+<li>cancel方法中，释放自己对上游发布者对象的持有</li>
+</ol>
+<p>Future，忽略锁相关</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Future</span>&lt;<span class="title">Output</span>, <span class="title">Failure</span>&gt;: <span class="title">Publisher</span> <span class="title">where</span> <span class="title">Failure</span>: <span class="title">Error</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Promise</span> = (<span class="type">Result</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;) -&gt; <span class="type">Void</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> _subscriptions: [<span class="type">Conduit</span>] = []</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> result: <span class="type">Result</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;?</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(</span><br><span class="line">        <span class="number">_</span> attemptToFulfill: @escaping (@escaping <span class="type">Promise</span>) -&gt; <span class="type">Void</span></span><br><span class="line">    ) &#123;</span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        attemptToFulfill &#123; result <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">self</span>.result == <span class="literal">nil</span> <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">            <span class="keyword">self</span>.result = result</span><br><span class="line">            <span class="keyword">self</span>._publish(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span>&lt;Downstream: Subscriber&gt;<span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        subscriber: Downstream</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span> <span class="keyword">where</span> <span class="type">Output</span> == <span class="type">Downstream</span>.<span class="type">Input</span>, <span class="type">Failure</span> == <span class="type">Downstream</span>.<span class="type">Failure</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> subscription = <span class="type">Conduit</span>(parent: <span class="keyword">self</span>,</span><br><span class="line">                                   downstream: <span class="type">AnySubscriber</span>(subscriber))</span><br><span class="line">        _subscriptions.append(subscription)</span><br><span class="line">       subscriber.receive(subscription: subscription)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Future中存储了自身的所有订阅Subscription</li>
+<li>Future初始化方法中接收到用户传递进来的闭包attemptToFulfill之后，立即执行该闭包。并且在attemptToFulfill闭包中通过Result闭包通知事件执行完成之后，会立即调用_publishe方法，向自己所有的订阅者发送结果</li>
+<li>在收到一个订阅者要订阅自己的请求时，首先初始化一个Subscription（Conduit）对象，并将该Subscription对象添加到自己的Subscription数组中去。之后继续调用订阅者的receive(subscription:)方法表示已经建立订阅关系</li>
+</ol>
+<p>至此，我们源码探究的第一阶段也就结束了，有的小伙伴可能在阅读源码的过程中就已经恍然大悟发现了其中的奥秘，如果还没有也不用担心，我在这里做一个对之上代码的小总结。</p>
+<p>首先是关于只有一个发布者与订阅者组成的订阅系统中的内存持有情况，为了更好理解我花了一幅图，途中的箭头代表了持有关系，Publisher中持有Subscription的数组，以及Subscription中通过_parent属性持有上游发布者构成了Publisher与Subscription之间的两个箭头，Subscription中通过_downstream属性持有下游监听者构成了Subscription到Subscriber的那个箭头，其实这里还有一个箭头被忽略掉，上面的源码订阅者中存在一个state的属性，该属性为subscribed时，其内部的关联值会持有subscription，但是这个枚举值会根据订阅者的状态在内部自动改变，所以我们不用去考虑这层持有关系。</p>
+<p><img src="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/1.png"></p>
+<p>看到这里再结合一路close方法链执行的尽头（Subscription中的close方法）中所做的事情，我想大家应该都明白了，我们通过AnyCancellable也好，通过Cancellable也好，最后想要关闭的实际上是Publisher与Subscription之间的循环引用，如果不及时对这个循环引用进行破除，那么就会一直存在于内存中，随着软件的运行，这类循环引用所导致的无法释放的对象会越来越多，最后会撑爆内存。</p>
+<p>那么为什么要有这个循环引用呢？答案是为了确保Publisher的存活，这个循环引用使Publisher得以继续在内存中存活而不被ARC所清理。那既然是这样为什么不采取在使用的时候直接将Publisher存储到当前类的属性中或者集合中的方案呢？毕竟这样的方法比现在的循环引用更容易被使用者理解，实现起来也更加简便一些。原因是，从语义的角度来看Publisher不应该被某个内部对其产生了订阅的类来管理，因为Publisher有时会在多个类之间传递使用，这样Publisher到底该由谁管理就变成了一个不是那么确定的事情，相反Subscription交由产生它的类管理是合理的，因为一个Subscription只会由一个类产生，通常也不需要传递给其他类使用，因为Subscription只是代表了一组订阅关系，拿在用户手里只相当于一个关闭订阅的token，没有其他的使用意义。除了语义角度之上的原因，更为重要的是在我们通过操作符组合形成的订阅链条中，存在着多个Publisher以及一个Subscription，如果通过保存Publisher来管理会变得非常复杂以及易出错，通过Subscription来管理整个链条就会很容易。</p>
+<br>
+
+<p>由于我们上面在分析Subscription的源码时使用了Future作为例子，所以我们在探索Subscription内部的同时也对Future的源码有了一定的了解，下面总结一下我们可以从Future源码中得到的东西。</p>
+<ol>
+<li>Future一旦被创建就会启动异步任务</li>
+<li>异步任务执行完成之后，Future会将结果发送给所有已经订阅了自己的订阅者，并将结果保存起来</li>
+<li>之后再有新的订阅者来，那就直接将保存的结果发送给订阅者</li>
+</ol>
+<p><br><br><br></p>
+<p>之前我们研究了只存在一个订阅者和一个发布者的简单订阅系统中的内存管理，接下来我们会继续深入探索由一个或多个操作符串联组成的订阅链条中的内存管理，最开始我们以比较常用的map操作符为例</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">map</span>&lt;Result&gt;<span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="number">_</span> transform: @escaping <span class="params">(Output)</span></span></span> -&gt; <span class="type">Result</span></span><br><span class="line">) -&gt; <span class="type">Publishers</span>.<span class="type">Map</span>&lt;<span class="type">Self</span>, <span class="type">Result</span>&gt; &#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="type">Publishers</span>.<span class="type">Map</span>(upstream: <span class="keyword">self</span>, transform: transform)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>map只是Publisher扩展的一个方法，该方法最终返回了一个Map对象</li>
+</ol>
+<p>Map对象源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">Map</span>&lt;<span class="title">Upstream</span>: <span class="title">Publisher</span>, <span class="title">Output</span>&gt;: <span class="title">Publisher</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Failure</span> = <span class="type">Upstream</span>.<span class="type">Failure</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> upstream: <span class="type">Upstream</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> transform: (<span class="type">Upstream</span>.<span class="type">Output</span>) -&gt; <span class="type">Output</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(upstream: <span class="type">Upstream</span>,</span><br><span class="line">                transform: @escaping (<span class="type">Upstream</span>.<span class="type">Output</span>) -&gt; <span class="type">Output</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.upstream = upstream</span><br><span class="line">        <span class="keyword">self</span>.transform = transform</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span>&lt;Downstream: Subscriber&gt;<span class="params">(subscriber: Downstream)</span></span></span><br><span class="line">        <span class="keyword">where</span> <span class="type">Output</span> == <span class="type">Downstream</span>.<span class="type">Input</span>, <span class="type">Downstream</span>.<span class="type">Failure</span> == <span class="type">Upstream</span>.<span class="type">Failure</span></span><br><span class="line">    &#123;</span><br><span class="line">        upstream.subscribe(<span class="type">Inner</span>(downstream: subscriber, <span class="built_in">map</span>: transform))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Map类中保存了上游的发布者upstream，以及要对上游发布的数据做的变换操作transform</li>
+<li>同时Map类自己也是一个发布者，在接收到下游的订阅的时候，会将订阅者包装成Map.Inner在传递给上游让上游订阅</li>
+</ol>
+<p>接下来来看Map中的内部类Inner的源码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">struct</span> <span class="title">Inner</span>&lt;<span class="title">Downstream</span>: <span class="title">Subscriber</span>&gt;: <span class="title">Subscriber</span></span></span><br><span class="line"><span class="class">        <span class="title">where</span> <span class="title">Downstream</span>.<span class="title">Input</span> == <span class="title">Output</span>, <span class="title">Downstream</span>.<span class="title">Failure</span> == <span class="title">Upstream</span>.<span class="title">Failure</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">typealias</span> <span class="type">Input</span> = <span class="type">Upstream</span>.<span class="type">Output</span></span><br><span class="line">    <span class="keyword">typealias</span> <span class="type">Failure</span> = <span class="type">Upstream</span>.<span class="type">Failure</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">let</span> downstream: <span class="type">Downstream</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">let</span> <span class="built_in">map</span>: (<span class="type">Input</span>) -&gt; <span class="type">Output</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">init</span>(downstream: <span class="type">Downstream</span>, <span class="built_in">map</span>: @escaping (<span class="type">Input</span>) -&gt; <span class="type">Output</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.downstream = downstream</span><br><span class="line">        <span class="keyword">self</span>.<span class="built_in">map</span> = <span class="built_in">map</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(subscription: Subscription)</span></span> &#123;</span><br><span class="line">        downstream.receive(subscription: subscription)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(<span class="number">_</span> input: Input)</span></span> -&gt; <span class="type">Subscribers</span>.<span class="type">Demand</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> downstream.receive(<span class="built_in">map</span>(input))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">receive</span><span class="params">(completion: Subscribers.Completion&lt;Failure&gt;)</span></span> &#123;</span><br><span class="line">        downstream.receive(completion: completion)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Inner对象中保存了下游的订阅者以及要做的变换操作</li>
+<li>Inner实现了Subscriber协议，接收到上游发送过来的值之后就对其做一些变换之后继续转发给下游</li>
+</ol>
+<p>看下面的一段演示代码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span> <span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">let</span> result = somePublisher</span><br><span class="line">                    .<span class="built_in">map</span>&#123;$<span class="number">0</span> * <span class="number">2</span>&#125;</span><br><span class="line">                    .<span class="built_in">count</span>()</span><br><span class="line"></span><br><span class="line">    result.sink(receiveCompletion: &#123;<span class="number">_</span> <span class="keyword">in</span> </span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;complete&quot;</span>)</span><br><span class="line">    &#125;) &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;value comes&quot;</span>)</span><br><span class="line">    &#125;.store(<span class="keyword">in</span>: &amp;subscriptions)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的代码中，使用map与count两个操作符构建了一个非常简单的订阅链条，注意代码中的逻辑不值得参考只用作演示。根据以上代码我花了一幅图，这幅图中的箭头表示对象间的持有关系，我将以上代码构建订阅链条的过程分为三个步骤。第一步，我们使用一个发布者和两个操作符构建了发布链条等待订阅者来订阅，同时最后返回的结果由result变量来保存，result在超出该方法的作用域之前不会被ARC回收，所以可以这个链条可以安全的存在于内存之中。第二步我们通过sink来订阅刚刚创建的那个发布链条，操作符对象（Map，Count）在接受到下游传递过来的订阅者的时候，会使用自己的内部类Inner对其进行包装，然后再将包装之后的新的订阅者对象传递给上层，最后会形成图中序号为2那样的持有关系。第三步超出test方法的作用域之后，由于存储发布链条的变量内存被释放，所以发布链条中的所有操作符对象也被释放，根部的发布者因为与Subscription的循环引用得以存活，整个订阅链条也得以存活。最后当我们调用subscription的close方法时，会断开subscription对publisher的引用，随后整个订阅链条都会被释放。</p>
+<p><img src="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/2.png"></p>
+<p>如果Combine的某个发布者链条会在多个类中流转或者将有多个订阅者订阅时，我们被要求或者建议在发布者链的末尾加上share或multicast操作符。在使用Combine封装网络操作中，我们被告知如果不使用share或者multicast操作符，极易会出现我们不期望的重复网络请求的情况，从而浪费系统资源。这到底是为什么？其实是因为大多数的发布者以及操作符都是使用struct来封装的，在各个类之间流转或者多个订阅者对其进行订阅的时候会发生值得复制，复制的程度取决于你的发布者链的构成，如果你的整条发布者链条都是由值类型的发布者或者操作符组成的，那么每有一个新的订阅者订阅都会产生一个新的链条，整个链条的状态将会被重置从而导致资源的重新请求。</p>
+<p>我们可以使用multicast或者share操作符来抹除这种发布者链条的复制行为，到底是怎么实现的呢？让我们从Multicast操作符类的源码开始</p>
+<p>以下省略了部分锁相关代码</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Multicast</span>&lt;<span class="title">Upstream</span>: <span class="title">Publisher</span>, <span class="title">SubjectType</span>: <span class="title">Subject</span>&gt;: <span class="title">ConnectablePublisher</span></span></span><br><span class="line"><span class="class">    <span class="title">where</span> <span class="title">Upstream</span>.<span class="title">Failure</span> == <span class="title">SubjectType</span>.<span class="title">Failure</span>,</span></span><br><span class="line"><span class="class">            <span class="title">Upstream</span>.<span class="title">Output</span> == <span class="title">SubjectType</span>.<span class="title">Output</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Output</span> = <span class="type">Upstream</span>.<span class="type">Output</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Failure</span> = <span class="type">Upstream</span>.<span class="type">Failure</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> upstream: <span class="type">Upstream</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> createSubject: () -&gt; <span class="type">SubjectType</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> subject: <span class="type">SubjectType?</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> lazySubject: <span class="type">SubjectType</span> &#123;</span><br><span class="line">        lock.lock()</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> subject = subject &#123;</span><br><span class="line">            lock.unlock()</span><br><span class="line">            <span class="keyword">return</span> subject</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> subject = createSubject()</span><br><span class="line">        <span class="keyword">self</span>.subject = subject</span><br><span class="line">        lock.unlock()</span><br><span class="line">        <span class="keyword">return</span> subject</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(upstream: <span class="type">Upstream</span>, createSubject: @escaping () -&gt; <span class="type">SubjectType</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.upstream = upstream</span><br><span class="line">        <span class="keyword">self</span>.createSubject = createSubject</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span>&lt;Downstream: Subscriber&gt;<span class="params">(subscriber: Downstream)</span></span></span><br><span class="line">        <span class="keyword">where</span> <span class="type">SubjectType</span>.<span class="type">Failure</span> == <span class="type">Downstream</span>.<span class="type">Failure</span>,</span><br><span class="line">                <span class="type">SubjectType</span>.<span class="type">Output</span> == <span class="type">Downstream</span>.<span class="type">Input</span></span><br><span class="line">    &#123;</span><br><span class="line">        lazySubject.subscribe(<span class="type">Inner</span>(parent: <span class="keyword">self</span>, downstream: subscriber))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">connect</span><span class="params">()</span></span> -&gt; <span class="type">Cancellable</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> upstream.subscribe(lazySubject)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Multicast操作符需要外部提供一个subject，这个subject可以是懒加载的。在Multicast类中，Combine使用两个属性来实现懒加载的属性而不是直接使用lazy，是因为lazy不是线程安全的， Multicast通过自己来控制锁的行为来实现线程安全的懒加载</li>
+<li>在接到下游的订阅请求时，会将下游的请阅请求通过Inner包装之后转发给自己属性中拥有的那个subject</li>
+<li>connect方法是ConnectablePublisher在Publisher协议的基础之上新增的约束方法，在这里的connect方法中，将自己属性中的subject与上游的发布者建立连接：即将自己属性中的subject作为订阅者订阅上游发布者</li>
+</ol>
+<p>至于Multicast中的Inner，只是简单的实现了上游到下游的数据传送，跟我们之前分析Map的Inner是一样的只是少了map特有的数据变换的逻辑，这里就不再列出来分析了，如果读者想看，可以<a target="_blank" rel="noopener" href="https://github.com/OpenCombine/OpenCombine/blob/master/Sources/OpenCombine/Publishers/Publishers.Multicast.swift">点击这里</a></p>
+<p>看过了上面Multicast的源码之后，我们可以使用一张图来总结Multicast的行为。第一步，我们对一条以Multicast结尾的发布者链条进行订阅时，并不能形成一条从头至尾的订阅链，下游的订阅者会订阅Multicast内部的一个Subject，然后就止步于此。第二步我们对返回的Multicast对象（ConnectablePublisher）调用connect方法，Multicast中的subject会与上游发布者链条建立连接，然后才能形成一条完整的订阅链。</p>
+<p><img src="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/3.png"></p>
+<p>Multicast通过其内部的一个subject将上游发送下来的数据转发给下游，正常情况下与去掉Multicast直接订阅没有什区别，但因为内部的subject被声明为引用类型（Class），可以有效的对下游屏蔽其上游存在值类型发布者的细节，同时Multicast自身的类型也是一个引用类型（Class），所以使用者拿到multicast操作符返回的对象之后可以肆无忌惮的在各个类之间流转，而不用担心因为值类型赋值发生复制而造成的各种各样的问题。同时我们还可以通过传入不同类型的Subject而控制对上游数据的缓存行为等。</p>
+<p>理解了Multicast，其实就是已经理解了share。为什么这么说呢，看一看share的源码就知道了</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Share</span>&lt;<span class="title">Upstream</span>: <span class="title">Publisher</span>&gt;: <span class="title">Publisher</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Output</span> = <span class="type">Upstream</span>.<span class="type">Output</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Failure</span> = <span class="type">Upstream</span>.<span class="type">Failure</span></span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">typealias</span> <span class="type">MulticastSubject</span> = <span class="type">PassthroughSubject</span>&lt;<span class="type">Output</span>, <span class="type">Failure</span>&gt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">let</span> inner: <span class="type">Autoconnect</span>&lt;<span class="type">Multicast</span>&lt;<span class="type">Upstream</span>, <span class="type">MulticastSubject</span>&gt;&gt;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">let</span> upstream: <span class="type">Upstream</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(upstream: <span class="type">Upstream</span>) &#123;</span><br><span class="line">        <span class="comment">// 2</span></span><br><span class="line">        <span class="keyword">self</span>.inner = upstream.multicast(subject: .<span class="keyword">init</span>()).autoconnect()</span><br><span class="line">        <span class="keyword">self</span>.upstream = upstream</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">receive</span>&lt;Downstream: Subscriber&gt;<span class="params">(subscriber: Downstream)</span></span></span><br><span class="line">        <span class="keyword">where</span> <span class="type">Downstream</span>.<span class="type">Input</span> == <span class="type">Output</span>, <span class="type">Downstream</span>.<span class="type">Failure</span> == <span class="type">Failure</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 3</span></span><br><span class="line">        inner.subscribe(subscriber)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>share默认使用的Subject时PassthroughSubject</li>
+<li>内部使用了multicast，并且初始化时传入一个符合类型的subject，并且调用了autoconnect</li>
+<li>下游对share操作符返回的对象进行订阅其实就等于对刚刚生成的multicast对象进行订阅</li>
+</ol>
+<p>通过源码我们可以看到，share操作符其实就是一个对multicast操作符的封装，在multicast的基础之上提供了默认的用于转发的subject以及附加了autoconnect。</p>
+<p>到了这里我们已经完成了关于Combine中内存管理相关源码的所有探究，有没有觉得对于Combine日常使用的代码有了更加清晰深刻的认识了呢？如果还是不太懂得话可以按照文章中得这个步骤再去源码中看一下哦。</p>
+<p>这篇文章除了想要向大家展示Combine中的内存管理方式之外，更多的想要传达给大家的是日常开发时遇到难题或者为了技术提升而去阅读源码的一种方式。看完了这篇文章再从头到尾捋一下文章中源码探究的流程，就可以发现我们到底是怎么从代码的最外层（API）一步一步深入到底层，直到找到想要的东西，又是怎么举一反三，将代码中的某个组件的行为推广到整个层级的行为，从而大大降低了我们为了去了解某个东西而耗费的精力与时间。这样的源码阅读方法或者说思想对想要自己探究源码的人十分重要。最后一句：源码，永远滴神。好了，那我现在走了</p>
+
+  </div>
+  <!--文末结束语-->
+  
+    <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="iconfont icon-heartbeat" style="font-size:24px;"></i> The End --- </div>
+  
+  <!--页脚广告-->
+  
+  <div class="mdui-divider"></div>
+  
+  <nav>
+    
+      <a rel="prev" class="post-nav-item mdui-float-left" href="/2020/08/04/Alamofire%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%93%E6%A0%8F%EF%BC%881%EF%BC%89-%E5%90%AF%E7%A8%8B/">
+        <i class="iconfont icon-angle-left"></i>
+        <span>Alamofire源码解析专栏（1）- 启程</span>
+      </a>
+    
+    
+      <a rel="next" class="post-nav-item mdui-float-right" href="/2020/06/16/Combine%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/">
+        <span>Combine核心概念</span>
+        <i class="iconfont icon-angle-right"></i>
+      </a>
+    
+  </nav>
+</article>
+
+
+
+
+  <div class="toc-button"  style="z-index: 100;">
+    <button class="mdui-fab mdui-ripple mdui-color-teal" mdui-menu="{target: '#toc'}"><i class="iconfont icon-list"></i></button>
+    <ul class="mdui-menu" id="toc">
+      <li class="mdui-menu-item">
+        <a href="/2020/07/02/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90Combine%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" id="toc-header" class="mdui-ripple">Table of Contents</a>
+        
+      </li>
+    </ul>
+  </div>
+
+
+
+    <div id="comment" class="mdui-card mdui-p-a-2 mdui-m-b-5">
+      <div class="mdui-tab" mdui-tab>
+        
+          <a href="#comment-tab0" class="mdui-ripple">gitalk</a>
+        
+          <a href="#comment-tab1" class="mdui-ripple">livere</a>
+        
+      </div>
+      
+        <div id="comment-tab0" class="mdui-p-a-2">
+          <div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id:  md5(location.pathname) ,
+    distractionFreeMode: 'true',
+  });
+  gitalk.render('gitalk-container');
+</script>
+        </div>
+      
+        <div id="comment-tab1" class="mdui-p-a-2">
+          <div id="lv-container" data-id="city" data-uid="">
+  <script type="text/javascript">
+    (function (d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+      if (typeof LivereTower === 'function') { return; }
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+      e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  </script>
+  <noscript>Please enable JavaScript to view the comments powered by LiveRe.</noscript>
+</div>
+        </div>
+      
+    </div>
+
+  </main>
+  <footer id="footer" class="mdui-text-center mdui-m-t-5 mdui-p-b-2 mdui-p-t-4 mdui-color-theme">
+  <div class="mdui-container">
+    <div class="mdui-row">
+      
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank"></a>
+      
+      <span>
+        &copy; 2019 - 2020 
+        
+          <span style="color:#d9333f" class="iconfont icon-heart"></span>
+        
+        六游
+      </span>
+    </div>
+    <div class="mdui-row">
+      
+        <span>Theme: <a href="https://github.com/kb1000fx/hexo-theme-meadow" rel="noopener" target="_blank">Meadow</a></span>
+      
+    </div>
+    <div class="mdui-row">
+      
+        <div class="mdui-col-xs-6 mdui-text-right">
+          <span id="busuanzi_container_site_uv" style="display: none;"> <span class="iconfont icon-user"></span>Total Visitors <span id="busuanzi_value_site_uv"></span></span>
+        </div>
+        <div class="mdui-col-xs-6 mdui-text-left">
+          <span id="busuanzi_container_site_pv" style="display: none;"> <span class="iconfont icon-eye"></span>Total Views <span id="busuanzi_value_site_pv"></span></span>
+        </div>
+      
+    </div>
+ </div>
+</footer>
+  
+  <button id="gotop" class="mdui-fab mdui-fab-fixed mdui-fab-hide mdui-ripple mdui-color-teal" style="z-index:100;"><i class="iconfont icon-arrowup"></i></button>
+  
+  
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+    
+<script src="/js/mdui.min.v1.0.0.js"></script>
+
+
+
+
+<script src="/js/meadow.js"></script>
+
+</body>
+</html >
